@@ -67,6 +67,9 @@ describe('shanten calculations', () => {
       t('sou', 2, 'l'), t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
     const melds = [{ type: 'chi', tiles: meldTiles }];
+    expect(calcStandardShanten(hand, melds)).toBe(1);
+    expect(calcChiitoiShanten(hand, melds)).toBe(4);
+    expect(calcKokushiShanten(hand, melds)).toBe(10);
     expect(calcShanten(hand, melds)).toEqual({ standard: 1, chiitoi: 4, kokushi: 10 });
   });
 });
