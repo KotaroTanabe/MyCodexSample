@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
@@ -15,6 +15,17 @@ export const GameController: React.FC = () => {
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
+
+  const turnRef = useRef(turn);
+  const playersRef = useRef<PlayerState[]>(players);
+
+  useEffect(() => {
+    turnRef.current = turn;
+  }, [turn]);
+
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
 
   // 初期化
   useEffect(() => {
@@ -48,32 +59,36 @@ export const GameController: React.FC = () => {
       setPhase('end');
       return;
     }
-    let p = [...players];
-    const result = drawTiles(p[turn], wall, 1);
-    p[turn] = result.player;
+    const currentIndex = turnRef.current;
+    let p = [...playersRef.current];
+    const result = drawTiles(p[currentIndex], wall, 1);
+    p[currentIndex] = result.player;
     setPlayers(p);
+    playersRef.current = p;
     setWall(result.wall);
-    setMessage(`${p[turn].name} がツモりました。`);
+    setMessage(`${p[currentIndex].name} がツモりました。`);
   };
 
   // 捨て牌処理（自分／AI共通）
   const handleDiscard = (tileId: string) => {
-    let p = [...players];
-    p[turn] = discardTile(p[turn], tileId);
+    const idx = turnRef.current;
+    let p = [...playersRef.current];
+    p[idx] = discardTile(p[idx], tileId);
     setPlayers(p);
+    playersRef.current = p;
     nextTurn();
   };
 
   // ターン進行
   const nextTurn = () => {
-    let next = (turn + 1) % 4;
+    let next = (turnRef.current + 1) % 4;
     setTurn(next);
     setTimeout(() => {
-      if (players[next].isAI) {
+      if (playersRef.current[next].isAI) {
         drawForCurrentPlayer();
         // AIの打牌ロジック（現時点はランダム）
         setTimeout(() => {
-          const tile = players[next].hand[0];
+          const tile = playersRef.current[next].hand[0];
           handleDiscard(tile.id);
         }, 500);
       } else {
