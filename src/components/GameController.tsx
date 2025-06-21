@@ -22,7 +22,7 @@ export const GameController: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
   const [helpOpen, setHelpOpen] = useState(false);
-  const [shanten, setShanten] = useState<{ value: number; isChiitoi: boolean }>({ value: 8, isChiitoi: false });
+  const [shanten, setShanten] = useState<{ standard: number; chiitoi: number; kokushi: number }>({ standard: 8, chiitoi: 8, kokushi: 13 });
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tileId: string; isShonpai: boolean } | null>(null);
 

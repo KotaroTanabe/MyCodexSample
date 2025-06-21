@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { calcStandardShanten, calcChiitoiShanten, calcShanten } from './shanten';
+import {
+  calcStandardShanten,
+  calcChiitoiShanten,
+  calcKokushiShanten,
+  calcShanten,
+} from './shanten';
 import { Tile } from '../types/mahjong';
 
 describe('shanten calculations', () => {
@@ -15,7 +20,8 @@ describe('shanten calculations', () => {
     ];
     expect(calcStandardShanten(hand)).toBe(-1);
     expect(calcChiitoiShanten(hand)).toBe(4);
-    expect(calcShanten(hand)).toEqual({ value: -1, isChiitoi: false });
+    expect(calcKokushiShanten(hand)).toBe(9);
+    expect(calcShanten(hand)).toEqual({ standard: -1, chiitoi: 4, kokushi: 9 });
   });
 
   it('calculates chiitoitsu tenpai correctly', () => {
@@ -30,7 +36,8 @@ describe('shanten calculations', () => {
     ];
     expect(calcChiitoiShanten(hand)).toBe(0);
     expect(calcStandardShanten(hand)).toBe(1);
-    expect(calcShanten(hand)).toEqual({ value: 0, isChiitoi: true });
+    expect(calcKokushiShanten(hand)).toBe(9);
+    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 0, kokushi: 9 });
   });
 
   it('handles a standard 1-shanten hand', () => {
@@ -43,6 +50,7 @@ describe('shanten calculations', () => {
     ];
     expect(calcStandardShanten(hand)).toBe(1);
     expect(calcChiitoiShanten(hand)).toBe(4);
-    expect(calcShanten(hand)).toEqual({ value: 1, isChiitoi: false });
+    expect(calcKokushiShanten(hand)).toBe(9);
+    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 4, kokushi: 9 });
   });
 });

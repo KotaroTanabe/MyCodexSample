@@ -7,7 +7,7 @@ interface UIBoardProps {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
-  shanten: { value: number; isChiitoi: boolean };
+  shanten: { standard: number; chiitoi: number; kokushi: number };
   lastDiscard: { tileId: string; isShonpai: boolean } | null;
 }
 
@@ -46,8 +46,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
       <div className="col-span-4 flex flex-col items-center mt-4">
         <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
-          向聴数: {shanten.value}
-          {shanten.isChiitoi && shanten.value >= 0 && ' (七対子向聴)'}
+          {(() => {
+            const base = Math.min(shanten.standard, shanten.chiitoi, shanten.kokushi);
+            let label = '';
+            if (shanten.chiitoi === base && base < shanten.standard) {
+              label = `七対子${base}向聴`;
+            } else if (shanten.kokushi === base && base < shanten.standard) {
+              label = `国士無双${base}向聴`;
+            }
+            return <>向聴数: {base}{label && ` (${label})`}</>;
+          })()}
         </div>
         {(() => {
           const my = players[0];

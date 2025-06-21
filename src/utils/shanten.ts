@@ -73,10 +73,32 @@ export function calcChiitoiShanten(hand: Tile[]): number {
   return 6 - pairCount + Math.max(0, 7 - unique);
 }
 
-export function calcShanten(hand: Tile[]): { value: number; isChiitoi: boolean } {
-  const normal = calcStandardShanten(hand);
-  const chiitoi = calcChiitoiShanten(hand);
-  return chiitoi < normal
-    ? { value: chiitoi, isChiitoi: true }
-    : { value: normal, isChiitoi: false };
+export function calcKokushiShanten(hand: Tile[]): number {
+  const yaochu = new Set([
+    'man-1', 'man-9', 'pin-1', 'pin-9', 'sou-1', 'sou-9',
+    'wind-1', 'wind-2', 'wind-3', 'wind-4',
+    'dragon-1', 'dragon-2', 'dragon-3',
+  ]);
+  const counts: Record<string, number> = {};
+  for (const t of hand) {
+    const key = `${t.suit}-${t.rank}`;
+    if (yaochu.has(key)) {
+      counts[key] = (counts[key] ?? 0) + 1;
+    }
+  }
+  const unique = Object.keys(counts).length;
+  const hasPair = Object.values(counts).some(c => c >= 2);
+  return 13 - unique - (hasPair ? 1 : 0);
+}
+
+export function calcShanten(hand: Tile[]): {
+  standard: number;
+  chiitoi: number;
+  kokushi: number;
+} {
+  return {
+    standard: calcStandardShanten(hand),
+    chiitoi: calcChiitoiShanten(hand),
+    kokushi: calcKokushiShanten(hand),
+  };
 }
