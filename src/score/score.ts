@@ -1,4 +1,4 @@
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 import { Yaku } from './yaku';
 
 function tileKey(t: Tile): string {
@@ -94,8 +94,9 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
   return null;
 }
 
-export function calculateFu(hand: Tile[]): number {
-  const parsed = decomposeHand(hand);
+export function calculateFu(hand: Tile[], melds: Meld[] = []): number {
+  const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const parsed = decomposeHand(allTiles);
   if (!parsed) return 0;
 
   let fu = 20; // base fu for a winning hand
@@ -116,9 +117,9 @@ export function calculateFu(hand: Tile[]): number {
   return fu;
 }
 
-export function calculateScore(hand: Tile[], yaku: Yaku[]): { han: number; fu: number; points: number } {
+export function calculateScore(hand: Tile[], melds: Meld[], yaku: Yaku[]): { han: number; fu: number; points: number } {
   const han = yaku.reduce((sum, y) => sum + y.han, 0);
-  const fu = calculateFu(hand);
+  const fu = calculateFu(hand, melds);
   const base = fu * Math.pow(2, han + 2);
   const points = base;
   return { han, fu, points };

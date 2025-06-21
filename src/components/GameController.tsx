@@ -98,12 +98,15 @@ export const GameController: React.FC = () => {
     playersRef.current = p;
     setWall(result.wall);
     wallRef.current = result.wall;
-    if (isWinningHand(p[currentIndex].hand)) {
-      const yaku = detectYaku(p[currentIndex].hand, {
+    if (isWinningHand([...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)])) {
+      const fullHand = [
+        ...p[currentIndex].hand,
+        ...p[currentIndex].melds.flatMap(m => m.tiles),
+      ];
+      const yaku = detectYaku(fullHand, p[currentIndex].melds, {
         isTsumo: true,
-        melds: p[currentIndex].melds,
       });
-      const { han, fu, points } = calculateScore(p[currentIndex].hand, yaku);
+      const { han, fu, points } = calculateScore(p[currentIndex].hand, p[currentIndex].melds, yaku);
       const newPlayers = p.map((pl, idx) =>
         idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
       );
