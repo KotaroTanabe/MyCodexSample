@@ -4,6 +4,7 @@ import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
+import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount } from './DiscardUtil';
 
@@ -18,6 +19,7 @@ export const GameController: React.FC = () => {
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
+  const [helpOpen, setHelpOpen] = useState(false);
   const [shanten, setShanten] = useState<{ value: number; isChiitoi: boolean }>({ value: 8, isChiitoi: false });
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tileId: string; isShonpai: boolean } | null>(null);
@@ -125,7 +127,7 @@ export const GameController: React.FC = () => {
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
-      <ScoreBoard players={players} kyoku={kyoku} />
+      <ScoreBoard players={players} kyoku={kyoku} onHelp={() => setHelpOpen(true)} />
       <UIBoard
         players={players}
         dora={dora}
@@ -140,6 +142,7 @@ export const GameController: React.FC = () => {
           リプレイ
         </button>
       )}
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };
