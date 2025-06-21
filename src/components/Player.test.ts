@@ -20,6 +20,7 @@ describe('drawTiles', () => {
     // hand should be sorted
     expect(updated.hand).toEqual(sortHand(wall.slice(0, 4)));
     expect(remaining).toEqual(wall.slice(4));
+    expect(updated.drawnTile).toBeNull();
   });
 
   it('sorts the hand by suit and rank', () => {
@@ -33,6 +34,14 @@ describe('drawTiles', () => {
     const player = createInitialPlayerState('Alice', false);
     const result = drawTiles(player, customWall, customWall.length);
     expect(result.player.hand).toEqual(sortHand(customWall));
+    expect(result.player.drawnTile).toBeNull();
+  });
+
+  it('records the last drawn tile when drawing a single tile', () => {
+    const wall = generateTileWall();
+    const player = createInitialPlayerState('Alice', false);
+    const { player: updated } = drawTiles(player, wall, 1);
+    expect(updated.drawnTile).toEqual(updated.hand[0]);
   });
 });
 
@@ -51,6 +60,7 @@ describe('discardTile', () => {
       sortHand(drawn.hand.filter(t => t.id !== tileToDiscard.id))
     );
     expect(updated.discard[updated.discard.length - 1]).toEqual(tileToDiscard);
+    expect(updated.drawnTile).toBeNull();
   });
 
   it('keeps the hand sorted after discarding', () => {

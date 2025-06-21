@@ -23,4 +23,5 @@ export interface PlayerState {
   isRiichi: boolean;
   name: string;
   isAI: boolean;
+  drawnTile: Tile | null;
 }

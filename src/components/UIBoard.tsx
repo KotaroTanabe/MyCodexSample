@@ -49,18 +49,36 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
           向聴数: {shanten.value}
           {shanten.isChiitoi && shanten.value >= 0 && ' (七対子向聴)'}
         </div>
-        <div className="grid grid-cols-12 gap-2">
-          {players[0].hand.map(tile => (
-            <button
-              key={tile.id}
-              className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-              onClick={() => onDiscard(tile.id)}
-              disabled={!isMyTurn}
-            >
-              <TileView tile={tile} />
-            </button>
-          ))}
-        </div>
+        {(() => {
+          const my = players[0];
+          const handTiles = my.drawnTile
+            ? my.hand.filter(t => t.id !== my.drawnTile?.id)
+            : my.hand;
+          return (
+            <div className="flex gap-2 items-center">
+              {handTiles.map(tile => (
+                <button
+                  key={tile.id}
+                  className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                  onClick={() => onDiscard(tile.id)}
+                  disabled={!isMyTurn}
+                >
+                  <TileView tile={tile} />
+                </button>
+              ))}
+              {my.drawnTile && (
+                <button
+                  key={my.drawnTile.id}
+                  className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                  onClick={() => onDiscard(my.drawnTile.id)}
+                  disabled={!isMyTurn}
+                >
+                  <TileView tile={my.drawnTile} />
+                </button>
+              )}
+            </div>
+          );
+        })()}
         <div className="flex gap-1 mt-2">
           {players[0].discard.map(tile => (
             <TileView
