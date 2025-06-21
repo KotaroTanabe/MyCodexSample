@@ -4,6 +4,7 @@ import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
+import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount } from './DiscardUtil';
 
 type GamePhase = 'init' | 'playing' | 'end';
@@ -17,6 +18,7 @@ export const GameController: React.FC = () => {
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
+  const [shanten, setShanten] = useState<{ value: number; isChiitoi: boolean }>({ value: 8, isChiitoi: false });
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tileId: string; isShonpai: boolean } | null>(null);
 
@@ -29,6 +31,9 @@ export const GameController: React.FC = () => {
 
   useEffect(() => {
     playersRef.current = players;
+    if (players.length > 0) {
+      setShanten(calcShanten(players[0].hand));
+    }
   }, [players]);
 
   // 初期化
@@ -126,6 +131,7 @@ export const GameController: React.FC = () => {
         dora={dora}
         onDiscard={handleDiscard}
         isMyTurn={turn === 0}
+        shanten={shanten}
         lastDiscard={lastDiscard}
       />
       <div className="mt-2">{message}</div>

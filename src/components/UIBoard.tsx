@@ -7,11 +7,12 @@ interface UIBoardProps {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
+  shanten: { value: number; isChiitoi: boolean };
   lastDiscard: { tileId: string; isShonpai: boolean } | null;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
-export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn, lastDiscard }) => {
+export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn, shanten, lastDiscard }) => {
   if (players.length === 0) {
     return null;
   }
@@ -44,6 +45,10 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
       {/* 自分の手牌 */}
       <div className="col-span-4 flex flex-col items-center mt-4">
         <div className="text-lg mb-1">あなたの手牌</div>
+        <div className="text-sm mb-2">
+          向聴数: {shanten.value}
+          {shanten.isChiitoi && shanten.value >= 0 && ' (七対子向聴)'}
+        </div>
         <div className="grid grid-cols-12 gap-2">
           {players[0].hand.map(tile => (
             <button
