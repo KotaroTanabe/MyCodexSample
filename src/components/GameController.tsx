@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
-import { generateTileWall } from './TileWall';
+import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
@@ -11,6 +11,7 @@ export const GameController: React.FC = () => {
   // ゲーム状態
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
+  const [dora, setDora] = useState<Tile[]>([]);
   const [turn, setTurn] = useState(0); // 0:自分, 1-3:AI
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
@@ -31,6 +32,9 @@ export const GameController: React.FC = () => {
   useEffect(() => {
     if (phase === 'init') {
       let wall = generateTileWall();
+      const doraResult = drawDoraIndicator(wall, 1);
+      const doraTiles = doraResult.dora;
+      wall = doraResult.wall;
       let p: PlayerState[] = [
         createInitialPlayerState('あなた', false),
         createInitialPlayerState('AI東家', true),
@@ -45,6 +49,7 @@ export const GameController: React.FC = () => {
       }
       setPlayers(p);
       setWall(wall);
+      setDora(doraTiles);
       setTurn(0);
       setKyoku(1);
       setMessage('配牌が完了しました。あなたのターンです。');
@@ -108,6 +113,7 @@ export const GameController: React.FC = () => {
       <ScoreBoard players={players} kyoku={kyoku} />
       <UIBoard
         players={players}
+        dora={dora}
         onDiscard={handleDiscard}
         isMyTurn={turn === 0}
       />
