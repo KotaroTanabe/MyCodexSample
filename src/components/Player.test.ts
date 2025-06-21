@@ -87,3 +87,25 @@ describe('incrementDiscardCount', () => {
     expect(result.record['man-1']).toBe(1);
   });
 });
+
+describe('initial hand distribution', () => {
+  it('gives the dealer 14 tiles after the initial draw', () => {
+    let wall = generateTileWall();
+    const players: PlayerState[] = [
+      createInitialPlayerState('you', false),
+      createInitialPlayerState('AI1', true),
+      createInitialPlayerState('AI2', true),
+      createInitialPlayerState('AI3', true),
+    ];
+    for (let i = 0; i < 4; i++) {
+      const result = drawTiles(players[i], wall, 13);
+      players[i] = result.player;
+      wall = result.wall;
+    }
+    const extra = drawTiles(players[0], wall, 1);
+    players[0] = extra.player;
+    wall = extra.wall;
+
+    expect(players[0].hand).toHaveLength(14);
+  });
+});

@@ -59,6 +59,10 @@ export const GameController: React.FC = () => {
         p[i] = result.player;
         wall = result.wall;
       }
+      // 親の14牌目を配る
+      const extra = drawTiles(p[0], wall, 1);
+      p[0] = extra.player;
+      wall = extra.wall;
       setPlayers(p);
       setWall(wall);
       setDora(doraTiles);
