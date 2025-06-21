@@ -3,18 +3,18 @@ import { PlayerState } from '../types/mahjong';
 
 interface UIBoardProps {
   players: PlayerState[];
-  turn: number;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
-export const UIBoard: React.FC<UIBoardProps> = ({ players, turn, onDiscard, isMyTurn }) => {
+export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }) => {
   return (
     <div className="w-full flex flex-col items-center">
       {/* 上部：AIの捨て牌 */}
       <div className="flex justify-between w-full mb-4">
-        {players.slice(1).map((ai, idx) => (
+        {players.slice(1).map(ai => (
           <div key={ai.name} className="flex flex-col items-center">
             <div className="text-sm">{ai.name}</div>
             <div className="flex gap-1">

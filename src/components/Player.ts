@@ -1,4 +1,4 @@
-import { PlayerState, Tile, Meld } from '../types/mahjong';
+import { PlayerState, Tile } from '../types/mahjong';
 
 export function createInitialPlayerState(name: string, isAI: boolean): PlayerState {
   return {
