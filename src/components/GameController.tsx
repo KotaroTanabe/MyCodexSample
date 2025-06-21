@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
+import { isWinningHand, detectYaku } from '../score/yaku';
+import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
 import { HelpModal } from './HelpModal';
@@ -83,6 +85,20 @@ export const GameController: React.FC = () => {
     setPlayers(p);
     playersRef.current = p;
     setWall(result.wall);
+    if (isWinningHand(p[currentIndex].hand)) {
+      const yaku = detectYaku(p[currentIndex].hand);
+      const { han, fu, points } = calculateScore(p[currentIndex].hand, yaku);
+      const newPlayers = p.map((pl, idx) =>
+        idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
+      );
+      setPlayers(newPlayers);
+      playersRef.current = newPlayers;
+      setMessage(
+        `${p[currentIndex].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`,
+      );
+      setPhase('end');
+      return;
+    }
     setMessage(`${p[currentIndex].name} がツモりました。`);
   };
 

@@ -1,11 +1,16 @@
 import { Tile } from '../types/mahjong';
+import { Yaku } from './yaku';
 
-/**
- * Calculates a basic score for the given hand.
- * Currently returns 0 as a placeholder.
- */
-export function calculateBasicScore(hand: Tile[]): number {
-  // TODO: implement actual scoring logic
-  // Temporary logic: base score equals tile count
-  return hand.length;
+export function calculateFu(hand: Tile[]): number {
+  // simplified fu calculation currently ignores hand contents
+  void hand;
+  return 30;
+}
+
+export function calculateScore(hand: Tile[], yaku: Yaku[]): { han: number; fu: number; points: number } {
+  const han = yaku.reduce((sum, y) => sum + y.han, 0);
+  const fu = calculateFu(hand);
+  const base = fu * Math.pow(2, han + 2);
+  const points = base;
+  return { han, fu, points };
 }
