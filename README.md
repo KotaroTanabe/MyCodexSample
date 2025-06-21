@@ -45,10 +45,12 @@ npm run preview
 
 ## CI/CD（GitHub Actions & Pages）
 
-- **push/PR時に自動ビルド・テスト**  
+- **push/PR時に自動ビルド・テスト**
 - 成功時 `dist` アーティファクトをダウンロード可能
+- PR作成時にプレビュー環境へ自動デプロイ
+  - Actionsのワークフロー実行ページの"Deploy to GitHub Pages"ステップに表示される`Preview URL`からアクセス
 - mainブランチpush時に **GitHub Pagesへ自動デプロイ**
-- 公開URL例：  
+- 公開URL例：
   `https://kotarotanabe.github.io/MyCodexSample/`
 
 ### 成果物をダウンロードして動作確認
