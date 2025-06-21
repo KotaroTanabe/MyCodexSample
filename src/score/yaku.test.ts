@@ -81,6 +81,7 @@ describe('Yaku detection', () => {
     const yaku = detectYaku(hand);
     expect(yaku.filter(y => y.name === 'Yakuhai')).toHaveLength(2);
 
+
     it('detects Chiitoitsu', () => {
     const hand: Tile[] = [
       t('man',1,'m1a'),t('man',1,'m1b'),
