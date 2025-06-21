@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { incrementDiscardCount } from './DiscardUtil';
 import { createInitialPlayerState, drawTiles, discardTile, sortHand } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState } from '../types/mahjong';
@@ -62,5 +63,27 @@ describe('discardTile', () => {
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
     const updated = discardTile(player, 's1');
     expect(updated.hand).toEqual(sortHand(hand.filter(t => t.id !== 's1')));
+  });
+});
+
+describe('incrementDiscardCount', () => {
+  it('increments counts and identifies shonpai', () => {
+    const tile: Tile = { suit: 'man', rank: 1, id: 'm1' };
+    let record: Record<string, number> = {};
+    let result = incrementDiscardCount(record, tile);
+    record = result.record;
+    expect(result.isShonpai).toBe(true);
+    expect(record['man-1']).toBe(1);
+
+    result = incrementDiscardCount(record, tile);
+    record = result.record;
+    expect(result.isShonpai).toBe(false);
+    expect(record['man-1']).toBe(2);
+
+    // reset for new round
+    record = {};
+    result = incrementDiscardCount(record, tile);
+    expect(result.isShonpai).toBe(true);
+    expect(result.record['man-1']).toBe(1);
   });
 });
