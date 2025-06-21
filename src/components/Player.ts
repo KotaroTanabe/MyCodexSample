@@ -1,4 +1,4 @@
-import { PlayerState, Tile } from '../types/mahjong';
+import { PlayerState, Tile, MeldType } from '../types/mahjong';
 
 export function sortHand(hand: Tile[]): Tile[] {
   const order: Record<Tile['suit'], number> = {
@@ -52,5 +52,19 @@ export function discardTile(player: PlayerState, tileId: string): PlayerState {
     hand: sortHand(newHand),
     discard: [...player.discard, tile],
     drawnTile: null,
+  };
+}
+
+export function claimMeld(
+  player: PlayerState,
+  tiles: Tile[],
+  type: MeldType,
+): PlayerState {
+  // remove called tiles from hand
+  const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
+  return {
+    ...player,
+    hand: sortHand(hand),
+    melds: [...player.melds, { type, tiles }],
   };
 }

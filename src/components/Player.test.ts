@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { incrementDiscardCount } from './DiscardUtil';
-import { createInitialPlayerState, drawTiles, discardTile, sortHand } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld } from './Player';
 import { generateTileWall } from './TileWall';
-import { Tile, PlayerState } from '../types/mahjong';
+import { Tile, PlayerState, MeldType } from '../types/mahjong';
 
 // Unit tests for Player helper functions
 
@@ -73,6 +73,23 @@ describe('discardTile', () => {
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
     const updated = discardTile(player, 's1');
     expect(updated.hand).toEqual(sortHand(hand.filter(t => t.id !== 's1')));
+  });
+});
+
+describe('claimMeld', () => {
+  it('removes tiles and adds a meld', () => {
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'm1' },
+      { suit: 'man', rank: 2, id: 'm2' },
+      { suit: 'man', rank: 3, id: 'm3' },
+      { suit: 'pin', rank: 5, id: 'p1' },
+    ];
+    const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
+    const tiles = hand.slice(0, 3);
+    const updated = claimMeld(player, tiles, 'chi' as MeldType);
+    expect(updated.hand).toHaveLength(1);
+    expect(updated.hand[0].id).toBe('p1');
+    expect(updated.melds).toEqual([{ type: 'chi', tiles }]);
   });
 });
 

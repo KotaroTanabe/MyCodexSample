@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
-import { createInitialPlayerState, drawTiles, discardTile } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, claimMeld } from './Player';
+import { MeldType } from '../types/mahjong';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
@@ -24,7 +25,8 @@ export const GameController: React.FC = () => {
   const [helpOpen, setHelpOpen] = useState(false);
   const [shanten, setShanten] = useState<{ standard: number; chiitoi: number; kokushi: number }>({ standard: 8, chiitoi: 8, kokushi: 13 });
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
-  const [lastDiscard, setLastDiscard] = useState<{ tileId: string; isShonpai: boolean } | null>(null);
+  const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
+  const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -124,11 +126,74 @@ export const GameController: React.FC = () => {
     if (!tile) return;
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
-    setLastDiscard({ tileId, isShonpai: result.isShonpai });
+    setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
     p[idx] = discardTile(p[idx], tileId);
     setPlayers(p);
     playersRef.current = p;
-    nextTurn();
+    if (idx !== 0) {
+      setCallOptions(['pon', 'chi', 'kan', 'pass']);
+    } else {
+      nextTurn();
+    }
+  };
+
+  const selectMeldTiles = (
+    player: PlayerState,
+    tile: Tile,
+    type: MeldType,
+  ): Tile[] | null => {
+    if (type === 'pon' || type === 'kan') {
+      const need = type === 'pon' ? 2 : 3;
+      const matches = player.hand.filter(
+        t => t.suit === tile.suit && t.rank === tile.rank,
+      );
+      if (matches.length >= need) return matches.slice(0, need);
+      return null;
+    }
+    // chi
+    if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
+      const opts = [
+        [tile.rank - 2, tile.rank - 1],
+        [tile.rank - 1, tile.rank + 1],
+        [tile.rank + 1, tile.rank + 2],
+      ];
+      for (const [a, b] of opts) {
+        const t1 = player.hand.find(t => t.suit === tile.suit && t.rank === a);
+        const t2 = player.hand.find(t => t.suit === tile.suit && t.rank === b);
+        if (t1 && t2) return [t1, t2];
+      }
+    }
+    return null;
+  };
+
+  const handleCallAction = (action: MeldType | 'pass') => {
+    if (!lastDiscard) return;
+    if (action === 'pass') {
+      setCallOptions(null);
+      setLastDiscard(null);
+      nextTurn();
+      return;
+    }
+    const caller = 0;
+    const discarder = lastDiscard.player;
+    let p = [...playersRef.current];
+    const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
+    if (!meldTiles) {
+      setCallOptions(null);
+      setLastDiscard(null);
+      nextTurn();
+      return;
+    }
+    p[discarder] = {
+      ...p[discarder],
+      discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
+    };
+    p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
+    setPlayers(p);
+    playersRef.current = p;
+    setCallOptions(null);
+    setLastDiscard(null);
+    setTurn(caller);
   };
 
   // ターン進行
@@ -165,6 +230,8 @@ export const GameController: React.FC = () => {
         isMyTurn={turn === 0}
         shanten={shanten}
         lastDiscard={lastDiscard}
+        callOptions={callOptions ?? undefined}
+        onCallAction={handleCallAction}
       />
       <div className="mt-2">{message}</div>
       {phase === 'end' && (
