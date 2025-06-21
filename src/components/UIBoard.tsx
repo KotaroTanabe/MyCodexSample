@@ -70,7 +70,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
                 <button
                   key={my.drawnTile.id}
                   className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-                  onClick={() => onDiscard(my.drawnTile.id)}
+                  onClick={() => onDiscard(my.drawnTile!.id)}
                   disabled={!isMyTurn}
                 >
                   <TileView tile={my.drawnTile} />
