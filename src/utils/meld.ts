@@ -37,6 +37,6 @@ export function getValidCallOptions(
   (['pon', 'chi', 'kan'] as MeldType[]).forEach(t => {
     if (selectMeldTiles(player, tile, t)) actions.push(t);
   });
-  actions.push('pass');
+  if (actions.length > 0) actions.push('pass');
   return actions;
 }
