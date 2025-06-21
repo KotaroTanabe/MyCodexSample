@@ -41,6 +41,47 @@ describe('Yaku detection', () => {
     const yaku = detectYaku(hand);
     expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
   });
+
+  it('detects Pinfu', () => {
+    const hand: Tile[] = [
+      t('man',2,'pf1'),t('man',3,'pf2'),t('man',4,'pf3'),
+      t('man',3,'pf4'),t('man',4,'pf5'),t('man',5,'pf6'),
+      t('pin',6,'pf7'),t('pin',7,'pf8'),t('pin',8,'pf9'),
+      t('sou',4,'pf10'),t('sou',5,'pf11'),t('sou',6,'pf12'),
+      t('sou',7,'pf13'),t('sou',7,'pf14'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Pinfu')).toBe(true);
+  });
+
+  it('detects Chiitoitsu', () => {
+    const hand: Tile[] = [
+      t('man',1,'c1a'),t('man',1,'c1b'),
+      t('pin',2,'c2a'),t('pin',2,'c2b'),
+      t('sou',3,'c3a'),t('sou',3,'c3b'),
+      t('man',4,'c4a'),t('man',4,'c4b'),
+      t('pin',5,'c5a'),t('pin',5,'c5b'),
+      t('sou',6,'c6a'),t('sou',6,'c6b'),
+      t('man',7,'c7a'),t('man',7,'c7b'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
+  });
+
+  it('detects Iipeiko', () => {
+    const hand: Tile[] = [
+      t('man',1,'i1'),t('man',2,'i2'),t('man',3,'i3'),
+      t('man',1,'i4'),t('man',2,'i5'),t('man',3,'i6'),
+      t('pin',4,'i7'),t('pin',5,'i8'),t('pin',6,'i9'),
+      t('pin',4,'i10'),t('pin',5,'i11'),t('pin',6,'i12'),
+      t('sou',7,'i13'),t('sou',7,'i14'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Iipeiko')).toBe(true);
+  });
 });
 
 describe('Scoring', () => {
@@ -54,8 +95,8 @@ describe('Scoring', () => {
     ];
     const yaku = detectYaku(hand);
     const { han, fu, points } = calculateScore(hand, yaku);
-    expect(han).toBe(1);
+    expect(han).toBe(2);
     expect(fu).toBe(30);
-    expect(points).toBe(240);
+    expect(points).toBe(480);
   });
 });

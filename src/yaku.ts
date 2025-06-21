@@ -18,4 +18,22 @@ export const YAKU_LIST: Yaku[] = [
     hanClosed: 1,
     hanOpen: 1,
   },
+  {
+    name: 'Pinfu',
+    description: '順子のみで雀頭が役牌でない形で和了',
+    hanClosed: 1,
+    hanOpen: 0,
+  },
+  {
+    name: 'Iipeiko',
+    description: '同一順子を2組含む形',
+    hanClosed: 1,
+    hanOpen: 0,
+  },
+  {
+    name: 'Chiitoitsu',
+    description: '七つの対子だけで構成された手',
+    hanClosed: 2,
+    hanOpen: 0,
+  },
 ];

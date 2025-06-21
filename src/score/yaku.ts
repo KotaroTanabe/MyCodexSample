@@ -34,6 +34,89 @@ function countDragonTriplets(counts: Record<string, number>): number {
   return yakuhai;
 }
 
+function canFormSequencesOnly(
+  counts: Record<string, number>,
+  memo = new Map<string, boolean>(),
+): boolean {
+  const serialized = JSON.stringify(counts);
+  if (memo.has(serialized)) return memo.get(serialized)!;
+
+  const keys = Object.keys(counts).filter(k => counts[k] > 0);
+  if (keys.length === 0) {
+    memo.set(serialized, true);
+    return true;
+  }
+
+  const first = keys[0];
+  const [suit, rankStr] = first.split('-');
+  const rank = Number(rankStr);
+
+  if (
+    (suit === 'man' || suit === 'pin' || suit === 'sou') &&
+    counts[`${suit}-${rank + 1}`] > 0 &&
+    counts[`${suit}-${rank + 2}`] > 0
+  ) {
+    counts[first]--;
+    counts[`${suit}-${rank + 1}`]--;
+    counts[`${suit}-${rank + 2}`]--;
+    if (canFormSequencesOnly(counts, memo)) {
+      counts[first]++;
+      counts[`${suit}-${rank + 1}`]++;
+      counts[`${suit}-${rank + 2}`]++;
+      memo.set(serialized, true);
+      return true;
+    }
+    counts[first]++;
+    counts[`${suit}-${rank + 1}`]++;
+    counts[`${suit}-${rank + 2}`]++;
+  }
+
+  memo.set(serialized, false);
+  return false;
+}
+
+export function isChiitoitsu(tiles: Tile[]): boolean {
+  if (tiles.length !== 14) return false;
+  const counts = countTiles(tiles);
+  const keys = Object.keys(counts);
+  if (keys.length !== 7) return false;
+  return keys.every(k => counts[k] === 2);
+}
+
+export function isPinfu(tiles: Tile[]): boolean {
+  if (isChiitoitsu(tiles)) return false;
+  const counts = countTiles(tiles);
+  for (const key of Object.keys(counts)) {
+    if (counts[key] >= 2) {
+      const [suit] = key.split('-');
+      if (suit === 'wind' || suit === 'dragon') continue;
+      counts[key] -= 2;
+      if (canFormSequencesOnly(counts)) {
+        counts[key] += 2;
+        return true;
+      }
+      counts[key] += 2;
+    }
+  }
+  return false;
+}
+
+export function isIipeiko(tiles: Tile[]): boolean {
+  if (!isWinningHand(tiles)) return false;
+  const counts = countTiles(tiles);
+  for (const suit of ['man', 'pin', 'sou'] as const) {
+    for (let r = 1; r <= 7; r++) {
+      const c = Math.min(
+        counts[`${suit}-${r}`] || 0,
+        counts[`${suit}-${r + 1}`] || 0,
+        counts[`${suit}-${r + 2}`] || 0,
+      );
+      if (c >= 2) return true;
+    }
+  }
+  return false;
+}
+
 function canFormSets(counts: Record<string, number>, memo = new Map<string, boolean>()): boolean {
   const serialized = JSON.stringify(counts);
   if (memo.has(serialized)) return memo.get(serialized)!;
@@ -73,6 +156,7 @@ function canFormSets(counts: Record<string, number>, memo = new Map<string, bool
 
 export function isWinningHand(tiles: Tile[]): boolean {
   if (tiles.length !== 14) return false;
+  if (isChiitoitsu(tiles)) return true;
   const counts = countTiles(tiles);
   const tileKeys = Object.keys(counts);
   for (const key of tileKeys) {
@@ -91,6 +175,15 @@ export function isWinningHand(tiles: Tile[]): boolean {
 export function detectYaku(tiles: Tile[]): Yaku[] {
   const result: Yaku[] = [];
   const counts = countTiles(tiles);
+  if (isChiitoitsu(tiles)) {
+    result.push({ name: 'Chiitoitsu', han: 2 });
+  }
+  if (isPinfu(tiles)) {
+    result.push({ name: 'Pinfu', han: 1 });
+  }
+  if (isIipeiko(tiles)) {
+    result.push({ name: 'Iipeiko', han: 1 });
+  }
   if (isTanyao(tiles)) {
     result.push({ name: 'Tanyao', han: 1 });
   }
