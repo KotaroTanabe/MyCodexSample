@@ -57,13 +57,13 @@ describe('Yaku detection', () => {
 
   it('detects Chiitoitsu', () => {
     const hand: Tile[] = [
-      t('man',1,'c1a'),t('man',1,'c1b'),
-      t('pin',2,'c2a'),t('pin',2,'c2b'),
-      t('sou',3,'c3a'),t('sou',3,'c3b'),
-      t('man',4,'c4a'),t('man',4,'c4b'),
-      t('pin',5,'c5a'),t('pin',5,'c5b'),
-      t('sou',6,'c6a'),t('sou',6,'c6b'),
-      t('man',7,'c7a'),t('man',7,'c7b'),
+      t('man',1,'m1a'),t('man',1,'m1b'),
+      t('man',2,'m2a'),t('man',2,'m2b'),
+      t('pin',3,'p3a'),t('pin',3,'p3b'),
+      t('pin',4,'p4a'),t('pin',4,'p4b'),
+      t('sou',5,'s5a'),t('sou',5,'s5b'),
+      t('sou',6,'s6a'),t('sou',6,'s6b'),
+      t('dragon',1,'d1a'),t('dragon',1,'d1b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
     const yaku = detectYaku(hand);
@@ -82,6 +82,20 @@ describe('Yaku detection', () => {
     const yaku = detectYaku(hand);
     expect(yaku.some(y => y.name === 'Iipeiko')).toBe(true);
   });
+
+  it('detects Kokushi Musou', () => {
+    const hand: Tile[] = [
+      t('man',1,'m1a'),t('man',9,'m9a'),
+      t('pin',1,'p1a'),t('pin',9,'p9a'),
+      t('sou',1,'s1a'),t('sou',9,'s9a'),
+      t('wind',1,'e'),t('wind',2,'s'),t('wind',3,'w'),t('wind',4,'n'),
+      t('dragon',1,'d1a'),t('dragon',2,'d2a'),t('dragon',3,'d3a'),
+      t('man',1,'m1b'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Kokushi Musou')).toBe(true);
+  });
 });
 
 describe('Scoring', () => {
@@ -95,8 +109,21 @@ describe('Scoring', () => {
     ];
     const yaku = detectYaku(hand);
     const { han, fu, points } = calculateScore(hand, yaku);
-    expect(han).toBe(2);
+    expect(han).toBe(1);
+    expect(fu).toBe(20);
+    expect(points).toBe(160);
+  });
+
+  it('adds fu for honor triplets', () => {
+    const hand: Tile[] = [
+      t('dragon',1,'d1a'),t('dragon',1,'d1b'),t('dragon',1,'d1c'),
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',5,'m5a'),t('man',5,'m5b'),
+    ];
+    const yaku = detectYaku(hand);
+    const { fu } = calculateScore(hand, yaku);
     expect(fu).toBe(30);
-    expect(points).toBe(480);
   });
 });
