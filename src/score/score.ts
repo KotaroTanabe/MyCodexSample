@@ -1,8 +1,9 @@
 import { Tile } from '../types/mahjong';
 import { Yaku } from './yaku';
 
-export function calculateFu(_hand: Tile[]): number {
-  // simplified fu calculation
+export function calculateFu(hand: Tile[]): number {
+  // simplified fu calculation currently ignores hand contents
+  void hand;
   return 30;
 }
 
