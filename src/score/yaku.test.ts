@@ -132,4 +132,24 @@ describe('Scoring', () => {
     const { fu } = calculateScore(concealed, melds, yaku);
     expect(fu).toBe(30);
   });
+
+  it('adds fu for a kan meld', () => {
+    // use 3 tiles for simplicity; scoring treats kan as pon plus bonus
+    const kanTiles = [
+      t('dragon',1,'k1a'),
+      t('dragon',1,'k1b'),
+      t('dragon',1,'k1c'),
+    ];
+    const concealed: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',5,'m5a'),t('man',5,'m5b'),
+    ];
+    const melds: Meld[] = [{ type: 'kan', tiles: kanTiles }];
+    const fullHand = [...concealed, ...kanTiles];
+    const yaku = detectYaku(fullHand, melds, { isTsumo: true });
+    const { fu } = calculateScore(concealed, melds, yaku);
+    expect(fu).toBe(60);
+  });
 });
