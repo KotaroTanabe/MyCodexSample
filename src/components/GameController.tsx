@@ -9,7 +9,7 @@ import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
 import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
-import { incrementDiscardCount } from './DiscardUtil';
+import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -133,6 +133,33 @@ export const GameController: React.FC = () => {
     p[idx] = discardTile(p[idx], tileId);
     setPlayers(p);
     playersRef.current = p;
+    const winIdx = findRonWinner(p, idx, tile);
+    if (winIdx !== null) {
+      const winningPlayer = p[winIdx];
+      const fullHand = [
+        ...winningPlayer.hand,
+        ...winningPlayer.melds.flatMap(m => m.tiles),
+        tile,
+      ];
+      const yaku = detectYaku(fullHand, winningPlayer.melds, { isTsumo: false });
+      const { han, fu, points } = calculateScore(
+        [...winningPlayer.hand, tile],
+        winningPlayer.melds,
+        yaku,
+      );
+      const updated = p.map((pl, i) =>
+        i === winIdx ? { ...pl, score: pl.score + points } : pl,
+      );
+      setPlayers(updated);
+      playersRef.current = updated;
+      setMessage(
+        `${winningPlayer.name} のロン！ ${yaku
+          .map(y => y.name)
+          .join(', ')} ${han}翻 ${fu}符 ${points}点`,
+      );
+      setPhase('end');
+      return;
+    }
     if (idx !== 0) {
       setCallOptions(['pon', 'chi', 'kan', 'pass']);
     } else {
