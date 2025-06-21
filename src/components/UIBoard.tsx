@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerState, Tile } from '../types/mahjong';
+import { PlayerState, Tile, Suit } from '../types/mahjong';
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -60,11 +60,64 @@ export const TileView: React.FC<{ tile: Tile }> = ({ tile }) => {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
     dragon: { 1: '白', 2: '發', 3: '中' },
   };
+  const emojiMap: Record<Suit, Record<number, string>> = {
+    man: {
+      1: '🀇',
+      2: '🀈',
+      3: '🀉',
+      4: '🀊',
+      5: '🀋',
+      6: '🀌',
+      7: '🀍',
+      8: '🀎',
+      9: '🀏',
+    },
+    pin: {
+      1: '🀙',
+      2: '🀚',
+      3: '🀛',
+      4: '🀜',
+      5: '🀝',
+      6: '🀞',
+      7: '🀟',
+      8: '🀠',
+      9: '🀡',
+    },
+    sou: {
+      1: '🀐',
+      2: '🀑',
+      3: '🀒',
+      4: '🀓',
+      5: '🀔',
+      6: '🀕',
+      7: '🀖',
+      8: '🀗',
+      9: '🀘',
+    },
+    wind: {
+      1: '🀀',
+      2: '🀁',
+      3: '🀂',
+      4: '🀃',
+    },
+    dragon: {
+      1: '🀆',
+      2: '🀅',
+      3: '🀄',
+    },
+  };
+  const kanji =
+    tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
+      ? `${tile.rank}${suitMap[tile.suit]}`
+      : honorMap[tile.suit]?.[tile.rank] ?? '';
   return (
-    <span className="inline-block border px-1 py-0.5 text-base bg-white">
-      {tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
-        ? `${tile.rank}${suitMap[tile.suit]}`
-        : honorMap[tile.suit]?.[tile.rank] ?? ''}
+    <span
+      className="inline-block border px-1 py-0.5 text-base bg-white"
+      aria-label={kanji}
+    >
+      <span className="font-emoji">
+        {emojiMap[tile.suit]?.[tile.rank] ?? kanji}
+      </span>
     </span>
   );
 };
