@@ -55,7 +55,20 @@ describe('Scoring', () => {
     const yaku = detectYaku(hand);
     const { han, fu, points } = calculateScore(hand, yaku);
     expect(han).toBe(1);
+    expect(fu).toBe(20);
+    expect(points).toBe(160);
+  });
+
+  it('adds fu for honor triplets', () => {
+    const hand: Tile[] = [
+      t('dragon',1,'d1a'),t('dragon',1,'d1b'),t('dragon',1,'d1c'),
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',5,'m5a'),t('man',5,'m5b'),
+    ];
+    const yaku = detectYaku(hand);
+    const { fu } = calculateScore(hand, yaku);
     expect(fu).toBe(30);
-    expect(points).toBe(240);
   });
 });
