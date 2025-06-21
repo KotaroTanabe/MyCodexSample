@@ -45,4 +45,9 @@ describe('UIBoard shanten display', () => {
     renderBoard({ standard: 3, chiitoi: 3, kokushi: 2 });
     expect(screen.getByText('向聴数: 2 (国士無双2向聴)')).toBeTruthy();
   });
+
+  it('shows negative shanten without label', () => {
+    renderBoard({ standard: -1, chiitoi: 3, kokushi: 5 });
+    expect(screen.getByText('向聴数: -1')).toBeTruthy();
+  });
 });
