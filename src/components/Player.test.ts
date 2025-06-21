@@ -86,10 +86,10 @@ describe('claimMeld', () => {
     ];
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
     const tiles = hand.slice(0, 3);
-    const updated = claimMeld(player, tiles, 'chi' as MeldType);
+    const updated = claimMeld(player, tiles, 'chi' as MeldType, 1, 'm2');
     expect(updated.hand).toHaveLength(1);
     expect(updated.hand[0].id).toBe('p1');
-    expect(updated.melds).toEqual([{ type: 'chi', tiles }]);
+    expect(updated.melds).toEqual([{ type: 'chi', tiles, fromPlayer: 1, calledTileId: 'm2' }]);
   });
 });
 

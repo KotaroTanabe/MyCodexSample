@@ -228,7 +228,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
       ...p[discarder],
       discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
     };
-    p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
+    p[caller] = claimMeld(
+      p[caller],
+      [...meldTiles, lastDiscard.tile],
+      action,
+      discarder,
+      lastDiscard.tile.id,
+    );
     setPlayers(p);
     playersRef.current = p;
 
@@ -256,7 +262,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
       ...p[discarder],
       discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
     };
-    p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
+    p[caller] = claimMeld(
+      p[caller],
+      [...meldTiles, lastDiscard.tile],
+      action,
+      discarder,
+      lastDiscard.tile.id,
+    );
     setPlayers(p);
     playersRef.current = p;
     setMessage(`${p[caller].name} が ${action}しました。`);

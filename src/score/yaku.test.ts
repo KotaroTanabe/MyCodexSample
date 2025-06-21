@@ -149,7 +149,9 @@ describe('Scoring', () => {
       t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
       t('man',5,'m5a'),t('man',5,'m5b'),
     ];
-    const melds: Meld[] = [{ type: 'pon', tiles: ponTiles }];
+    const melds: Meld[] = [
+      { type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'd1a' },
+    ];
     const fullHand = [...concealed, ...ponTiles];
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(false);
@@ -184,7 +186,9 @@ describe('Scoring', () => {
       t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
       t('man',5,'m5a'),t('man',5,'m5b'),
     ];
-    const melds: Meld[] = [{ type: 'kan', tiles: kanTiles }];
+    const melds: Meld[] = [
+      { type: 'kan', tiles: kanTiles, fromPlayer: 2, calledTileId: 'k1a' },
+    ];
     const fullHand = [...concealed, ...kanTiles];
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
     const { fu } = calculateScore(concealed, melds, yaku);
