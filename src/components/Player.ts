@@ -12,6 +12,7 @@ export function createInitialPlayerState(name: string, isAI: boolean): PlayerSta
   };
 }
 
+
 export function drawTiles(player: PlayerState, wall: Tile[], count: number): { player: PlayerState; wall: Tile[] } {
   const drawn = wall.slice(0, count);
   return {
