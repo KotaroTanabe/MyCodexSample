@@ -54,6 +54,13 @@ npm test
 ```
 - 実行前に **必ず** `npm install` を実行して依存パッケージをインストールする
 
+### 5. Lint
+
+```sh
+npm run lint
+```
+- `.eslintrc.json` を利用した ESLint 設定で、TypeScript/React のコードをチェックできます。
+
 ---
 
 ## CI/CD（GitHub Actions & Pages）
