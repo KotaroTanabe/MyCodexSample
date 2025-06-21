@@ -30,8 +30,18 @@ describe('UIBoard shanten display', () => {
     expect(screen.getByText('向聴数: 1 (七対子1向聴)')).toBeTruthy();
   });
 
+  it('shows chiitoi label for 2-shanten', () => {
+    renderBoard({ standard: 4, chiitoi: 2, kokushi: 13 });
+    expect(screen.getByText('向聴数: 2 (七対子2向聴)')).toBeTruthy();
+  });
+
   it('shows kokushi label when lower', () => {
     renderBoard({ standard: 4, chiitoi: 4, kokushi: 0 });
     expect(screen.getByText('向聴数: 0 (国士無双0向聴)')).toBeTruthy();
+  });
+
+  it('shows kokushi label for 2-shanten', () => {
+    renderBoard({ standard: 3, chiitoi: 3, kokushi: 2 });
+    expect(screen.getByText('向聴数: 2 (国士無双2向聴)')).toBeTruthy();
   });
 });
