@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { isLeftOf, filterChiOptions } from './table';
+import { MeldType } from '../types/mahjong';
 
 describe('isLeftOf', () => {
   it('returns true when first seat is immediately left of second', () => {
@@ -17,12 +18,12 @@ describe('isLeftOf', () => {
 
 describe('filterChiOptions', () => {
   it('removes chi when caller is not left of discarder', () => {
-    const opts = ['pon', 'chi', 'kan', 'pass'];
+    const opts: (MeldType | 'pass')[] = ['pon', 'chi', 'kan', 'pass'];
     expect(filterChiOptions(opts, 2, 0)).toEqual(['pon', 'kan', 'pass']);
   });
 
   it('keeps chi when caller is left of discarder', () => {
-    const opts = ['pon', 'chi', 'kan', 'pass'];
+    const opts: (MeldType | 'pass')[] = ['pon', 'chi', 'kan', 'pass'];
     expect(filterChiOptions(opts, 1, 0)).toEqual(opts);
   });
 });
