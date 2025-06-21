@@ -70,3 +70,8 @@ export function claimMeld(
     melds: [...player.melds, { type, tiles, fromPlayer, calledTileId }],
   };
 }
+
+export function declareRiichi(player: PlayerState): PlayerState {
+  if (player.isRiichi) return player;
+  return { ...player, isRiichi: true };
+}
