@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerState } from '../types/mahjong';
+import { PlayerState, Tile } from '../types/mahjong';
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -54,7 +54,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }
 };
 
 // 牌表示（簡易）
-export const TileView: React.FC<{ tile: any }> = ({ tile }) => {
+export const TileView: React.FC<{ tile: Tile }> = ({ tile }) => {
   const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
   const honorMap: Record<string, Record<number, string>> = {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
