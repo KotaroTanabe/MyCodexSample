@@ -56,14 +56,15 @@ export const GameController: React.FC = () => {
     }
   }, [players]);
 
-  // 初期化
-  useEffect(() => {
-    if (phase === 'init') {
-      let wall = generateTileWall();
-      const doraResult = drawDoraIndicator(wall, 1);
-      const doraTiles = doraResult.dora;
-      wall = doraResult.wall;
-      let p: PlayerState[] = [
+  // ラウンド初期化関数
+  const startRound = (resetKyoku: boolean) => {
+    let wallStack = generateTileWall();
+    const doraResult = drawDoraIndicator(wallStack, 1);
+    const doraTiles = doraResult.dora;
+    wallStack = doraResult.wall;
+    let p: PlayerState[];
+    if (resetKyoku) {
+      p = [
         createInitialPlayerState('あなた', false, 0),
         createInitialPlayerState('AI東家', true, 1),
         createInitialPlayerState('AI南家', true, 2),
@@ -79,17 +80,15 @@ export const GameController: React.FC = () => {
         isRiichi: false,
       }));
     }
-
     for (let i = 0; i < 4; i++) {
       const result = drawTiles(p[i], wallStack, 13);
       p[i] = result.player;
       wallStack = result.wall;
     }
-
+    // 親は1枚多く持つ
     const extra = drawTiles(p[0], wallStack, 1);
     p[0] = extra.player;
     wallStack = extra.wall;
-
     setPlayers(p);
     playersRef.current = p;
     setWall(wallStack);
