@@ -63,7 +63,7 @@ export const TileView: React.FC<{
       : honorMap[tile.suit]?.[tile.rank] ?? '';
   return (
     <span
-      className="relative inline-block border px-1 py-0.5 bg-white tile-font-size"
+      className={`relative inline-block border px-1 py-0.5 bg-white tile-font-size ${className ?? ''}`}
       aria-label={kanji}
     >
       <span className="font-emoji">{emojiMap[tile.suit]?.[tile.rank] ?? kanji}</span>
