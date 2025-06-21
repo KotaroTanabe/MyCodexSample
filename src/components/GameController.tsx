@@ -168,6 +168,16 @@ export const GameController: React.FC = () => {
     p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
     setPlayers(p);
     playersRef.current = p;
+
+    if (action === 'kan') {
+      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      setDora(prev => [...prev, ...doraResult.dora]);
+      setWall(doraResult.wall);
+      wallRef.current = doraResult.wall;
+      turnRef.current = caller;
+      drawForCurrentPlayer();
+    }
+
     setCallOptions(null);
     setLastDiscard(null);
     setTurn(caller);

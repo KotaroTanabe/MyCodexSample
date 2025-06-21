@@ -112,6 +112,14 @@ export function calculateFu(hand: Tile[], melds: Meld[] = []): number {
     }
   }
 
+  for (const meld of melds) {
+    if (meld.type === 'kan') {
+      const base = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
+      const kanFu = isTerminalOrHonor(meld.tiles[0]) ? 32 : 16;
+      fu += kanFu - base;
+    }
+  }
+
   // round up to nearest 10
   fu = Math.ceil(fu / 10) * 10;
   return fu;
