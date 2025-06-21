@@ -22,7 +22,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
       {players.slice(1).map(ai => (
         <div key={ai.name} className="flex flex-col items-center">
           <div className="text-sm mb-1">{ai.name}</div>
-          <div className="flex gap-1">
+          <div className="grid grid-cols-6 gap-1">
             {ai.discard.map(tile => (
               <TileView
                 key={tile.id}
