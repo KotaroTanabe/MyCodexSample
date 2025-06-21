@@ -25,8 +25,20 @@ describe('Yaku detection', () => {
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Tanyao')).toBe(true);
+  });
+
+  it('detects Menzen Tsumo', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, { isTsumo: true, melds: [] });
+    expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(true);
   });
 
   it('detects Yakuhai', () => {
@@ -38,7 +50,7 @@ describe('Yaku detection', () => {
       t('sou',2,'s2a'),t('sou',2,'s2b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
   });
 
@@ -53,7 +65,7 @@ describe('Yaku detection', () => {
       t('dragon',1,'d1a'),t('dragon',1,'d1b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
   });
 
@@ -67,7 +79,7 @@ describe('Yaku detection', () => {
       t('man',1,'m1b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Kokushi Musou')).toBe(true);
   });
 });
@@ -81,11 +93,11 @@ describe('Scoring', () => {
       t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     const { han, fu, points } = calculateScore(hand, yaku);
-    expect(han).toBe(1);
+    expect(han).toBe(2);
     expect(fu).toBe(20);
-    expect(points).toBe(160);
+    expect(points).toBe(320);
   });
 
   it('adds fu for honor triplets', () => {
@@ -96,7 +108,7 @@ describe('Scoring', () => {
       t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
       t('man',5,'m5a'),t('man',5,'m5b'),
     ];
-    const yaku = detectYaku(hand);
+    const yaku = detectYaku(hand, { isTsumo: true });
     const { fu } = calculateScore(hand, yaku);
     expect(fu).toBe(30);
   });
