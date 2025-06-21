@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts,.tsx --fix",
     "test": "vitest run"
   },
   "dependencies": {

@@ -64,12 +64,19 @@ export function claimMeld(
   player: PlayerState,
   tiles: Tile[],
   type: MeldType,
+  fromPlayer: number,
+  calledTileId: string,
 ): PlayerState {
   // remove called tiles from hand
   const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
   return {
     ...player,
     hand: sortHand(hand),
-    melds: [...player.melds, { type, tiles }],
+    melds: [...player.melds, { type, tiles, fromPlayer, calledTileId }],
   };
+}
+
+export function declareRiichi(player: PlayerState): PlayerState {
+  if (player.isRiichi) return player;
+  return { ...player, isRiichi: true };
 }

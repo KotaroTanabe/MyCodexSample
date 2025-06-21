@@ -15,3 +15,8 @@
 .tile-font-size {
   font-size: var(--tile-font-size);
 }
+
+/* Utility class for rotating a tile 90 degrees */
+.rotate-90 {
+  transform: rotate(90deg);
+}
