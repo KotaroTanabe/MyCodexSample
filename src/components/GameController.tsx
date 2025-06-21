@@ -93,7 +93,6 @@ export const GameController: React.FC = () => {
       <ScoreBoard players={players} kyoku={kyoku} />
       <UIBoard
         players={players}
-        turn={turn}
         onDiscard={handleDiscard}
         isMyTurn={turn === 0}
       />
