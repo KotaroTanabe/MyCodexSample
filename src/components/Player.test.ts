@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { incrementDiscardCount } from './DiscardUtil';
-import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld, declareRiichi } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
 
@@ -134,5 +134,13 @@ describe('initial hand distribution', () => {
     wall = extra.wall;
 
     expect(players[0].hand).toHaveLength(14);
+  });
+});
+
+describe('declareRiichi', () => {
+  it('sets the riichi flag on the player', () => {
+    const player = createInitialPlayerState('RiichiMan', false);
+    const updated = declareRiichi(player);
+    expect(updated.isRiichi).toBe(true);
   });
 });

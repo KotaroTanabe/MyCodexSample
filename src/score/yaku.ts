@@ -124,7 +124,7 @@ export function isWinningHand(tiles: Tile[]): boolean {
 export function detectYaku(
   hand: Tile[],
   melds: Meld[] = [],
-  opts?: { isTsumo?: boolean },
+  opts?: { isTsumo?: boolean; isRiichi?: boolean },
 ): Yaku[] {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const result: Yaku[] = [];
@@ -142,6 +142,9 @@ export function detectYaku(
   }
   if (opts?.isTsumo && isClosed) {
     result.push({ name: 'Menzen Tsumo', han: 1 });
+  }
+  if (opts?.isRiichi && isClosed) {
+    result.push({ name: 'Riichi', han: 1 });
   }
   const yakuhai = countDragonTriplets(counts);
   for (let i = 0; i < yakuhai; i++) {

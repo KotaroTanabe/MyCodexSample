@@ -166,4 +166,18 @@ describe('Scoring', () => {
     const { fu } = calculateScore(concealed, melds, yaku);
     expect(fu).toBe(60);
   });
+
+  it('adds riichi han when declared', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true, isRiichi: true });
+    expect(yaku.some(y => y.name === 'Riichi')).toBe(true);
+    const { han } = calculateScore(hand, [], yaku, []);
+    expect(han).toBe(3);
+  });
 });
