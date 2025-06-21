@@ -60,6 +60,7 @@ npm test
 npm run lint
 ```
 - `.eslintrc.json` を利用した ESLint 設定で、TypeScript/React のコードをチェックできます。
+- ESLint v8 を使用しており `eslint.config.js` は置かず、従来形式の `.eslintrc.json` のみで運用しています。
 
 ---
 
