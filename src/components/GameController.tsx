@@ -4,6 +4,7 @@ import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld } from './Player';
 import { MeldType } from '../types/mahjong';
 import { selectMeldTiles, getValidCallOptions } from '../utils/meld';
+import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
@@ -56,10 +57,10 @@ export const GameController: React.FC = () => {
       const doraTiles = doraResult.dora;
       wall = doraResult.wall;
       let p: PlayerState[] = [
-        createInitialPlayerState('あなた', false),
-        createInitialPlayerState('AI東家', true),
-        createInitialPlayerState('AI南家', true),
-        createInitialPlayerState('AI西家', true),
+        createInitialPlayerState('あなた', false, 0),
+        createInitialPlayerState('AI東家', true, 1),
+        createInitialPlayerState('AI南家', true, 2),
+        createInitialPlayerState('AI西家', true, 3),
       ];
       // 配牌
       for (let i = 0; i < 4; i++) {
@@ -167,7 +168,12 @@ export const GameController: React.FC = () => {
       return;
     }
     if (idx !== 0) {
-      const options = getValidCallOptions(p[0], tile);
+      let options = getValidCallOptions(p[0], tile);
+      options = filterChiOptions(
+        options,
+        playersRef.current[0].seat,
+        playersRef.current[idx].seat,
+      );
       setCallOptions(options);
     } else {
       nextTurn();

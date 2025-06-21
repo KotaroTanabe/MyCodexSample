@@ -24,4 +24,5 @@ export interface PlayerState {
   name: string;
   isAI: boolean;
   drawnTile: Tile | null;
+  seat: number;
 }
