@@ -24,6 +24,7 @@ export function createInitialPlayerState(name: string, isAI: boolean): PlayerSta
     isRiichi: false,
     name,
     isAI,
+    drawnTile: null,
   };
 }
 
@@ -34,6 +35,7 @@ export function drawTiles(player: PlayerState, wall: Tile[], count: number): { p
     player: {
       ...player,
       hand: sortHand([...player.hand, ...drawn]),
+      drawnTile: count === 1 ? drawn[0] : null,
     },
     wall: wall.slice(count),
   };
@@ -49,5 +51,6 @@ export function discardTile(player: PlayerState, tileId: string): PlayerState {
     ...player,
     hand: sortHand(newHand),
     discard: [...player.discard, tile],
+    drawnTile: null,
   };
 }
