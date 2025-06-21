@@ -11,6 +11,7 @@ import { ScoreBoard } from './ScoreBoard';
 import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
+import { chooseAICallOption } from '../utils/ai';
 import { payoutTsumo, payoutRon } from '../utils/payout';
 
 type GamePhase = 'init' | 'playing' | 'end';
@@ -205,7 +206,7 @@ export const GameController: React.FC = () => {
   };
 
 
-  const handleCallAction = (action: MeldType | 'pass') => {
+const handleCallAction = (action: MeldType | 'pass') => {
     if (!lastDiscard) return;
     if (action === 'pass') {
       setCallOptions(null);
@@ -242,7 +243,39 @@ export const GameController: React.FC = () => {
 
     setCallOptions(null);
     setLastDiscard(null);
+  setTurn(caller);
+};
+
+  const performAICall = (caller: number, action: MeldType) => {
+    if (!lastDiscard) return;
+    const discarder = lastDiscard.player;
+    let p = [...playersRef.current];
+    const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
+    if (!meldTiles) return;
+    p[discarder] = {
+      ...p[discarder],
+      discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
+    };
+    p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
+    setPlayers(p);
+    playersRef.current = p;
+    setMessage(`${p[caller].name} が ${action}しました。`);
+
+    if (action === 'kan') {
+      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      setDora(prev => [...prev, ...doraResult.dora]);
+      setWall(doraResult.wall);
+      wallRef.current = doraResult.wall;
+      turnRef.current = caller;
+      drawForCurrentPlayer();
+    }
+
+    setLastDiscard(null);
     setTurn(caller);
+    setTimeout(() => {
+      const tile = playersRef.current[caller].hand[0];
+      handleDiscard(tile.id);
+    }, 500);
   };
 
   // ターン進行
@@ -251,6 +284,18 @@ export const GameController: React.FC = () => {
     setTurn(next);
     setTimeout(() => {
       if (playersRef.current[next].isAI) {
+        // Check if the AI wants to call on the previous discard
+        if (lastDiscard && lastDiscard.player !== next) {
+          const action = chooseAICallOption(
+            playersRef.current[next],
+            lastDiscard.tile,
+          );
+          if (action !== 'pass') {
+            performAICall(next, action);
+            return;
+          }
+          setLastDiscard(null);
+        }
         drawForCurrentPlayer();
         // AIの打牌ロジック（現時点はランダム）
         setTimeout(() => {
