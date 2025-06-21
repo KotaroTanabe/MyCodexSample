@@ -1,0 +1,51 @@
+import { Tile, Suit } from '../types/mahjong';
+
+const suits: Suit[] = ['man', 'pin', 'sou'];
+const honors: { suit: Suit; rank: number }[] = [
+  { suit: 'wind', rank: 1 }, // 東
+  { suit: 'wind', rank: 2 }, // 南
+  { suit: 'wind', rank: 3 }, // 西
+  { suit: 'wind', rank: 4 }, // 北
+  { suit: 'dragon', rank: 1 }, // 白
+  { suit: 'dragon', rank: 2 }, // 発
+  { suit: 'dragon', rank: 3 }, // 中
+];
+
+// 牌山生成
+export function generateTileWall(): Tile[] {
+  let tiles: Tile[] = [];
+  let id = 1;
+  // 数牌
+  for (const suit of suits) {
+    for (let rank = 1; rank <= 9; rank++) {
+      for (let i = 0; i < 4; i++) {
+        tiles.push({
+          suit,
+          rank,
+          id: `${suit}-${rank}-${i}-${id++}`,
+        });
+      }
+    }
+  }
+  // 字牌
+  for (const honor of honors) {
+    for (let i = 0; i < 4; i++) {
+      tiles.push({
+        suit: honor.suit,
+        rank: honor.rank,
+        id: `${honor.suit}-${honor.rank}-${i}-${id++}`,
+      });
+    }
+  }
+  return shuffle(tiles);
+}
+
+// シャッフル
+function shuffle<T>(array: T[]): T[] {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
