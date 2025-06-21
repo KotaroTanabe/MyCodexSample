@@ -4,6 +4,7 @@ import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi } from './Player';
 import { MeldType } from '../types/mahjong';
 import { selectMeldTiles, getValidCallOptions } from '../utils/meld';
+import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
@@ -55,18 +56,19 @@ export const GameController: React.FC = () => {
     }
   }, [players]);
 
-  const startRound = (resetScores: boolean) => {
+  // ラウンド初期化関数
+  const startRound = (resetKyoku: boolean) => {
     let wallStack = generateTileWall();
     const doraResult = drawDoraIndicator(wallStack, 1);
     const doraTiles = doraResult.dora;
     wallStack = doraResult.wall;
     let p: PlayerState[];
-    if (resetScores || playersRef.current.length === 0) {
+    if (resetKyoku) {
       p = [
-        createInitialPlayerState('あなた', false),
-        createInitialPlayerState('AI東家', true),
-        createInitialPlayerState('AI南家', true),
-        createInitialPlayerState('AI西家', true),
+        createInitialPlayerState('あなた', false, 0),
+        createInitialPlayerState('AI東家', true, 1),
+        createInitialPlayerState('AI南家', true, 2),
+        createInitialPlayerState('AI西家', true, 3),
       ];
     } else {
       p = playersRef.current.map(pl => ({
@@ -78,17 +80,15 @@ export const GameController: React.FC = () => {
         isRiichi: false,
       }));
     }
-
     for (let i = 0; i < 4; i++) {
       const result = drawTiles(p[i], wallStack, 13);
       p[i] = result.player;
       wallStack = result.wall;
     }
-
+    // 親は1枚多く持つ
     const extra = drawTiles(p[0], wallStack, 1);
     p[0] = extra.player;
     wallStack = extra.wall;
-
     setPlayers(p);
     playersRef.current = p;
     setWall(wallStack);
@@ -202,7 +202,12 @@ export const GameController: React.FC = () => {
       return;
     }
     if (idx !== 0) {
-      const options = getValidCallOptions(p[0], tile);
+      let options = getValidCallOptions(p[0], tile);
+      options = filterChiOptions(
+        options,
+        playersRef.current[0].seat,
+        playersRef.current[idx].seat,
+      );
       setCallOptions(options);
     } else {
       nextTurn();
