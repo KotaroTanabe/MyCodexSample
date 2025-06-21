@@ -5,7 +5,7 @@ import {
   calcKokushiShanten,
   calcShanten,
 } from './shanten';
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 
 describe('shanten calculations', () => {
   const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -66,7 +66,7 @@ describe('shanten calculations', () => {
       t('pin', 1, 'j'), t('pin', 1, 'k'),
       t('sou', 2, 'l'), t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
-    const melds = [{ type: 'chi', tiles: meldTiles }];
+    const melds: Meld[] = [{ type: 'chi', tiles: meldTiles }];
     expect(calcStandardShanten(hand, melds)).toBe(1);
     expect(calcChiitoiShanten(hand, melds)).toBe(4);
     expect(calcKokushiShanten(hand, melds)).toBe(10);
