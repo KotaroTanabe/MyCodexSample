@@ -50,6 +50,7 @@ npm run preview
 - PR作成時にプレビュー環境へ自動デプロイ
   - Actionsのワークフロー実行ページの"Deploy to GitHub Pages"ステップに表示される`Preview URL`からアクセス
 - mainブランチpush時に **GitHub Pagesへ自動デプロイ**
+- PR作成時は **Pagesプレビュー** を自動発行（`steps.deployment.outputs.page_url` を確認）
 - 公開URL例：
   `https://kotarotanabe.github.io/MyCodexSample/`
 
