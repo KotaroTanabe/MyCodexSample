@@ -7,10 +7,11 @@ interface UIBoardProps {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
+  lastDiscard: { tileId: string; isShonpai: boolean } | null;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
-export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn }) => {
+export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn, lastDiscard }) => {
   if (players.length === 0) {
     return null;
   }
@@ -22,7 +23,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
           <div className="text-sm mb-1">{ai.name}</div>
           <div className="flex gap-1">
             {ai.discard.map(tile => (
-              <TileView key={tile.id} tile={tile} />
+              <TileView
+                key={tile.id}
+                tile={tile}
+                isShonpai={lastDiscard?.tileId === tile.id && lastDiscard.isShonpai}
+              />
             ))}
           </div>
         </div>
@@ -53,7 +58,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
         </div>
         <div className="flex gap-1 mt-2">
           {players[0].discard.map(tile => (
-            <TileView key={tile.id} tile={tile} />
+            <TileView
+              key={tile.id}
+              tile={tile}
+              isShonpai={lastDiscard?.tileId === tile.id && lastDiscard.isShonpai}
+            />
           ))}
         </div>
       </div>
@@ -62,7 +71,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
 };
 
 // 牌表示（簡易）
-export const TileView: React.FC<{ tile: Tile }> = ({ tile }) => {
+export const TileView: React.FC<{ tile: Tile; isShonpai?: boolean }> = ({ tile, isShonpai }) => {
   const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
   const honorMap: Record<string, Record<number, string>> = {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
@@ -126,6 +135,7 @@ export const TileView: React.FC<{ tile: Tile }> = ({ tile }) => {
       <span className="font-emoji">
         {emojiMap[tile.suit]?.[tile.rank] ?? kanji}
       </span>
+      {isShonpai && <span className="text-yellow-500 ml-0.5">★</span>}
     </span>
   );
 };
