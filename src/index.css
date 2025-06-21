@@ -6,3 +6,12 @@
 .font-emoji {
   font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
 }
+
+/* Default tile font size and class */
+:root {
+  --tile-font-size: 2rem;
+}
+
+.tile-font-size {
+  font-size: var(--tile-font-size);
+}

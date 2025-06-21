@@ -152,7 +152,7 @@ export const TileView: React.FC<{ tile: Tile; isShonpai?: boolean }> = ({ tile, 
       : honorMap[tile.suit]?.[tile.rank] ?? '';
   return (
     <span
-      className="inline-block border px-1 py-0.5 text-base bg-white"
+      className="inline-block border px-1 py-0.5 bg-white tile-font-size"
       aria-label={kanji}
     >
       <span className="font-emoji">
