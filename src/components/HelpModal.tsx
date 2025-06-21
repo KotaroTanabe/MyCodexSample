@@ -21,13 +21,28 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             ×
           </button>
         </div>
-        <ul className="list-disc pl-5 space-y-1 max-h-96 overflow-y-auto">
-          {YAKU_LIST.map(y => (
-            <li key={y.name}>
-              <span className="font-semibold">{y.name}</span> - {y.description}
-            </li>
-          ))}
-        </ul>
+        <div className="max-h-96 overflow-y-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr>
+                <th className="border px-2 py-1">役</th>
+                <th className="border px-2 py-1">門前</th>
+                <th className="border px-2 py-1">副露</th>
+                <th className="border px-2 py-1">説明</th>
+              </tr>
+            </thead>
+            <tbody>
+              {YAKU_LIST.map(y => (
+                <tr key={y.name}>
+                  <td className="border px-2 py-1 font-semibold">{y.name}</td>
+                  <td className="border px-2 py-1 text-center">{y.hanClosed}</td>
+                  <td className="border px-2 py-1 text-center">{y.hanOpen}</td>
+                  <td className="border px-2 py-1">{y.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
