@@ -1,5 +1,20 @@
 import { PlayerState, Tile } from '../types/mahjong';
 
+export function sortHand(hand: Tile[]): Tile[] {
+  const order: Record<Tile['suit'], number> = {
+    man: 0,
+    pin: 1,
+    sou: 2,
+    wind: 3,
+    dragon: 4,
+  };
+  return [...hand].sort((a, b) => {
+    const diff = order[a.suit] - order[b.suit];
+    if (diff !== 0) return diff;
+    return a.rank - b.rank;
+  });
+}
+
 export function createInitialPlayerState(name: string, isAI: boolean): PlayerState {
   return {
     hand: [],
@@ -17,7 +32,7 @@ export function drawTiles(player: PlayerState, wall: Tile[], count: number): { p
   return {
     player: {
       ...player,
-      hand: [...player.hand, ...drawn],
+      hand: sortHand([...player.hand, ...drawn]),
     },
     wall: wall.slice(count),
   };
@@ -31,7 +46,7 @@ export function discardTile(player: PlayerState, tileId: string): PlayerState {
   newHand.splice(idx, 1);
   return {
     ...player,
-    hand: newHand,
+    hand: sortHand(newHand),
     discard: [...player.discard, tile],
   };
 }
