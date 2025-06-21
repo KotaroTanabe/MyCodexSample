@@ -38,8 +38,15 @@ npm run dev
 npm run build
 npm run preview
 ```
-- `dist/` 配下が成果物。  
+- `dist/` 配下が成果物。
 - `npm run preview` でローカル起動（SPAルーティング考慮）
+
+### 4. テスト実行
+
+```sh
+npm test
+```
+- 実行前に **必ず** `npm install` を実行して依存パッケージをインストールする
 
 ---
 
