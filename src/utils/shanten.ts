@@ -1,14 +1,15 @@
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 
 function tileIndex(tile: Tile): number {
   const base: Record<Tile['suit'], number> = { man: 0, pin: 9, sou: 18, wind: 27, dragon: 31 };
   return base[tile.suit] + tile.rank - 1;
 }
 
-export function calcStandardShanten(hand: Tile[]): number {
+export function calcStandardShanten(hand: Tile[], melds: Meld[] = []): number {
   const counts = new Array(34).fill(0);
-  for (const t of hand) counts[tileIndex(t)]++;
-  let melds = 0;
+  const exclude = new Set(melds.flatMap(m => m.tiles.map(t => t.id)));
+  for (const t of hand) if (!exclude.has(t.id)) counts[tileIndex(t)]++;
+  let meldCount = melds.length;
   let pairs = 0;
   let taatsu = 0;
 
@@ -16,7 +17,7 @@ export function calcStandardShanten(hand: Tile[]): number {
   for (let i = 0; i < 34; i++) {
     while (counts[i] >= 3) {
       counts[i] -= 3;
-      melds++;
+      meldCount++;
     }
   }
   // complete sequences
@@ -25,7 +26,7 @@ export function calcStandardShanten(hand: Tile[]): number {
       counts[i]--;
       counts[i + 1]--;
       counts[i + 2]--;
-      melds++;
+      meldCount++;
     }
   }
   // pairs for head
@@ -57,13 +58,14 @@ export function calcStandardShanten(hand: Tile[]): number {
     }
   }
   if (pairs > 1) pairs = 1;
-  if (taatsu > 4 - melds) taatsu = 4 - melds;
-  return 8 - melds * 2 - taatsu - pairs;
+  if (taatsu > 4 - meldCount) taatsu = 4 - meldCount;
+  return 8 - meldCount * 2 - taatsu - pairs;
 }
 
-export function calcChiitoiShanten(hand: Tile[]): number {
+export function calcChiitoiShanten(hand: Tile[], melds: Meld[] = []): number {
   const counts = new Array(34).fill(0);
-  for (const t of hand) counts[tileIndex(t)]++;
+  const exclude = new Set(melds.flatMap(m => m.tiles.map(t => t.id)));
+  for (const t of hand) if (!exclude.has(t.id)) counts[tileIndex(t)]++;
   let pairCount = 0;
   let unique = 0;
   for (const c of counts) {
@@ -73,14 +75,16 @@ export function calcChiitoiShanten(hand: Tile[]): number {
   return 6 - pairCount + Math.max(0, 7 - unique);
 }
 
-export function calcKokushiShanten(hand: Tile[]): number {
+export function calcKokushiShanten(hand: Tile[], melds: Meld[] = []): number {
   const yaochu = new Set([
     'man-1', 'man-9', 'pin-1', 'pin-9', 'sou-1', 'sou-9',
     'wind-1', 'wind-2', 'wind-3', 'wind-4',
     'dragon-1', 'dragon-2', 'dragon-3',
   ]);
   const counts: Record<string, number> = {};
+  const exclude = new Set(melds.flatMap(m => m.tiles.map(t => t.id)));
   for (const t of hand) {
+    if (exclude.has(t.id)) continue;
     const key = `${t.suit}-${t.rank}`;
     if (yaochu.has(key)) {
       counts[key] = (counts[key] ?? 0) + 1;
@@ -91,14 +95,14 @@ export function calcKokushiShanten(hand: Tile[]): number {
   return 13 - unique - (hasPair ? 1 : 0);
 }
 
-export function calcShanten(hand: Tile[]): {
+export function calcShanten(hand: Tile[], melds: Meld[] = []): {
   standard: number;
   chiitoi: number;
   kokushi: number;
 } {
   return {
-    standard: calcStandardShanten(hand),
-    chiitoi: calcChiitoiShanten(hand),
-    kokushi: calcKokushiShanten(hand),
+    standard: calcStandardShanten(hand, melds),
+    chiitoi: calcChiitoiShanten(hand, melds),
+    kokushi: calcKokushiShanten(hand, melds),
   };
 }

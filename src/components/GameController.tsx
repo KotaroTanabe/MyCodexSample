@@ -43,7 +43,7 @@ export const GameController: React.FC = () => {
   useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
-      setShanten(calcShanten(players[0].hand));
+      setShanten(calcShanten(players[0].hand, players[0].melds));
     }
   }, [players]);
 
