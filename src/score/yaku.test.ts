@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 import { detectYaku, isTanyao, isWinningHand } from './yaku';
 import { calculateScore } from './score';
 
@@ -25,7 +25,7 @@ describe('Yaku detection', () => {
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand, { isTsumo: true });
+    const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Tanyao')).toBe(true);
   });
 
@@ -37,7 +37,7 @@ describe('Yaku detection', () => {
       t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
-    const yaku = detectYaku(hand, { isTsumo: true, melds: [] });
+    const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(true);
   });
 
@@ -50,8 +50,32 @@ describe('Yaku detection', () => {
       t('sou',2,'s2a'),t('sou',2,'s2b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand, { isTsumo: true });
+    const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
+  });
+
+  it('detects Pinfu', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Pinfu')).toBe(true);
+  });
+
+  it('detects Iipeiko', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('man',2,'m2b'),t('man',3,'m3b'),t('man',4,'m4b'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',6,'s6a'),t('sou',7,'s7a'),t('sou',8,'s8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Iipeiko')).toBe(true);
   });
 
   it('detects Chiitoitsu', () => {
@@ -65,7 +89,7 @@ describe('Yaku detection', () => {
       t('dragon',1,'d1a'),t('dragon',1,'d1b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand, { isTsumo: true });
+    const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
   });
 
@@ -79,7 +103,7 @@ describe('Yaku detection', () => {
       t('man',1,'m1b'),
     ];
     expect(isWinningHand(hand)).toBe(true);
-    const yaku = detectYaku(hand, { isTsumo: true });
+    const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Kokushi Musou')).toBe(true);
   });
 });
@@ -93,11 +117,11 @@ describe('Scoring', () => {
       t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
-    const yaku = detectYaku(hand, { isTsumo: true });
-    const { han, fu, points } = calculateScore(hand, yaku);
-    expect(han).toBe(2);
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const { han, fu, points } = calculateScore(hand, [], yaku, []);
+    expect(han).toBe(3);
     expect(fu).toBe(20);
-    expect(points).toBe(320);
+    expect(points).toBe(640);
   });
 
   it('adds fu for honor triplets', () => {
@@ -108,8 +132,81 @@ describe('Scoring', () => {
       t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
       t('man',5,'m5a'),t('man',5,'m5b'),
     ];
-    const yaku = detectYaku(hand, { isTsumo: true });
-    const { fu } = calculateScore(hand, yaku);
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const { fu } = calculateScore(hand, [], yaku, []);
     expect(fu).toBe(30);
+  });
+
+  it('scores correctly with an open meld', () => {
+    const ponTiles = [
+      t('dragon',1,'d1a'),
+      t('dragon',1,'d1b'),
+      t('dragon',1,'d1c'),
+    ];
+    const concealed: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',5,'m5a'),t('man',5,'m5b'),
+    ];
+    const melds: Meld[] = [
+      { type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'd1a' },
+    ];
+    const fullHand = [...concealed, ...ponTiles];
+    const yaku = detectYaku(fullHand, melds, { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(false);
+    const { fu } = calculateScore(concealed, melds, yaku, []);
+    expect(fu).toBe(30);
+  });
+
+  it('adds dora to han calculation', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const doraIndicator = t('pin',4,'di');
+    const { han } = calculateScore(hand, [], yaku, [doraIndicator]);
+    expect(han).toBe(5);
+  });
+
+  it('adds fu for a kan meld', () => {
+    // use 3 tiles for simplicity; scoring treats kan as pon plus bonus
+    const kanTiles = [
+      t('dragon',1,'k1a'),
+      t('dragon',1,'k1b'),
+      t('dragon',1,'k1c'),
+    ];
+    const concealed: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',5,'m5a'),t('man',5,'m5b'),
+    ];
+    const melds: Meld[] = [
+      { type: 'kan', tiles: kanTiles, fromPlayer: 2, calledTileId: 'k1a' },
+    ];
+    const fullHand = [...concealed, ...kanTiles];
+    const yaku = detectYaku(fullHand, melds, { isTsumo: true });
+    const { fu } = calculateScore(concealed, melds, yaku);
+    expect(fu).toBe(60);
+  });
+
+  it('adds riichi han when declared', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true, isRiichi: true });
+    expect(yaku.some(y => y.name === 'Riichi')).toBe(true);
+    const { han } = calculateScore(hand, [], yaku, []);
+    // メンタンピン三色だから5ハンでは…?
+    expect(han).toBe(4);
   });
 });

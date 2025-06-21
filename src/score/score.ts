@@ -1,4 +1,4 @@
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 import { Yaku } from './yaku';
 
 function tileKey(t: Tile): string {
@@ -94,8 +94,9 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
   return null;
 }
 
-export function calculateFu(hand: Tile[]): number {
-  const parsed = decomposeHand(hand);
+export function calculateFu(hand: Tile[], melds: Meld[] = []): number {
+  const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const parsed = decomposeHand(allTiles);
   if (!parsed) return 0;
 
   let fu = 20; // base fu for a winning hand
@@ -111,14 +112,53 @@ export function calculateFu(hand: Tile[]): number {
     }
   }
 
+  for (const meld of melds) {
+    if (meld.type === 'kan') {
+      const base = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
+      const kanFu = isTerminalOrHonor(meld.tiles[0]) ? 32 : 16;
+      fu += kanFu - base;
+    }
+  }
+
   // round up to nearest 10
   fu = Math.ceil(fu / 10) * 10;
   return fu;
 }
 
-export function calculateScore(hand: Tile[], yaku: Yaku[]): { han: number; fu: number; points: number } {
-  const han = yaku.reduce((sum, y) => sum + y.han, 0);
-  const fu = calculateFu(hand);
+function doraFromIndicator(indicator: Tile): Tile {
+  if (indicator.suit === 'man' || indicator.suit === 'pin' || indicator.suit === 'sou') {
+    const rank = indicator.rank === 9 ? 1 : indicator.rank + 1;
+    return { suit: indicator.suit, rank, id: '' };
+  }
+  if (indicator.suit === 'wind') {
+    const rank = indicator.rank === 4 ? 1 : indicator.rank + 1;
+    return { suit: 'wind', rank, id: '' };
+  }
+  // dragon
+  const rank = indicator.rank === 3 ? 1 : indicator.rank + 1;
+  return { suit: 'dragon', rank, id: '' };
+}
+
+function countDora(allTiles: Tile[], indicators: Tile[]): number {
+  const counts = countTiles(allTiles);
+  let total = 0;
+  for (const ind of indicators) {
+    const dora = doraFromIndicator(ind);
+    total += counts[tileKey(dora)] || 0;
+  }
+  return total;
+}
+
+export function calculateScore(
+  hand: Tile[],
+  melds: Meld[],
+  yaku: Yaku[],
+  doraIndicators: Tile[] = [],
+): { han: number; fu: number; points: number } {
+  const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const dora = countDora(allTiles, doraIndicators);
+  const han = yaku.reduce((sum, y) => sum + y.han, 0) + dora;
+  const fu = calculateFu(hand, melds);
   const base = fu * Math.pow(2, han + 2);
   const points = base;
   return { han, fu, points };

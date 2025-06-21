@@ -15,7 +15,11 @@ export function sortHand(hand: Tile[]): Tile[] {
   });
 }
 
-export function createInitialPlayerState(name: string, isAI: boolean): PlayerState {
+export function createInitialPlayerState(
+  name: string,
+  isAI: boolean,
+  seat = 0,
+): PlayerState {
   return {
     hand: [],
     discard: [],
@@ -25,6 +29,7 @@ export function createInitialPlayerState(name: string, isAI: boolean): PlayerSta
     name,
     isAI,
     drawnTile: null,
+    seat,
   };
 }
 
@@ -59,12 +64,19 @@ export function claimMeld(
   player: PlayerState,
   tiles: Tile[],
   type: MeldType,
+  fromPlayer: number,
+  calledTileId: string,
 ): PlayerState {
   // remove called tiles from hand
   const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
   return {
     ...player,
     hand: sortHand(hand),
-    melds: [...player.melds, { type, tiles }],
+    melds: [...player.melds, { type, tiles, fromPlayer, calledTileId }],
   };
+}
+
+export function declareRiichi(player: PlayerState): PlayerState {
+  if (player.isRiichi) return player;
+  return { ...player, isRiichi: true };
 }

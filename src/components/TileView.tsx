@@ -1,7 +1,11 @@
 import React from 'react';
 import { Tile, Suit } from '../types/mahjong';
 
-export const TileView: React.FC<{ tile: Tile; isShonpai?: boolean }> = ({ tile, isShonpai }) => {
+export const TileView: React.FC<{
+  tile: Tile;
+  isShonpai?: boolean;
+  className?: string;
+}> = ({ tile, isShonpai, className }) => {
   const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
   const honorMap: Record<string, Record<number, string>> = {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
