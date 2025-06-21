@@ -6,15 +6,15 @@ import { MeldView } from './MeldView';
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
   shanten: { standard: number; chiitoi: number; kokushi: number };
   lastDiscard: { tile: Tile; player: number; isShonpai: boolean } | null;
   callOptions?: (MeldType | 'pass')[];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   onCallAction?: (action: MeldType | 'pass') => void;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+   
   onDeclareRiichi?: () => void;
 }
 
