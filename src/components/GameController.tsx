@@ -12,6 +12,7 @@ import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 import { chooseAICallOption } from '../utils/ai';
+import { payoutTsumo, payoutRon } from '../utils/payout';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -33,6 +34,7 @@ export const GameController: React.FC = () => {
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
   const wallRef = useRef<Tile[]>(wall);
+  const kyokuRef = useRef(kyoku);
 
   useEffect(() => {
     turnRef.current = turn;
@@ -43,53 +45,85 @@ export const GameController: React.FC = () => {
   }, [wall]);
 
   useEffect(() => {
+    kyokuRef.current = kyoku;
+  }, [kyoku]);
+
+  useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
       setShanten(calcShanten(players[0].hand));
     }
   }, [players]);
 
-  // 初期化
-  useEffect(() => {
-    if (phase === 'init') {
-      let wall = generateTileWall();
-      const doraResult = drawDoraIndicator(wall, 1);
-      const doraTiles = doraResult.dora;
-      wall = doraResult.wall;
-      let p: PlayerState[] = [
+  const startRound = (resetScores: boolean) => {
+    let wallStack = generateTileWall();
+    const doraResult = drawDoraIndicator(wallStack, 1);
+    const doraTiles = doraResult.dora;
+    wallStack = doraResult.wall;
+    let p: PlayerState[];
+    if (resetScores || playersRef.current.length === 0) {
+      p = [
         createInitialPlayerState('あなた', false),
         createInitialPlayerState('AI東家', true),
         createInitialPlayerState('AI南家', true),
         createInitialPlayerState('AI西家', true),
       ];
-      // 配牌
-      for (let i = 0; i < 4; i++) {
-        const result = drawTiles(p[i], wall, 13);
-        p[i] = result.player;
-        wall = result.wall;
-      }
-      // 親の14牌目を配る
-      const extra = drawTiles(p[0], wall, 1);
-      p[0] = extra.player;
-      wall = extra.wall;
-      setPlayers(p);
-      setWall(wall);
-      wallRef.current = wall;
-      setDora(doraTiles);
-      setTurn(0);
-      setDiscardCounts({});
-      setLastDiscard(null);
+    } else {
+      p = playersRef.current.map(pl => ({
+        ...pl,
+        hand: [],
+        discard: [],
+        melds: [],
+        drawnTile: null,
+        isRiichi: false,
+      }));
+    }
+
+    for (let i = 0; i < 4; i++) {
+      const result = drawTiles(p[i], wallStack, 13);
+      p[i] = result.player;
+      wallStack = result.wall;
+    }
+
+    const extra = drawTiles(p[0], wallStack, 1);
+    p[0] = extra.player;
+    wallStack = extra.wall;
+
+    setPlayers(p);
+    playersRef.current = p;
+    setWall(wallStack);
+    wallRef.current = wallStack;
+    setDora(doraTiles);
+    setTurn(0);
+    setDiscardCounts({});
+    setLastDiscard(null);
+    setMessage('配牌が完了しました。あなたのターンです。');
+    setPhase('playing');
+  };
+
+  // 初期化
+  useEffect(() => {
+    if (phase === 'init') {
       setKyoku(1);
-      setMessage('配牌が完了しました。あなたのターンです。');
-      setPhase('playing');
+      startRound(true);
     }
   }, [phase]);
+
+  const nextKyoku = () => {
+    const next = kyokuRef.current + 1;
+    if (next > 8) {
+      setPhase('init');
+    } else {
+      setKyoku(next);
+      startRound(false);
+    }
+  };
 
   // ツモ処理
   const drawForCurrentPlayer = () => {
     if (wallRef.current.length === 0) {
       setMessage('牌山が尽きました。流局です。');
-      setPhase('end');
+      setTimeout(nextKyoku, 500);
       return;
     }
     const currentIndex = turnRef.current;
@@ -114,15 +148,13 @@ export const GameController: React.FC = () => {
         yaku,
         dora,
       );
-      const newPlayers = p.map((pl, idx) =>
-        idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
-      );
+      const newPlayers = payoutTsumo(p, currentIndex, points);
       setPlayers(newPlayers);
       playersRef.current = newPlayers;
       setMessage(
         `${p[currentIndex].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`,
       );
-      setPhase('end');
+      setTimeout(nextKyoku, 500);
       return;
     }
     setMessage(`${p[currentIndex].name} がツモりました。`);
@@ -154,9 +186,7 @@ export const GameController: React.FC = () => {
         winningPlayer.melds,
         yaku,
       );
-      const updated = p.map((pl, i) =>
-        i === winIdx ? { ...pl, score: pl.score + points } : pl,
-      );
+      const updated = payoutRon(p, winIdx, idx, points);
       setPlayers(updated);
       playersRef.current = updated;
       setMessage(
@@ -164,7 +194,7 @@ export const GameController: React.FC = () => {
           .map(y => y.name)
           .join(', ')} ${han}翻 ${fu}符 ${points}点`,
       );
-      setPhase('end');
+      setTimeout(nextKyoku, 500);
       return;
     }
     if (idx !== 0) {
