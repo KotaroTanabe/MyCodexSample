@@ -58,9 +58,16 @@ export const TileView: React.FC<{ tile: Tile; isShonpai?: boolean }> = ({ tile, 
       ? `${tile.rank}${suitMap[tile.suit]}`
       : honorMap[tile.suit]?.[tile.rank] ?? '';
   return (
-    <span className="inline-block border px-1 py-0.5 bg-white tile-font-size" aria-label={kanji}>
+    <span
+      className="relative inline-block border px-1 py-0.5 bg-white tile-font-size"
+      aria-label={kanji}
+    >
       <span className="font-emoji">{emojiMap[tile.suit]?.[tile.rank] ?? kanji}</span>
-      {isShonpai && <span className="text-yellow-500 ml-0.5">★</span>}
+      {isShonpai && (
+        <span className="absolute -top-1 -right-1 text-xs text-yellow-500">
+          ★
+        </span>
+      )}
     </span>
   );
 };
