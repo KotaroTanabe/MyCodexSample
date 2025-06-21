@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import React from 'react';
+import React from 'react'; // needed for JSX linting
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { UIBoard } from './UIBoard';
