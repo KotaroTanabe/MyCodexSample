@@ -19,6 +19,12 @@ export const YAKU_LIST: Yaku[] = [
     hanOpen: 1,
   },
   {
+    name: 'Menzen Tsumo',
+    description: '門前で自摸和了する',
+    hanClosed: 1,
+    hanOpen: 0,
+  },
+  {
     name: 'Pinfu',
     description: '順子のみで雀頭は役牌以外、両面待ちの形',
     hanClosed: 1,

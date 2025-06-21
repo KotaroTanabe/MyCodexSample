@@ -1,4 +1,4 @@
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 
 export interface Yaku {
   name: string;
@@ -121,7 +121,10 @@ export function isWinningHand(tiles: Tile[]): boolean {
   return false;
 }
 
-export function detectYaku(tiles: Tile[]): Yaku[] {
+export function detectYaku(
+  tiles: Tile[],
+  opts?: { melds?: Meld[]; isTsumo?: boolean }
+): Yaku[] {
   const result: Yaku[] = [];
   const counts = countTiles(tiles);
   if (isChiitoitsu(tiles)) {
@@ -132,6 +135,9 @@ export function detectYaku(tiles: Tile[]): Yaku[] {
   }
   if (isTanyao(tiles)) {
     result.push({ name: 'Tanyao', han: 1 });
+  }
+  if (opts?.isTsumo && (!opts?.melds || opts.melds.length === 0)) {
+    result.push({ name: 'Menzen Tsumo', han: 1 });
   }
   const yakuhai = countDragonTriplets(counts);
   for (let i = 0; i < yakuhai; i++) {
