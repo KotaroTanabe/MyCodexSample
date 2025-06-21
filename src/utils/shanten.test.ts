@@ -40,6 +40,19 @@ describe('shanten calculations', () => {
     expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 0, kokushi: 9 });
   });
 
+  it('calculates chiitoitsu 2-shanten', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a'), t('man', 1, 'b'),
+      t('man', 2, 'c'), t('man', 2, 'd'),
+      t('pin', 3, 'e'), t('pin', 3, 'f'),
+      t('pin', 4, 'g'), t('pin', 4, 'h'),
+      t('sou', 5, 'i'), t('sou', 6, 'j'),
+      t('wind', 1, 'k'), t('dragon', 1, 'l'),
+      t('man', 3, 'm'), t('man', 4, 'n'),
+    ];
+    expect(calcChiitoiShanten(hand)).toBe(2);
+  });
+
   it('handles a standard 1-shanten hand', () => {
     const hand: Tile[] = [
       t('man', 1, 'a'), t('man', 2, 'b'), t('man', 3, 'c'),
@@ -55,8 +68,9 @@ describe('shanten calculations', () => {
   });
 
   it('calculates shanten correctly when melds are present', () => {
-    const meldTiles = [
-      t('man', 1, 'ma'),
+    const meldTiles = [  });
+
+                       
       t('man', 2, 'mb'),
       t('man', 3, 'mc'),
     ];
@@ -66,10 +80,21 @@ describe('shanten calculations', () => {
       t('pin', 1, 'j'), t('pin', 1, 'k'),
       t('sou', 2, 'l'), t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
-    const melds: Meld[] = [{ type: 'chi', tiles: meldTiles }];
-    expect(calcStandardShanten(hand, melds)).toBe(1);
+    const melds: Meld[] = [{ type: 'chi', tiles: meld
     expect(calcChiitoiShanten(hand, melds)).toBe(4);
     expect(calcKokushiShanten(hand, melds)).toBe(10);
     expect(calcShanten(hand, melds)).toEqual({ standard: 1, chiitoi: 4, kokushi: 10 });
+  });
+
+it('calculates kokushi 2-shanten', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a'), t('man', 9, 'b'),
+      t('pin', 1, 'c'), t('pin', 9, 'd'),
+      t('sou', 1, 'e'), t('sou', 9, 'f'),
+      t('wind', 1, 'g'), t('wind', 2, 'h'), t('wind', 3, 'i'),
+      t('dragon', 1, 'j'), t('dragon', 2, 'k'),
+      t('man', 2, 'l'), t('pin', 3, 'm'),
+    ];
+    expect(calcKokushiShanten(hand)).toBe(2);
   });
 });
