@@ -28,10 +28,15 @@ export const GameController: React.FC = () => {
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
+  const wallRef = useRef<Tile[]>(wall);
 
   useEffect(() => {
     turnRef.current = turn;
   }, [turn]);
+
+  useEffect(() => {
+    wallRef.current = wall;
+  }, [wall]);
 
   useEffect(() => {
     playersRef.current = players;
@@ -65,6 +70,7 @@ export const GameController: React.FC = () => {
       wall = extra.wall;
       setPlayers(p);
       setWall(wall);
+      wallRef.current = wall;
       setDora(doraTiles);
       setTurn(0);
       setDiscardCounts({});
@@ -77,18 +83,19 @@ export const GameController: React.FC = () => {
 
   // ツモ処理
   const drawForCurrentPlayer = () => {
-    if (wall.length === 0) {
+    if (wallRef.current.length === 0) {
       setMessage('牌山が尽きました。流局です。');
       setPhase('end');
       return;
     }
     const currentIndex = turnRef.current;
     let p = [...playersRef.current];
-    const result = drawTiles(p[currentIndex], wall, 1);
+    const result = drawTiles(p[currentIndex], wallRef.current, 1);
     p[currentIndex] = result.player;
     setPlayers(p);
     playersRef.current = p;
     setWall(result.wall);
+    wallRef.current = result.wall;
     if (isWinningHand(p[currentIndex].hand)) {
       const yaku = detectYaku(p[currentIndex].hand);
       const { han, fu, points } = calculateScore(p[currentIndex].hand, yaku);
