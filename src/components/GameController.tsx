@@ -106,7 +106,12 @@ export const GameController: React.FC = () => {
       const yaku = detectYaku(fullHand, p[currentIndex].melds, {
         isTsumo: true,
       });
-      const { han, fu, points } = calculateScore(p[currentIndex].hand, p[currentIndex].melds, yaku);
+      const { han, fu, points } = calculateScore(
+        p[currentIndex].hand,
+        p[currentIndex].melds,
+        yaku,
+        dora,
+      );
       const newPlayers = p.map((pl, idx) =>
         idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
       );
