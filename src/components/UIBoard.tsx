@@ -14,24 +14,22 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }
     return null;
   }
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full grid grid-cols-4 gap-2">
       {/* 上部：AIの捨て牌 */}
-      <div className="flex justify-between w-full mb-4">
-        {players.slice(1).map(ai => (
-          <div key={ai.name} className="flex flex-col items-center">
-            <div className="text-sm">{ai.name}</div>
-            <div className="flex gap-1">
-              {ai.discard.map(tile => (
-                <TileView key={tile.id} tile={tile} />
-              ))}
-            </div>
+      {players.slice(1).map(ai => (
+        <div key={ai.name} className="flex flex-col items-center">
+          <div className="text-sm mb-1">{ai.name}</div>
+          <div className="flex gap-1">
+            {ai.discard.map(tile => (
+              <TileView key={tile.id} tile={tile} />
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
       {/* 自分の手牌 */}
-      <div className="flex flex-col items-center mt-6">
-        <div className="text-lg">あなたの手牌</div>
-        <div className="flex gap-2 mt-2">
+      <div className="col-span-4 flex flex-col items-center mt-4">
+        <div className="text-lg mb-1">あなたの手牌</div>
+        <div className="grid grid-cols-12 gap-2">
           {players[0].hand.map(tile => (
             <button
               key={tile.id}
