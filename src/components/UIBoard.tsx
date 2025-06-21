@@ -3,13 +3,14 @@ import { PlayerState, Tile, Suit } from '../types/mahjong';
 
 interface UIBoardProps {
   players: PlayerState[];
+  dora: Tile[];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
-export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }) => {
+export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn }) => {
   if (players.length === 0) {
     return null;
   }
@@ -26,6 +27,15 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }
           </div>
         </div>
       ))}
+      {/* ドラ表示 */}
+      <div className="col-span-4 flex flex-col items-center mt-2">
+        <div className="text-sm mb-1">ドラ表示</div>
+        <div className="flex gap-1">
+          {dora.map(tile => (
+            <TileView key={tile.id} tile={tile} />
+          ))}
+        </div>
+      </div>
       {/* 自分の手牌 */}
       <div className="col-span-4 flex flex-col items-center mt-4">
         <div className="text-lg mb-1">あなたの手牌</div>

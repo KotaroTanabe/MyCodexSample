@@ -40,6 +40,15 @@ export function generateTileWall(): Tile[] {
   return shuffle(tiles);
 }
 
+// ドラ表示牌を取り出す
+export function drawDoraIndicator(
+  wall: Tile[],
+  count = 1,
+): { dora: Tile[]; wall: Tile[] } {
+  const indicators = wall.slice(0, count);
+  return { dora: indicators, wall: wall.slice(count) };
+}
+
 // シャッフル
 function shuffle<T>(array: T[]): T[] {
   let arr = [...array];
