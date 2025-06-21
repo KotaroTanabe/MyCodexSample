@@ -12,6 +12,10 @@ export type MeldType = 'pon' | 'chi' | 'kan';
 export interface Meld {
   type: MeldType;
   tiles: Tile[];
+  /** index of the player from whom the tile was taken */
+  fromPlayer: number;
+  /** id of the tile claimed from another player's discard */
+  calledTileId: string;
 }
 
 // プレイヤー状態
