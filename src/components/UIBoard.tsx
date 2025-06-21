@@ -1,5 +1,7 @@
 import React from 'react';
-import { PlayerState, Tile, Suit, MeldType } from '../types/mahjong';
+import { PlayerState, Tile, MeldType } from '../types/mahjong';
+import { TileView } from './TileView';
+import { MeldView } from './MeldView';
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -34,6 +36,13 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       {players.slice(1).map(ai => (
         <div key={ai.name} className="flex flex-col items-center">
           <div className="text-sm mb-1">{ai.name}</div>
+          {ai.melds.length > 0 && (
+            <div className="flex gap-1 mb-1">
+              {ai.melds.map((m, idx) => (
+                <MeldView key={idx} meld={m} />
+              ))}
+            </div>
+          )}
           <div className="grid grid-cols-6 gap-1">
             {ai.discard.map(tile => (
               <TileView
@@ -56,6 +65,13 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
       {/* 自分の手牌 */}
       <div className="col-span-4 flex flex-col items-center mt-4">
+        {players[0].melds.length > 0 && (
+          <div className="flex gap-2 mb-2">
+            {players[0].melds.map((m, idx) => (
+              <MeldView key={idx} meld={m} />
+            ))}
+          </div>
+        )}
         <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
           {(() => {
@@ -123,75 +139,5 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         )}
       </div>
     </div>
-  );
-};
-
-// 牌表示（簡易）
-export const TileView: React.FC<{ tile: Tile; isShonpai?: boolean }> = ({ tile, isShonpai }) => {
-  const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
-  const honorMap: Record<string, Record<number, string>> = {
-    wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
-    dragon: { 1: '白', 2: '發', 3: '中' },
-  };
-  const emojiMap: Record<Suit, Record<number, string>> = {
-    man: {
-      1: '🀇',
-      2: '🀈',
-      3: '🀉',
-      4: '🀊',
-      5: '🀋',
-      6: '🀌',
-      7: '🀍',
-      8: '🀎',
-      9: '🀏',
-    },
-    pin: {
-      1: '🀙',
-      2: '🀚',
-      3: '🀛',
-      4: '🀜',
-      5: '🀝',
-      6: '🀞',
-      7: '🀟',
-      8: '🀠',
-      9: '🀡',
-    },
-    sou: {
-      1: '🀐',
-      2: '🀑',
-      3: '🀒',
-      4: '🀓',
-      5: '🀔',
-      6: '🀕',
-      7: '🀖',
-      8: '🀗',
-      9: '🀘',
-    },
-    wind: {
-      1: '🀀',
-      2: '🀁',
-      3: '🀂',
-      4: '🀃',
-    },
-    dragon: {
-      1: '🀆',
-      2: '🀅',
-      3: '🀄',
-    },
-  };
-  const kanji =
-    tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
-      ? `${tile.rank}${suitMap[tile.suit]}`
-      : honorMap[tile.suit]?.[tile.rank] ?? '';
-  return (
-    <span
-      className="inline-block border px-1 py-0.5 bg-white tile-font-size"
-      aria-label={kanji}
-    >
-      <span className="font-emoji">
-        {emojiMap[tile.suit]?.[tile.rank] ?? kanji}
-      </span>
-      {isShonpai && <span className="text-yellow-500 ml-0.5">★</span>}
-    </span>
   );
 };
