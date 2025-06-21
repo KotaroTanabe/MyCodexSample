@@ -1,0 +1,63 @@
+import { describe, it, expect } from 'vitest';
+import { getValidCallOptions, selectMeldTiles } from './meld';
+import { PlayerState, Tile } from '../types/mahjong';
+import { createInitialPlayerState } from '../components/Player';
+
+describe('getValidCallOptions', () => {
+  it('returns pon when two matching tiles exist', () => {
+    const discard: Tile = { suit: 'man', rank: 5, id: 'd1' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 5, id: 'a' },
+      { suit: 'man', rank: 5, id: 'b' },
+      { suit: 'sou', rank: 1, id: 'x' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    expect(getValidCallOptions(player, discard)).toEqual(['pon', 'pass']);
+  });
+
+  it('includes kan when three matching tiles exist', () => {
+    const discard: Tile = { suit: 'pin', rank: 2, id: 'd2' };
+    const hand: Tile[] = [
+      { suit: 'pin', rank: 2, id: 'a' },
+      { suit: 'pin', rank: 2, id: 'b' },
+      { suit: 'pin', rank: 2, id: 'c' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    expect(getValidCallOptions(player, discard)).toEqual(['pon', 'kan', 'pass']);
+  });
+
+  it('detects chi sequences', () => {
+    const discard: Tile = { suit: 'sou', rank: 3, id: 'd3' };
+    const hand: Tile[] = [
+      { suit: 'sou', rank: 2, id: 'a' },
+      { suit: 'sou', rank: 4, id: 'b' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    expect(getValidCallOptions(player, discard)).toEqual(['chi', 'pass']);
+  });
+});
+
+describe('selectMeldTiles', () => {
+  it('returns tiles for pon', () => {
+    const tile: Tile = { suit: 'man', rank: 7, id: 'd' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 7, id: 'a' },
+      { suit: 'man', rank: 7, id: 'b' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    const result = selectMeldTiles(player, tile, 'pon');
+    expect(result?.length).toBe(2);
+  });
+});

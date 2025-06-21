@@ -3,13 +3,14 @@ import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi } from './Player';
 import { MeldType } from '../types/mahjong';
+import { selectMeldTiles, getValidCallOptions } from '../utils/meld';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
 import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
-import { incrementDiscardCount } from './DiscardUtil';
+import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -109,7 +110,12 @@ export const GameController: React.FC = () => {
       if (p[currentIndex].isRiichi) {
         yaku.push({ name: 'Riichi', han: 1 });
       }
-      const { han, fu, points } = calculateScore(p[currentIndex].hand, p[currentIndex].melds, yaku);
+      const { han, fu, points } = calculateScore(
+        p[currentIndex].hand,
+        p[currentIndex].melds,
+        yaku,
+        dora,
+      );
       const newPlayers = p.map((pl, idx) =>
         idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
       );
@@ -136,41 +142,41 @@ export const GameController: React.FC = () => {
     p[idx] = discardTile(p[idx], tileId);
     setPlayers(p);
     playersRef.current = p;
+    const winIdx = findRonWinner(p, idx, tile);
+    if (winIdx !== null) {
+      const winningPlayer = p[winIdx];
+      const fullHand = [
+        ...winningPlayer.hand,
+        ...winningPlayer.melds.flatMap(m => m.tiles),
+        tile,
+      ];
+      const yaku = detectYaku(fullHand, winningPlayer.melds, { isTsumo: false });
+      const { han, fu, points } = calculateScore(
+        [...winningPlayer.hand, tile],
+        winningPlayer.melds,
+        yaku,
+      );
+      const updated = p.map((pl, i) =>
+        i === winIdx ? { ...pl, score: pl.score + points } : pl,
+      );
+      setPlayers(updated);
+      playersRef.current = updated;
+      setMessage(
+        `${winningPlayer.name} のロン！ ${yaku
+          .map(y => y.name)
+          .join(', ')} ${han}翻 ${fu}符 ${points}点`,
+      );
+      setPhase('end');
+      return;
+    }
     if (idx !== 0) {
-      setCallOptions(['pon', 'chi', 'kan', 'pass']);
+      const options = getValidCallOptions(p[0], tile);
+      setCallOptions(options);
     } else {
       nextTurn();
     }
   };
 
-  const selectMeldTiles = (
-    player: PlayerState,
-    tile: Tile,
-    type: MeldType,
-  ): Tile[] | null => {
-    if (type === 'pon' || type === 'kan') {
-      const need = type === 'pon' ? 2 : 3;
-      const matches = player.hand.filter(
-        t => t.suit === tile.suit && t.rank === tile.rank,
-      );
-      if (matches.length >= need) return matches.slice(0, need);
-      return null;
-    }
-    // chi
-    if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
-      const opts = [
-        [tile.rank - 2, tile.rank - 1],
-        [tile.rank - 1, tile.rank + 1],
-        [tile.rank + 1, tile.rank + 2],
-      ];
-      for (const [a, b] of opts) {
-        const t1 = player.hand.find(t => t.suit === tile.suit && t.rank === a);
-        const t2 = player.hand.find(t => t.suit === tile.suit && t.rank === b);
-        if (t1 && t2) return [t1, t2];
-      }
-    }
-    return null;
-  };
 
   const handleCallAction = (action: MeldType | 'pass') => {
     if (!lastDiscard) return;
@@ -197,6 +203,16 @@ export const GameController: React.FC = () => {
     p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
     setPlayers(p);
     playersRef.current = p;
+
+    if (action === 'kan') {
+      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      setDora(prev => [...prev, ...doraResult.dora]);
+      setWall(doraResult.wall);
+      wallRef.current = doraResult.wall;
+      turnRef.current = caller;
+      drawForCurrentPlayer();
+    }
+
     setCallOptions(null);
     setLastDiscard(null);
     setTurn(caller);
