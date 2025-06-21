@@ -48,7 +48,8 @@ npm run preview
 - **push/PR時に自動ビルド・テスト**  
 - 成功時 `dist` アーティファクトをダウンロード可能
 - mainブランチpush時に **GitHub Pagesへ自動デプロイ**
-- 公開URL例：  
+- PR作成時は **Pagesプレビュー** を自動発行（`steps.deployment.outputs.page_url` を確認）
+- 公開URL例：
   `https://kotarotanabe.github.io/MyCodexSample/`
 
 ### 成果物をダウンロードして動作確認
