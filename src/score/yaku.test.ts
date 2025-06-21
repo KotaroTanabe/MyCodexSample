@@ -41,6 +41,35 @@ describe('Yaku detection', () => {
     const yaku = detectYaku(hand);
     expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
   });
+
+  it('detects Chiitoitsu', () => {
+    const hand: Tile[] = [
+      t('man',1,'m1a'),t('man',1,'m1b'),
+      t('man',2,'m2a'),t('man',2,'m2b'),
+      t('pin',3,'p3a'),t('pin',3,'p3b'),
+      t('pin',4,'p4a'),t('pin',4,'p4b'),
+      t('sou',5,'s5a'),t('sou',5,'s5b'),
+      t('sou',6,'s6a'),t('sou',6,'s6b'),
+      t('dragon',1,'d1a'),t('dragon',1,'d1b'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
+  });
+
+  it('detects Kokushi Musou', () => {
+    const hand: Tile[] = [
+      t('man',1,'m1a'),t('man',9,'m9a'),
+      t('pin',1,'p1a'),t('pin',9,'p9a'),
+      t('sou',1,'s1a'),t('sou',9,'s9a'),
+      t('wind',1,'e'),t('wind',2,'s'),t('wind',3,'w'),t('wind',4,'n'),
+      t('dragon',1,'d1a'),t('dragon',2,'d2a'),t('dragon',3,'d3a'),
+      t('man',1,'m1b'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand);
+    expect(yaku.some(y => y.name === 'Kokushi Musou')).toBe(true);
+  });
 });
 
 describe('Scoring', () => {
