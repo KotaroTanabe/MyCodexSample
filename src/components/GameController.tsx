@@ -220,7 +220,13 @@ export const GameController: React.FC = () => {
         playersRef.current[0].seat,
         playersRef.current[idx].seat,
       );
-      setCallOptions(options);
+      if (options.length === 0) {
+        setCallOptions(null);
+        setLastDiscard(null);
+        nextTurn();
+      } else {
+        setCallOptions(options);
+      }
     } else {
       nextTurn();
     }
