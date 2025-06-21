@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: url('https://raw.githubusercontent.com/googlefonts/noto-emoji/main/fonts/NotoColorEmoji.ttf') format('truetype');
+}
+
+.font-emoji {
+  font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+}
