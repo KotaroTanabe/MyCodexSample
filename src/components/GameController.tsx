@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
-import { createInitialPlayerState, drawTiles, discardTile, claimMeld } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi } from './Player';
 import { MeldType } from '../types/mahjong';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
@@ -106,6 +106,9 @@ export const GameController: React.FC = () => {
       const yaku = detectYaku(fullHand, p[currentIndex].melds, {
         isTsumo: true,
       });
+      if (p[currentIndex].isRiichi) {
+        yaku.push({ name: 'Riichi', han: 1 });
+      }
       const { han, fu, points } = calculateScore(p[currentIndex].hand, p[currentIndex].melds, yaku);
       const newPlayers = p.map((pl, idx) =>
         idx === currentIndex ? { ...pl, score: pl.score + points } : pl,
@@ -199,6 +202,13 @@ export const GameController: React.FC = () => {
     setTurn(caller);
   };
 
+  const handleRiichi = () => {
+    let p = [...playersRef.current];
+    p[0] = declareRiichi(p[0]);
+    setPlayers(p);
+    playersRef.current = p;
+  };
+
   // ターン進行
   const nextTurn = () => {
     let next = (turnRef.current + 1) % 4;
@@ -235,6 +245,7 @@ export const GameController: React.FC = () => {
         lastDiscard={lastDiscard}
         callOptions={callOptions ?? undefined}
         onCallAction={handleCallAction}
+        onDeclareRiichi={handleRiichi}
       />
       <div className="mt-2">{message}</div>
       {phase === 'end' && (

@@ -16,6 +16,7 @@ function renderBoard(shanten: { standard: number; chiitoi: number; kokushi: numb
     isMyTurn: true,
     shanten,
     lastDiscard: null,
+    onDeclareRiichi: () => {},
   };
   render(<UIBoard {...props} />);
 }

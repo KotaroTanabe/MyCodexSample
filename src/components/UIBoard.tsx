@@ -14,6 +14,8 @@ interface UIBoardProps {
   callOptions?: (MeldType | 'pass')[];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onCallAction?: (action: MeldType | 'pass') => void;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  onDeclareRiichi?: () => void;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
@@ -26,6 +28,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   lastDiscard,
   callOptions,
   onCallAction,
+  onDeclareRiichi,
 }) => {
   if (players.length === 0) {
     return null;
@@ -136,6 +139,14 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               </button>
             ))}
           </div>
+        )}
+        {!players[0].isRiichi && isMyTurn && (
+          <button
+            className="mt-2 px-2 py-1 bg-red-500 text-white rounded"
+            onClick={() => onDeclareRiichi?.()}
+          >
+            リーチ
+          </button>
         )}
       </div>
     </div>

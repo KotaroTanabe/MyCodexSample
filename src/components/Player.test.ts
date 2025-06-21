@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { incrementDiscardCount } from './DiscardUtil';
-import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld, declareRiichi } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
 
@@ -112,6 +112,15 @@ describe('incrementDiscardCount', () => {
     result = incrementDiscardCount(record, tile);
     expect(result.isShonpai).toBe(true);
     expect(result.record['man-1']).toBe(1);
+  });
+});
+
+describe('declareRiichi', () => {
+  it('sets the riichi flag', () => {
+    const player = createInitialPlayerState('Carol', false);
+    const updated = declareRiichi(player);
+    expect(updated.isRiichi).toBe(true);
+    expect(player.isRiichi).toBe(false);
   });
 });
 
