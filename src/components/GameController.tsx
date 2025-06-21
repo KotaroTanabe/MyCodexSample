@@ -3,6 +3,7 @@ import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld } from './Player';
 import { MeldType } from '../types/mahjong';
+import { selectMeldTiles, getValidCallOptions } from '../utils/meld';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
@@ -139,40 +140,13 @@ export const GameController: React.FC = () => {
     setPlayers(p);
     playersRef.current = p;
     if (idx !== 0) {
-      setCallOptions(['pon', 'chi', 'kan', 'pass']);
+      const options = getValidCallOptions(p[0], tile);
+      setCallOptions(options);
     } else {
       nextTurn();
     }
   };
 
-  const selectMeldTiles = (
-    player: PlayerState,
-    tile: Tile,
-    type: MeldType,
-  ): Tile[] | null => {
-    if (type === 'pon' || type === 'kan') {
-      const need = type === 'pon' ? 2 : 3;
-      const matches = player.hand.filter(
-        t => t.suit === tile.suit && t.rank === tile.rank,
-      );
-      if (matches.length >= need) return matches.slice(0, need);
-      return null;
-    }
-    // chi
-    if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
-      const opts = [
-        [tile.rank - 2, tile.rank - 1],
-        [tile.rank - 1, tile.rank + 1],
-        [tile.rank + 1, tile.rank + 2],
-      ];
-      for (const [a, b] of opts) {
-        const t1 = player.hand.find(t => t.suit === tile.suit && t.rank === a);
-        const t2 = player.hand.find(t => t.suit === tile.suit && t.rank === b);
-        if (t1 && t2) return [t1, t2];
-      }
-    }
-    return null;
-  };
 
   const handleCallAction = (action: MeldType | 'pass') => {
     if (!lastDiscard) return;
@@ -199,6 +173,16 @@ export const GameController: React.FC = () => {
     p[caller] = claimMeld(p[caller], [...meldTiles, lastDiscard.tile], action);
     setPlayers(p);
     playersRef.current = p;
+
+    if (action === 'kan') {
+      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      setDora(prev => [...prev, ...doraResult.dora]);
+      setWall(doraResult.wall);
+      wallRef.current = doraResult.wall;
+      turnRef.current = caller;
+      drawForCurrentPlayer();
+    }
+
     setCallOptions(null);
     setLastDiscard(null);
     setTurn(caller);
