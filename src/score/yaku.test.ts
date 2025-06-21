@@ -118,10 +118,12 @@ describe('Scoring', () => {
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
     const yaku = detectYaku(hand, [], { isTsumo: true });
-    const { han, fu, points } = calculateScore(hand, [], yaku, []);
+    const { han, fu, ron, tsumo } = calculateScore(hand, [], yaku, [], false);
     expect(han).toBe(3);
     expect(fu).toBe(20);
-    expect(points).toBe(640);
+    expect(ron).toBe(2600);
+    expect(tsumo.dealer).toBe(1300);
+    expect(tsumo.nonDealer).toBe(700);
   });
 
   it('adds fu for honor triplets', () => {
@@ -208,5 +210,39 @@ describe('Scoring', () => {
     const { han } = calculateScore(hand, [], yaku, []);
     // メンタンピン三色だから5ハンでは…?
     expect(han).toBe(4);
+  });
+
+  it('applies mangan limit and dealer/child differences', () => {
+    const hand: Tile[] = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const doraIndicator = t('man',5,'di1');
+    const result = calculateScore(hand, [], yaku, [doraIndicator, doraIndicator], false);
+    expect(result.han).toBe(5);
+    expect(result.ron).toBe(8000);
+    expect(result.tsumo.dealer).toBe(4000);
+    expect(result.tsumo.nonDealer).toBe(2000);
+  });
+
+  it('calculates yakuman points for non-dealer', () => {
+    const hand: Tile[] = [
+      t('man',1,'m1a'),t('man',9,'m9a'),
+      t('pin',1,'p1a'),t('pin',9,'p9a'),
+      t('sou',1,'s1a'),t('sou',9,'s9a'),
+      t('wind',1,'e'),t('wind',2,'s'),t('wind',3,'w'),t('wind',4,'n'),
+      t('dragon',1,'d1a'),t('dragon',2,'d2a'),t('dragon',3,'d3a'),
+      t('man',1,'m1b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const result = calculateScore(hand, [], yaku, [], false);
+    expect(result.han).toBeGreaterThanOrEqual(13);
+    expect(result.ron).toBe(32000);
+    expect(result.tsumo.dealer).toBe(16000);
+    expect(result.tsumo.nonDealer).toBe(8000);
   });
 });

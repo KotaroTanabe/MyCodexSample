@@ -143,17 +143,25 @@ export const GameController: React.FC = () => {
         isTsumo: true,
         isRiichi: p[currentIndex].isRiichi,
       });
-      const { han, fu, points } = calculateScore(
+      const dealerIndex = 1;
+      const isDealer = currentIndex === dealerIndex;
+      const { han, fu, tsumo } = calculateScore(
         p[currentIndex].hand,
         p[currentIndex].melds,
         yaku,
         dora,
+        isDealer,
       );
-      const newPlayers = payoutTsumo(p, currentIndex, points);
+      const newPlayers = payoutTsumo(p, currentIndex, tsumo, dealerIndex);
       setPlayers(newPlayers);
       playersRef.current = newPlayers;
+      const totalPoints = isDealer
+        ? tsumo.dealer * (p.length - 1)
+        : tsumo.dealer + tsumo.nonDealer * (p.length - 2);
       setMessage(
-        `${p[currentIndex].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`,
+        `${p[currentIndex].name} の和了！ ${yaku
+          .map(y => y.name)
+          .join(', ')} ${han}翻 ${fu}符 ${totalPoints}点`,
       );
       setTimeout(nextKyoku, 500);
       return;
@@ -185,18 +193,22 @@ export const GameController: React.FC = () => {
         isTsumo: false,
         isRiichi: winningPlayer.isRiichi,
       });
-      const { han, fu, points } = calculateScore(
+      const dealerIndex = 1;
+      const isDealer = winIdx === dealerIndex;
+      const { han, fu, ron } = calculateScore(
         [...winningPlayer.hand, tile],
         winningPlayer.melds,
         yaku,
+        [],
+        isDealer,
       );
-      const updated = payoutRon(p, winIdx, idx, points);
+      const updated = payoutRon(p, winIdx, idx, ron);
       setPlayers(updated);
       playersRef.current = updated;
       setMessage(
         `${winningPlayer.name} のロン！ ${yaku
           .map(y => y.name)
-          .join(', ')} ${han}翻 ${fu}符 ${points}点`,
+          .join(', ')} ${han}翻 ${fu}符 ${ron}点`,
       );
       setTimeout(nextKyoku, 500);
       return;
