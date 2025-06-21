@@ -154,12 +154,40 @@ export function calculateScore(
   melds: Meld[],
   yaku: Yaku[],
   doraIndicators: Tile[] = [],
-): { han: number; fu: number; points: number } {
+  isDealer = false,
+): {
+  han: number;
+  fu: number;
+  ron: number;
+  tsumo: { dealer: number; nonDealer: number };
+} {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const dora = countDora(allTiles, doraIndicators);
   const han = yaku.reduce((sum, y) => sum + y.han, 0) + dora;
   const fu = calculateFu(hand, melds);
-  const base = fu * Math.pow(2, han + 2);
-  const points = base;
-  return { han, fu, points };
+
+  let base = fu * Math.pow(2, han + 2);
+
+  if (han >= 13) {
+    base = 8000;
+  } else if (han >= 11) {
+    base = 6000;
+  } else if (han >= 8) {
+    base = 4000;
+  } else if (han >= 6) {
+    base = 3000;
+  } else if (han >= 5) {
+    base = 2000;
+  } else if (base >= 2000) {
+    base = 2000;
+  }
+
+  const round100 = (n: number) => Math.ceil(n / 100) * 100;
+
+  const ron = round100(base * (isDealer ? 6 : 4));
+
+  const dealerPay = round100(base * 2);
+  const nonDealerPay = isDealer ? dealerPay : round100(base);
+
+  return { han, fu, ron, tsumo: { dealer: dealerPay, nonDealer: nonDealerPay } };
 }
