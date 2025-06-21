@@ -10,6 +10,9 @@ interface UIBoardProps {
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
 export const UIBoard: React.FC<UIBoardProps> = ({ players, onDiscard, isMyTurn }) => {
+  if (players.length === 0) {
+    return null;
+  }
   return (
     <div className="w-full flex flex-col items-center">
       {/* 上部：AIの捨て牌 */}
