@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerState, Tile, Suit } from '../types/mahjong';
+import { PlayerState, Tile, Suit, MeldType } from '../types/mahjong';
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -8,11 +8,23 @@ interface UIBoardProps {
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
   shanten: { standard: number; chiitoi: number; kokushi: number };
-  lastDiscard: { tileId: string; isShonpai: boolean } | null;
+  lastDiscard: { tile: Tile; player: number; isShonpai: boolean } | null;
+  callOptions?: (MeldType | 'pass')[];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  onCallAction?: (action: MeldType | 'pass') => void;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
-export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMyTurn, shanten, lastDiscard }) => {
+export const UIBoard: React.FC<UIBoardProps> = ({
+  players,
+  dora,
+  onDiscard,
+  isMyTurn,
+  shanten,
+  lastDiscard,
+  callOptions,
+  onCallAction,
+}) => {
   if (players.length === 0) {
     return null;
   }
@@ -27,7 +39,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
               <TileView
                 key={tile.id}
                 tile={tile}
-                isShonpai={lastDiscard?.tileId === tile.id && lastDiscard.isShonpai}
+                isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
               />
             ))}
           </div>
@@ -92,10 +104,23 @@ export const UIBoard: React.FC<UIBoardProps> = ({ players, dora, onDiscard, isMy
             <TileView
               key={tile.id}
               tile={tile}
-              isShonpai={lastDiscard?.tileId === tile.id && lastDiscard.isShonpai}
+              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
         </div>
+        {callOptions && callOptions.length > 0 && (
+          <div className="flex gap-2 mt-2">
+            {callOptions.map(act => (
+              <button
+                key={act}
+                className="px-2 py-1 bg-yellow-200 rounded"
+                onClick={() => onCallAction?.(act)}
+              >
+                {act === 'pon' ? 'ポン' : act === 'chi' ? 'チー' : act === 'kan' ? 'カン' : 'スルー'}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
