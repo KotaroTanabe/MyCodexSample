@@ -4,6 +4,7 @@ import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile } from './Player';
 import { UIBoard } from './UIBoard';
 import { ScoreBoard } from './ScoreBoard';
+import { HelpModal } from './HelpModal';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -16,6 +17,7 @@ export const GameController: React.FC = () => {
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -110,7 +112,7 @@ export const GameController: React.FC = () => {
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
-      <ScoreBoard players={players} kyoku={kyoku} />
+      <ScoreBoard players={players} kyoku={kyoku} onHelp={() => setHelpOpen(true)} />
       <UIBoard
         players={players}
         dora={dora}
@@ -123,6 +125,7 @@ export const GameController: React.FC = () => {
           リプレイ
         </button>
       )}
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };
