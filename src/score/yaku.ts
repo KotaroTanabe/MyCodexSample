@@ -103,6 +103,86 @@ function canFormSets(counts: Record<string, number>, memo = new Map<string, bool
   return false;
 }
 
+interface ParsedMeld {
+  type: 'chi' | 'pon';
+  tiles: Tile[];
+}
+
+function parseKey(key: string): Tile {
+  const [suit, rankStr] = key.split('-');
+  return { suit: suit as Tile['suit'], rank: Number(rankStr), id: '' };
+}
+
+function findMelds(counts: Record<string, number>): ParsedMeld[] | null {
+  const keys = Object.keys(counts).filter(k => counts[k] > 0).sort();
+  if (keys.length === 0) return [];
+
+  const first = keys[0];
+  const [suit, rankStr] = first.split('-');
+  const rank = Number(rankStr);
+
+  if (counts[first] >= 3) {
+    counts[first] -= 3;
+    const rest = findMelds(counts);
+    counts[first] += 3;
+    if (rest) {
+      return [{ type: 'pon', tiles: [parseKey(first), parseKey(first), parseKey(first)] }, ...rest];
+    }
+  }
+
+  if ((suit === 'man' || suit === 'pin' || suit === 'sou') && counts[`${suit}-${rank+1}`] > 0 && counts[`${suit}-${rank+2}`] > 0) {
+    counts[first]--;
+    counts[`${suit}-${rank+1}`]--;
+    counts[`${suit}-${rank+2}`]--;
+    const rest = findMelds(counts);
+    counts[first]++;
+    counts[`${suit}-${rank+1}`]++;
+    counts[`${suit}-${rank+2}`]++;
+    if (rest) {
+      return [{ type: 'chi', tiles: [parseKey(first), parseKey(`${suit}-${rank+1}`), parseKey(`${suit}-${rank+2}`)] }, ...rest];
+    }
+  }
+
+  return null;
+}
+
+function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | null {
+  const counts = countTiles(tiles);
+  const tileKeys = Object.keys(counts);
+  for (const key of tileKeys) {
+    if (counts[key] >= 2) {
+      counts[key] -= 2;
+      const melds = findMelds(counts);
+      counts[key] += 2;
+      if (melds) {
+        return { pair: [parseKey(key), parseKey(key)], melds };
+      }
+    }
+  }
+  return null;
+}
+
+function isPinfuHand(tiles: Tile[]): boolean {
+  const parsed = decomposeHand(tiles);
+  if (!parsed) return false;
+  if (parsed.melds.some(m => m.type !== 'chi')) return false;
+  const pairSuit = parsed.pair[0].suit;
+  if (pairSuit === 'dragon' || pairSuit === 'wind') return false;
+  return true;
+}
+
+function isIipeikoHand(tiles: Tile[]): boolean {
+  const parsed = decomposeHand(tiles);
+  if (!parsed) return false;
+  const seqs = parsed.melds.filter(m => m.type === 'chi').map(m => m.tiles.map(tileKey).join(','));
+  const counts: Record<string, number> = {};
+  for (const s of seqs) {
+    counts[s] = (counts[s] || 0) + 1;
+    if (counts[s] === 2) return true;
+  }
+  return false;
+}
+
 export function isWinningHand(tiles: Tile[]): boolean {
   if (tiles.length !== 14) return false;
   if (isChiitoitsu(tiles) || isKokushi(tiles)) return true;
@@ -139,6 +219,12 @@ export function detectYaku(
   }
   if (isTanyao(allTiles)) {
     result.push({ name: 'Tanyao', han: 1 });
+  }
+  if (isClosed && isPinfuHand(allTiles)) {
+    result.push({ name: 'Pinfu', han: 1 });
+  }
+  if (isClosed && isIipeikoHand(allTiles)) {
+    result.push({ name: 'Iipeiko', han: 1 });
   }
   if (opts?.isTsumo && isClosed) {
     result.push({ name: 'Menzen Tsumo', han: 1 });
