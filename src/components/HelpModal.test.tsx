@@ -30,11 +30,13 @@ describe('HelpModal', () => {
     expect(screen.queryByText('符\\翻')).toBeNull();
   });
 
-  it('displays rule status list', () => {
+  it('displays rule status list with README link', () => {
     render(<HelpModal isOpen onClose={() => {}} />);
     fireEvent.click(screen.getByText('ルール対応状況'));
     expect(screen.getByRole('heading', { name: 'ルール対応状況' })).toBeTruthy();
     expect(screen.getByText('リーチ')).toBeTruthy();
     expect(screen.getByText('ドラ')).toBeTruthy();
+    const link = screen.getByRole('link', { name: 'README' });
+    expect(link.getAttribute('href')).toContain('#rules-supported');
   });
 });

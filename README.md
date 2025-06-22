@@ -121,6 +121,23 @@ npm run lint
 
 ---
 
+## Rules Supported
+
+現在実装されているルールは以下の通りです。
+
+- リーチ (Reach)
+- ドラ (Dora)
+
+## Not Yet Implemented
+
+以下のルールはまだ実装されていません。
+
+- 本場 (Honba)
+- 裏ドラ (Ura Dora)
+- 一発 (Ippatsu)
+
+---
+
 ## 開発メモ
 
 - 基本的な役判定と符計算を含む点数計算を実装。より高度なAIは未実装（PR歓迎）
