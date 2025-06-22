@@ -12,7 +12,12 @@ const basePlayer = createInitialPlayerState('you', false);
 afterEach(() => cleanup());
 function renderBoard(shanten: { standard: number; chiitoi: number; kokushi: number }) {
   const props = {
-    players: [basePlayer],
+    players: [
+      basePlayer,
+      createInitialPlayerState('ai1', true, 1),
+      createInitialPlayerState('ai2', true, 2),
+      createInitialPlayerState('ai3', true, 3),
+    ],
     dora: [] as Tile[],
     onDiscard: () => {},
     isMyTurn: true,
@@ -71,7 +76,12 @@ describe('UIBoard riichi button', () => {
     expect(canDeclareRiichi(player)).toBe(true);
     render(
       <UIBoard
-        players={[player]}
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
         dora={[]}
         onDiscard={() => {}}
         isMyTurn={true}
@@ -95,7 +105,12 @@ describe('UIBoard riichi button', () => {
     expect(canDeclareRiichi(player)).toBe(false);
     render(
       <UIBoard
-        players={[player]}
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
         dora={[]}
         onDiscard={() => {}}
         isMyTurn={true}

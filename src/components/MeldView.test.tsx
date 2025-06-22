@@ -22,7 +22,7 @@ describe('MeldView', () => {
     expect(count).toBe(3);
   });
 
-  it('adds rotate class to called tile', () => {
+  it('rotates the called tile 90 degrees', () => {
     const meld: Meld = {
       type: 'pon',
       tiles: [
@@ -33,9 +33,26 @@ describe('MeldView', () => {
       fromPlayer: 2,
       calledTileId: 'p2',
     };
-    const html = renderToStaticMarkup(<MeldView meld={meld} />);
-    // ensure rotate class applied to the called tile span
-    const rotateCount = (html.match(/rotate-90/g) || []).length;
+    const html = renderToStaticMarkup(<MeldView meld={meld} seat={1} />);
+    const rotateCount = (html.match(/rotate\(180deg\)/g) || []).length;
+    // seat rotation 90 + called tile rotation 90 -> 180deg
     expect(rotateCount).toBe(1);
+  });
+
+  it('applies seat rotation', () => {
+    const meld: Meld = {
+      type: 'chi',
+      tiles: [
+        { suit: 'man', rank: 4, id: 'm4' },
+        { suit: 'man', rank: 5, id: 'm5' },
+        { suit: 'man', rank: 6, id: 'm6' },
+      ],
+      fromPlayer: 3,
+      calledTileId: 'm5',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} seat={2} />);
+    // seat rotation of 180deg applied to two tiles, called tile rotates further
+    const count = (html.match(/rotate\(180deg\)/g) || []).length;
+    expect(count).toBe(2);
   });
 });

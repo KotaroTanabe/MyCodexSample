@@ -4,6 +4,8 @@ import { TileView } from './TileView';
 import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
 
+const seatRotation = (seat: number) => (seat % 4) * 90;
+
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
@@ -39,32 +41,80 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   if (players.length === 0) {
     return null;
   }
+  const me = players[0];
+  const right = players[1];
+  const top = players[2];
+  const left = players[3];
   return (
-    <div className="w-full grid grid-cols-4 gap-2">
-      {/* 上部：AIの捨て牌 */}
-      {players.slice(1).map(ai => (
-        <div key={ai.name} className="flex flex-col items-center">
-          <div className="text-sm mb-1">{ai.name}</div>
-          {ai.melds.length > 0 && (
-            <div className="flex gap-1 mb-1">
-              {ai.melds.map((m, idx) => (
-                <MeldView key={idx} meld={m} />
-              ))}
-            </div>
-          )}
-          <div className="grid grid-cols-6 gap-1">
-            {ai.discard.map(tile => (
-              <TileView
-                key={tile.id}
-                tile={tile}
-                isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-              />
+    <div className="w-full grid grid-rows-3 grid-cols-3 gap-2 place-items-center">
+      {/* 対面 */}
+      <div className="row-start-1 col-start-2 flex flex-col items-center">
+        <div className="text-sm mb-1">{top.name}</div>
+        {top.melds.length > 0 && (
+          <div className="flex gap-1 mb-1">
+            {top.melds.map((m, idx) => (
+              <MeldView key={idx} meld={m} seat={top.seat} />
             ))}
           </div>
+        )}
+        <div className="grid grid-cols-6 gap-1">
+          {top.discard.map(tile => (
+            <TileView
+              key={tile.id}
+              tile={tile}
+              rotate={seatRotation(top.seat)}
+              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+            />
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* 右側：下家 */}
+      <div className="row-start-2 col-start-3 flex flex-col items-center">
+        <div className="text-sm mb-1">{right.name}</div>
+        {right.melds.length > 0 && (
+          <div className="flex gap-1 mb-1">
+            {right.melds.map((m, idx) => (
+              <MeldView key={idx} meld={m} seat={right.seat} />
+            ))}
+          </div>
+        )}
+        <div className="grid grid-cols-6 gap-1">
+          {right.discard.map(tile => (
+            <TileView
+              key={tile.id}
+              tile={tile}
+              rotate={seatRotation(right.seat)}
+              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* 左側：上家 */}
+      <div className="row-start-2 col-start-1 flex flex-col items-center">
+        <div className="text-sm mb-1">{left.name}</div>
+        {left.melds.length > 0 && (
+          <div className="flex gap-1 mb-1">
+            {left.melds.map((m, idx) => (
+              <MeldView key={idx} meld={m} seat={left.seat} />
+            ))}
+          </div>
+        )}
+        <div className="grid grid-cols-6 gap-1">
+          {left.discard.map(tile => (
+            <TileView
+              key={tile.id}
+              tile={tile}
+              rotate={seatRotation(left.seat)}
+              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* ドラ表示 */}
-      <div className="col-span-4 flex flex-col items-center mt-2">
+      <div className="row-start-2 col-start-2 flex flex-col items-center">
         <div className="text-sm mb-1">ドラ表示</div>
         <div className="flex gap-1">
           {dora.map(tile => (
@@ -72,12 +122,13 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           ))}
         </div>
       </div>
+
       {/* 自分の手牌 */}
-      <div className="col-span-4 flex flex-col items-center mt-4">
-        {players[0].melds.length > 0 && (
+      <div className="row-start-3 col-start-2 flex flex-col items-center mt-4">
+        {me.melds.length > 0 && (
           <div className="flex gap-2 mb-2">
-            {players[0].melds.map((m, idx) => (
-              <MeldView key={idx} meld={m} />
+            {me.melds.map((m, idx) => (
+              <MeldView key={idx} meld={m} seat={me.seat} />
             ))}
           </div>
         )}
@@ -95,7 +146,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           })()}
         </div>
         {(() => {
-          const my = players[0];
+          const my = me;
           const handTiles = my.drawnTile
             ? my.hand.filter(t => t.id !== my.drawnTile?.id)
             : my.hand;
@@ -125,10 +176,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           );
         })()}
         <div className="flex gap-1 mt-2">
-          {players[0].discard.map(tile => (
+          {me.discard.map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
+              rotate={seatRotation(me.seat)}
               isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
@@ -159,7 +211,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        {onRiichi && isMyTurn && canDeclareRiichi(players[0]) && (
+        {onRiichi && isMyTurn && canDeclareRiichi(me) && (
           <button
             className="mt-2 px-2 py-1 bg-red-200 rounded"
             onClick={() => onRiichi()}
