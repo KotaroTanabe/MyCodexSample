@@ -21,6 +21,9 @@ function renderBoard(shanten: { standard: number; chiitoi: number; kokushi: numb
       createInitialPlayerState('ai3', true, 3),
     ],
     dora: [] as Tile[],
+    kyoku: 1,
+    wallCount: 70,
+    kyotaku: 0,
     onDiscard: () => {},
     isMyTurn: true,
     shanten,
@@ -89,6 +92,9 @@ describe('UIBoard riichi button', () => {
           createInitialPlayerState('ai3', true, 3),
         ]}
         dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
@@ -118,6 +124,9 @@ describe('UIBoard riichi button', () => {
           createInitialPlayerState('ai3', true, 3),
         ]}
         dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 1, chiitoi: 4, kokushi: 9 }}
@@ -140,6 +149,9 @@ describe('UIBoard chi options', () => {
           createInitialPlayerState('ai3', true, 3),
         ]}
         dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
@@ -167,6 +179,9 @@ describe('UIBoard discard orientation', () => {
           createInitialPlayerState('left', true, 3),
         ]}
         dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
@@ -198,6 +213,9 @@ describe('UIBoard discard orientation', () => {
           left,
         ]}
         dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}

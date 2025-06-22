@@ -4,10 +4,14 @@ import { TileView } from './TileView';
 import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
 import { RiverView } from './RiverView';
+import { ScoreBoard } from './ScoreBoard';
 
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
+  kyoku: number;
+  wallCount: number;
+  kyotaku: number;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
@@ -32,6 +36,9 @@ interface UIBoardProps {
 export const UIBoard: React.FC<UIBoardProps> = ({
   players,
   dora,
+  kyoku,
+  wallCount,
+  kyotaku,
   onDiscard,
   isMyTurn,
   shanten,
@@ -109,14 +116,22 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         />
       </div>
 
-      {/* ドラ表示 */}
-      <div className="row-start-2 col-start-2 flex flex-col items-center">
-        <div className="text-sm mb-1">ドラ表示</div>
-        <div className="flex gap-1">
-          {dora.map(tile => (
-            <TileView key={tile.id} tile={tile} />
-          ))}
+      {/* ドラ表示とスコア */}
+      <div className="row-start-2 col-start-2 flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1">
+          <div className="text-sm">ドラ表示</div>
+          <div className="flex gap-1">
+            {dora.map(tile => (
+              <TileView key={tile.id} tile={tile} />
+            ))}
+          </div>
         </div>
+        <ScoreBoard
+          players={players}
+          kyoku={kyoku}
+          wallCount={wallCount}
+          kyotaku={kyotaku}
+        />
       </div>
 
       {/* 自分の手牌 */}
