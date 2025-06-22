@@ -67,6 +67,20 @@ describe('Yaku detection', () => {
     expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
   });
 
+  it('counts Yakuhai twice for a double wind triplet', () => {
+    const hand: Tile[] = [
+      t('wind',1,'de1'),t('wind',1,'de2'),t('wind',1,'de3'),
+      t('man',2,'dm2a'),t('man',3,'dm3a'),t('man',4,'dm4a'),
+      t('man',5,'dm5a'),t('man',6,'dm6a'),t('man',7,'dm7a'),
+      t('pin',2,'dp2a'),t('pin',3,'dp3a'),t('pin',4,'dp4a'),
+      t('sou',2,'ds2a'),t('sou',2,'ds2b'),
+    ];
+    expect(isWinningHand(hand)).toBe(true);
+    const yaku = detectYaku(hand, [], { isTsumo: true, seatWind: 1, roundWind: 1 });
+    const yakuhaiCount = yaku.filter(y => y.name === 'Yakuhai').length;
+    expect(yakuhaiCount).toBe(2); // ダブ東の刻子は2翻になるはず
+  });
+
   it('detects Pinfu', () => {
     const hand: Tile[] = [
       t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
