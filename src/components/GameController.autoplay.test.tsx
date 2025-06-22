@@ -6,11 +6,11 @@ import { GameController } from './GameController';
 
 describe('GameController auto play', () => {
   it('disables tile buttons when enabled', async () => {
-    render(<GameController />);
+    const { container } = render(<GameController />);
     await screen.findByText('あなたの手牌');
     const checkbox = screen.getByLabelText('観戦モード');
     fireEvent.click(checkbox);
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.some(b => b.disabled)).toBe(true);
+    const buttons = container.querySelectorAll('button');
+    expect(Array.from(buttons).some(b => (b as HTMLButtonElement).disabled)).toBe(true);
   });
 });
