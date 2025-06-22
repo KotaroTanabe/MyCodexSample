@@ -2,7 +2,18 @@ import React from 'react';
 import { Meld } from '../types/mahjong';
 import { TileView } from './TileView';
 
-const seatRotation = (seat: number) => (seat % 4) * 90;
+const seatRotation = (seat: number) => {
+  switch (seat % 4) {
+    case 1:
+      return 270;
+    case 3:
+      return 90;
+    case 2:
+      return 180;
+    default:
+      return 0;
+  }
+};
 
 export const MeldView: React.FC<{ meld: Meld; seat?: number }> = ({ meld, seat = 0 }) => {
   return (

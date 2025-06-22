@@ -34,8 +34,8 @@ describe('MeldView', () => {
       calledTileId: 'p2',
     };
     const html = renderToStaticMarkup(<MeldView meld={meld} seat={1} />);
-    const rotateCount = (html.match(/rotate\(180deg\)/g) || []).length;
-    // seat rotation 90 + called tile rotation 90 -> 180deg
+    const rotateCount = (html.match(/rotate\(360deg\)/g) || []).length;
+    // seat rotation 270 + called tile rotation 90 -> 360deg
     expect(rotateCount).toBe(1);
   });
 
