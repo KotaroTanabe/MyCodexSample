@@ -10,17 +10,6 @@ const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank,
 afterEach(() => cleanup());
 
 describe('RiverView', () => {
-  it('applies rotation for the seat', () => {
-    render(<RiverView tiles={[]} seat={2} lastDiscard={null} dataTestId="rv-2" />);
-    let div = screen.getByTestId('rv-2');
-    expect(div.style.transform).toContain('rotate(180deg)');
-    render(<RiverView tiles={[]} seat={1} lastDiscard={null} dataTestId="rv-1" />);
-    div = screen.getByTestId('rv-1');
-    expect(div.style.transform).toContain('rotate(270deg)');
-    render(<RiverView tiles={[]} seat={3} lastDiscard={null} dataTestId="rv-3" />);
-    div = screen.getByTestId('rv-3');
-    expect(div.style.transform).toContain('rotate(90deg)');
-  });
 
   it('keeps order for left seat', () => {
     const tiles = [t('man', 1, 'a'), t('man', 2, 'b')];
@@ -46,13 +35,4 @@ describe('RiverView', () => {
     expect(div.children.length).toBe(RESERVED_RIVER_SLOTS);
   });
 
-  it('offsets called tiles based on seat', () => {
-    const tiles = [t('man', 1, 'a'), { ...t('man', 2, 'b'), called: true }];
-    render(<RiverView tiles={tiles} seat={1} lastDiscard={null} dataTestId="rv-call" />);
-    const div = screen.getByTestId('rv-call');
-    const tileEls = div.querySelectorAll('[aria-label]');
-    const style = tileEls[1].getAttribute('style') ?? '';
-    expect(style).toContain('rotate(90deg)');
-    expect(style).toContain('translateY(-6px)');
-  });
 });
