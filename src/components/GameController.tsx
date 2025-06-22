@@ -266,7 +266,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       setTimeout(nextKyoku, 500);
       return;
     }
-    setMessage(`${p[currentIndex].name} がツモりました。`);
+
   };
 
   // 捨て牌処理（自分／AI共通）
