@@ -5,6 +5,7 @@ const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank,
 export interface SampleHand {
   hand: Tile[];
   melds: Meld[];
+  winningTile: Tile;
 }
 
 export const SAMPLE_HANDS: SampleHand[] = [
@@ -17,6 +18,7 @@ export const SAMPLE_HANDS: SampleHand[] = [
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ],
     melds: [],
+    winningTile: t('pin',5,'p5b'),
   },
   {
     hand: [
@@ -28,6 +30,7 @@ export const SAMPLE_HANDS: SampleHand[] = [
     melds: [
       { type: 'pon', tiles: [t('dragon',1,'d1a'),t('dragon',1,'d1b'),t('dragon',1,'d1c')], fromPlayer: 1, calledTileId: 'd1a' },
     ],
+    winningTile: t('man',5,'m5b'),
   },
   {
     hand: [
@@ -39,6 +42,7 @@ export const SAMPLE_HANDS: SampleHand[] = [
     melds: [
       { type: 'kan', tiles: [t('dragon',1,'k1a'),t('dragon',1,'k1b'),t('dragon',1,'k1c')], fromPlayer: 2, calledTileId: 'k1a' },
     ],
+    winningTile: t('man',5,'m5b'),
   },
 ];
 
@@ -48,13 +52,15 @@ function rand(): string {
 
 function randomizeIds(hand: SampleHand): SampleHand {
   const handTiles = hand.hand.map(t => ({ ...t, id: rand() }));
+  const winIdx = hand.hand.findIndex(t => t.id === hand.winningTile.id);
+  const winningTile = winIdx >= 0 ? handTiles[winIdx] : { ...hand.winningTile, id: rand() };
   const melds = hand.melds.map(m => {
     const tiles = m.tiles.map(t => ({ ...t, id: rand() }));
     const idx = m.tiles.findIndex(t => t.id === m.calledTileId);
     const calledTileId = idx >= 0 ? tiles[idx].id : rand();
     return { ...m, tiles, calledTileId };
   });
-  return { hand: handTiles, melds };
+  return { hand: handTiles, melds, winningTile };
 }
 
 export function randomizeSampleHands(hands: SampleHand[]): SampleHand[] {

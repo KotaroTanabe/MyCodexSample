@@ -29,7 +29,7 @@ describe('FuQuiz', () => {
 
   it('displays seat and round wind and win type', () => {
     render(<FuQuiz initialIndex={0} initialWinType="ron" />);
-    expect(screen.getByText('場風: 東 / 自風: 東 / ロン')).toBeTruthy();
+    expect(screen.getByText('場風: 東 / 自風: 東 / ロン: 5筒')).toBeTruthy();
   });
 
   it('opens help modal', () => {

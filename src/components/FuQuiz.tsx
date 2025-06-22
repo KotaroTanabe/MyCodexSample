@@ -4,6 +4,7 @@ import { calculateFuDetail } from '../score/calculateFuDetail';
 import { TileView } from './TileView';
 import { sortHand } from './Player';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
+import { tileToKanji } from '../utils/tileString';
 import { QuizHelpModal } from './QuizHelpModal';
 
 interface FuQuizProps {
@@ -55,7 +56,9 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
       <div className="flex justify-between items-center text-sm mb-1">
         <div>
           場風: {windNames[roundWind]} / 自風: {windNames[seatWind]} /
-          {winType === 'tsumo' ? ' ツモ' : ' ロン'}
+          {winType === 'tsumo'
+            ? ' ツモ'
+            : ` ロン: ${tileToKanji(question.winningTile)}`}
         </div>
         <button
           onClick={() => setHelpOpen(true)}
