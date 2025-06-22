@@ -99,9 +99,9 @@ export const GameController: React.FC = () => {
     if (resetKyoku) {
       p = [
         createInitialPlayerState('あなた', playerIsAI, 0),
-        createInitialPlayerState('AI東家', true, 1),
-        createInitialPlayerState('AI南家', true, 2),
-        createInitialPlayerState('AI西家', true, 3),
+        createInitialPlayerState('AI下家', true, 1),
+        createInitialPlayerState('AI対面', true, 2),
+        createInitialPlayerState('AI上家', true, 3),
       ];
     } else {
       p = playersRef.current.map(pl => ({
