@@ -34,15 +34,23 @@ describe('ScoreQuiz', () => {
 
   it('displays seat and round wind and win type', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="ron" initialSeatWind={1} />);
-    expect(screen.getByText('場風: 東 / 自風: 東 / ロン: 5筒')).toBeTruthy();
+    expect(screen.getByText('場風: 東 / 自風: 東 (親) / ロン: 5筒')).toBeTruthy();
   });
 
   it('handles tsumo answers with split payments', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="tsumo" initialSeatWind={2} />);
-    const input = screen.getByPlaceholderText('点数を入力');
-    fireEvent.change(input, { target: { value: '2000-4000' } });
+    const childInput = screen.getByPlaceholderText('子の支払い');
+    const parentInput = screen.getByPlaceholderText('親の支払い');
+    fireEvent.change(childInput, { target: { value: '2000' } });
+    fireEvent.change(parentInput, { target: { value: '4000' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('正解！')).toBeTruthy();
+  });
+
+  it('shows two inputs for child tsumo', () => {
+    render(<ScoreQuiz initialIndex={0} initialWinType="tsumo" initialSeatWind={2} />);
+    expect(screen.getByPlaceholderText('子の支払い')).toBeTruthy();
+    expect(screen.getByPlaceholderText('親の支払い')).toBeTruthy();
   });
 
   it('opens help modal with score info', () => {
