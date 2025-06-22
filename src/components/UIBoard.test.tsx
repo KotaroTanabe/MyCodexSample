@@ -144,7 +144,7 @@ describe('UIBoard discard orientation', () => {
     const rightDiv = screen.getByTestId('discard-seat-1');
     const topDiv = screen.getByTestId('discard-seat-2');
     const leftDiv = screen.getByTestId('discard-seat-3');
-    expect(rightDiv.style.transform).toContain('rotate(90deg)');
+    expect(rightDiv.style.transform).toContain('rotate(270deg)');
     expect(topDiv.style.transform).toContain('rotate(180deg)');
     expect(leftDiv.style.transform).toContain('rotate(270deg)');
   });
@@ -177,8 +177,8 @@ describe('UIBoard discard orientation', () => {
     const rightTiles = rightDiv.querySelectorAll('[aria-label]');
     const topTiles = topDiv.querySelectorAll('[aria-label]');
 
-    expect(rightTiles[0].getAttribute('aria-label')).toBe('2萬');
-    expect(rightTiles[rightTiles.length - 1].getAttribute('aria-label')).toBe('1萬');
+    expect(rightTiles[0].getAttribute('aria-label')).toBe('1萬');
+    expect(rightTiles[rightTiles.length - 1].getAttribute('aria-label')).toBe('2萬');
     expect(topTiles[0].getAttribute('aria-label')).toBe('4筒');
     expect(topTiles[topTiles.length - 1].getAttribute('aria-label')).toBe('3筒');
   });
