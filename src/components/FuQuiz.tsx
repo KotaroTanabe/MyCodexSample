@@ -3,8 +3,7 @@ import { Tile, Meld } from '../types/mahjong';
 import { calculateFu } from '../score/score';
 import { TileView } from './TileView';
 import { sortHand } from './Player';
-import { SAMPLE_HANDS } from '../quiz/sampleHands';
-import { generateRandomAgari } from '../quiz/randomAgari';
+import { useAgariQuiz } from '../quiz/useAgariQuiz';
 
 // helper functions copied from score.ts for fu breakdown
 function tileKey(t: Tile): string {
@@ -154,16 +153,13 @@ interface FuQuizProps {
 }
 
 export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) => {
-  const [idx, setIdx] = useState(initialIndex ?? 0);
-  const [question, setQuestion] = useState(() =>
-    initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
-  );
+  const { question, winType, nextQuestion } = useAgariQuiz({
+    initialIndex,
+    initialWinType,
+  });
   const seatWind = 1;
   const roundWind = 1;
   const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
-  const [winType, setWinType] = useState<'ron' | 'tsumo'>(
-    initialWinType ?? (Math.random() < 0.5 ? 'ron' : 'tsumo'),
-  );
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
@@ -178,15 +174,8 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
     setResult({ fu, steps: detail.steps, correct });
   };
 
-  const nextQuestion = () => {
-    if (initialIndex !== undefined) {
-      const next = (idx + 1) % SAMPLE_HANDS.length;
-      setIdx(next);
-      setQuestion(SAMPLE_HANDS[next]);
-    } else {
-      setQuestion(generateRandomAgari());
-    }
-    setWinType(Math.random() < 0.5 ? 'ron' : 'tsumo');
+  const handleNext = () => {
+    nextQuestion();
     setGuess('');
     setResult(null);
   };
@@ -221,7 +210,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
           </ul>
         </div>
       )}
-      <button onClick={nextQuestion} className="mt-2 px-2 py-1 bg-green-200 rounded">
+      <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">
         次の問題
       </button>
     </div>
