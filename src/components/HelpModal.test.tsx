@@ -29,4 +29,12 @@ describe('HelpModal', () => {
     expect(screen.getByRole('heading', { name: '役一覧' })).toBeTruthy();
     expect(screen.queryByText('符\\翻')).toBeNull();
   });
+
+  it('displays rule status list', () => {
+    render(<HelpModal isOpen onClose={() => {}} />);
+    fireEvent.click(screen.getByText('ルール対応状況'));
+    expect(screen.getByRole('heading', { name: 'ルール対応状況' })).toBeTruthy();
+    expect(screen.getByText('リーチ')).toBeTruthy();
+    expect(screen.getByText('ドラ')).toBeTruthy();
+  });
 });
