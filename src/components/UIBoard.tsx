@@ -4,7 +4,18 @@ import { TileView } from './TileView';
 import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
 
-const seatRotation = (seat: number) => (seat % 4) * 90;
+const seatRotation = (seat: number) => {
+  switch (seat % 4) {
+    case 1:
+      return 270; // shimocha (right)
+    case 3:
+      return 90; // kamicha (left)
+    case 2:
+      return 180; // toimen
+    default:
+      return 0; // self
+  }
+};
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -132,6 +143,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
+        <div className="flex gap-1 mb-2">
+          {me.discard.map(tile => (
+            <TileView
+              key={tile.id}
+              tile={tile}
+              rotate={seatRotation(me.seat)}
+              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+            />
+          ))}
+        </div>
         <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
           {(() => {
@@ -175,16 +196,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             </div>
           );
         })()}
-        <div className="flex gap-1 mt-2">
-          {me.discard.map(tile => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              rotate={seatRotation(me.seat)}
-              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-            />
-          ))}
-        </div>
         {callOptions && callOptions.length > 0 && (
           <div className="flex gap-2 mt-2">
             {callOptions.map(act => (
