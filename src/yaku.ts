@@ -90,4 +90,40 @@ export const YAKU_LIST: Yaku[] = [
     hanClosed: 6,
     hanOpen: 5,
   },
+  {
+    name: 'Ippatsu',
+    description: 'リーチ後一巡以内に和了',
+    hanClosed: 1,
+    hanOpen: 0,
+  },
+  {
+    name: 'Rinshan Kaihou',
+    description: '槓の後に引いた牌でツモ和了',
+    hanClosed: 1,
+    hanOpen: 1,
+  },
+  {
+    name: 'Chankan',
+    description: '加槓の牌をロン和了',
+    hanClosed: 1,
+    hanOpen: 1,
+  },
+  {
+    name: 'Haitei',
+    description: '最後の自摸牌でツモ和了',
+    hanClosed: 1,
+    hanOpen: 1,
+  },
+  {
+    name: 'Houtei',
+    description: '最後の捨て牌でロン和了',
+    hanClosed: 1,
+    hanOpen: 1,
+  },
+  {
+    name: 'Ura Dora',
+    description: '裏ドラによる加算',
+    hanClosed: 1,
+    hanOpen: 0,
+  },
 ];
