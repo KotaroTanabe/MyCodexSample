@@ -174,9 +174,12 @@ describe('UIBoard discard orientation', () => {
     const rightDiv = screen.getByTestId('discard-seat-1');
     const topDiv = screen.getByTestId('discard-seat-2');
 
-    expect((rightDiv.firstChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('2萬');
-    expect((rightDiv.lastChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('1萬');
-    expect((topDiv.firstChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('4筒');
-    expect((topDiv.lastChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('3筒');
+    const rightTiles = rightDiv.querySelectorAll('[aria-label]');
+    const topTiles = topDiv.querySelectorAll('[aria-label]');
+
+    expect(rightTiles[0].getAttribute('aria-label')).toBe('2萬');
+    expect(rightTiles[rightTiles.length - 1].getAttribute('aria-label')).toBe('1萬');
+    expect(topTiles[0].getAttribute('aria-label')).toBe('4筒');
+    expect(topTiles[topTiles.length - 1].getAttribute('aria-label')).toBe('3筒');
   });
 });
