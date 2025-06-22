@@ -13,8 +13,6 @@ import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { UIBoard } from './UIBoard';
-import { ScoreBoard } from './ScoreBoard';
-import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 import { chooseAICallOption } from '../utils/ai';
@@ -45,7 +43,6 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
   const [kyoku, setKyoku] = useState<number>(1); // 東1局など
-  const [helpOpen, setHelpOpen] = useState(false);
   const [shanten, setShanten] = useState<{ standard: number; chiitoi: number; kokushi: number }>({ standard: 8, chiitoi: 8, kokushi: 13 });
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
@@ -553,16 +550,12 @@ const handleCallAction = (action: MeldType | 'pass') => {
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
-      <ScoreBoard
-        players={players}
-        kyoku={kyoku}
-        wallCount={wall.length}
-        kyotaku={riichiPool}
-        onHelp={() => setHelpOpen(true)}
-      />
       <UIBoard
         players={players}
         dora={dora}
+        kyoku={kyoku}
+        wallCount={wall.length}
+        kyotaku={riichiPool}
         onDiscard={handleDiscard}
         isMyTurn={turn === 0 && !players[0]?.isAI}
         shanten={shanten}
@@ -591,7 +584,6 @@ const handleCallAction = (action: MeldType | 'pass') => {
       {phase === 'end' && (
         <FinalResultModal players={players} onReplay={handleRestart} />
       )}
-      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };
