@@ -1,4 +1,5 @@
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
+import { calcShanten } from '../utils/shanten';
 
 export function sortHand(hand: Tile[]): Tile[] {
   const order: Record<Tile['suit'], number> = {
@@ -79,4 +80,19 @@ export function claimMeld(
 export function declareRiichi(player: PlayerState): PlayerState {
   if (player.isRiichi) return player;
   return { ...player, isRiichi: true };
+}
+
+export function canDeclareRiichi(player: PlayerState): boolean {
+  if (player.isRiichi || player.melds.length > 0 || !player.drawnTile) {
+    return false;
+  }
+  for (const tile of player.hand) {
+    const remaining = player.hand.filter(t => t.id !== tile.id);
+    const shanten = calcShanten(remaining, player.melds.length);
+    const base = Math.min(shanten.standard, shanten.chiitoi, shanten.kokushi);
+    if (base === 0) {
+      return true;
+    }
+  }
+  return false;
 }
