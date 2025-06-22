@@ -21,6 +21,9 @@ interface UIBoardProps {
   selfKanOptions?: Tile[][];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onSelfKan?: (tiles: Tile[]) => void;
+  chiOptions?: Tile[][];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  onChi?: (tiles: Tile[]) => void;
   playerIsAI?: boolean;
   onToggleAI?: () => void;
 }
@@ -38,6 +41,8 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   onRiichi,
   selfKanOptions,
   onSelfKan,
+  chiOptions,
+  onChi,
   playerIsAI,
   onToggleAI,
 }) => {
@@ -183,6 +188,22 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 onClick={() => onCallAction?.(act)}
               >
                 {act === 'pon' ? 'ポン' : act === 'chi' ? 'チー' : act === 'kan' ? 'カン' : 'スルー'}
+              </button>
+            ))}
+          </div>
+        )}
+        {chiOptions && chiOptions.length > 0 && (
+          <div className="flex gap-2 mt-2">
+            {chiOptions.map((tiles, idx) => (
+              <button
+                key={idx}
+                className="px-2 py-1 bg-yellow-200 rounded flex gap-1"
+                onClick={() => onChi?.(tiles)}
+              >
+                チー
+                {tiles.map(t => (
+                  <TileView key={t.id} tile={t} />
+                ))}
               </button>
             ))}
           </div>

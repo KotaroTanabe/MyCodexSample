@@ -1,5 +1,22 @@
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
 
+export function getChiOptions(player: PlayerState, tile: Tile): Tile[][] {
+  if (tile.suit !== 'man' && tile.suit !== 'pin' && tile.suit !== 'sou')
+    return [];
+  const ranks = [
+    [tile.rank - 2, tile.rank - 1],
+    [tile.rank - 1, tile.rank + 1],
+    [tile.rank + 1, tile.rank + 2],
+  ];
+  const options: Tile[][] = [];
+  for (const [a, b] of ranks) {
+    const t1 = player.hand.find(t => t.suit === tile.suit && t.rank === a);
+    const t2 = player.hand.find(t => t.suit === tile.suit && t.rank === b);
+    if (t1 && t2) options.push([t1, t2]);
+  }
+  return options;
+}
+
 export function selectMeldTiles(
   player: PlayerState,
   tile: Tile,
@@ -13,18 +30,9 @@ export function selectMeldTiles(
     if (matches.length >= need) return matches.slice(0, need);
     return null;
   }
-  // chi
-  if (tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou') {
-    const opts = [
-      [tile.rank - 2, tile.rank - 1],
-      [tile.rank - 1, tile.rank + 1],
-      [tile.rank + 1, tile.rank + 2],
-    ];
-    for (const [a, b] of opts) {
-      const t1 = player.hand.find(t => t.suit === tile.suit && t.rank === a);
-      const t2 = player.hand.find(t => t.suit === tile.suit && t.rank === b);
-      if (t1 && t2) return [t1, t2];
-    }
+  if (type === 'chi') {
+    const opts = getChiOptions(player, tile);
+    if (opts.length > 0) return opts[0];
   }
   return null;
 }

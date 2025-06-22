@@ -129,6 +129,33 @@ describe('UIBoard riichi button', () => {
   });
 });
 
+describe('UIBoard chi options', () => {
+  it('renders buttons for each chi combination', () => {
+    render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('me', false, 0),
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+        chiOptions={[
+          [t('man', 1, 'a'), t('man', 2, 'b')],
+          [t('man', 2, 'c'), t('man', 4, 'd')],
+        ]}
+        onChi={() => {}}
+      />,
+    );
+    const buttons = screen.getAllByText('チー');
+    expect(buttons.length).toBe(2);
+  });
+});
+
 describe('UIBoard discard orientation', () => {
   it('applies rotation to each seat', () => {
     render(
