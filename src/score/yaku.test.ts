@@ -215,6 +215,8 @@ describe('Scoring', () => {
     ];
     const yaku = detectYaku(hand, [], { isTsumo: true });
     const { han, fu, points } = calculateScore(hand, [], yaku, []);
+    // 今の実装では基本点 = fu * 2^(han + 2)
+    // この手は20符5翻なので 20 * 2^(5 + 2) = 2560 となるはず
     expect(han).toBe(5);
     expect(fu).toBe(20);
     expect(points).toBe(2560);
@@ -252,6 +254,7 @@ describe('Scoring', () => {
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(false);
     const { fu } = calculateScore(concealed, melds, yaku, []);
+    // 基本符20 + 明刻(役牌)8 = 28、切り上げで30符になるはず
     expect(fu).toBe(30);
   });
 
@@ -288,6 +291,7 @@ describe('Scoring', () => {
     const fullHand = [...concealed, ...kanTiles];
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
     const { fu } = calculateScore(concealed, melds, yaku);
+    // 基本符20 + カン(役牌)32 = 52、切り上げで60符になるはず
     expect(fu).toBe(60);
   });
 
