@@ -52,6 +52,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [chiTileOptions, setChiTileOptions] = useState<Tile[][] | null>(null);
   const [riichiPool, setRiichiPool] = useState(0);
   const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
+  const [tsumoOption, setTsumoOption] = useState(false);
+  const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -153,6 +155,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     setDiscardCounts({});
     setLastDiscard(null);
     setPendingRiichi(null);
+    setTsumoOption(false);
+    setRonCandidate(null);
     setRoundResult(null);
     if (resetKyoku) {
       setRiichiPool(0);
@@ -231,40 +235,13 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       }
     }
     if (isWinningHand([...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)])) {
-      const fullHand = [
-        ...p[currentIndex].hand,
-        ...p[currentIndex].melds.flatMap(m => m.tiles),
-      ];
-      const seatWind = p[currentIndex].seat + 1;
-      const roundWind = kyokuRef.current <= 4 ? 1 : 2;
-      const yaku = detectYaku(fullHand, p[currentIndex].melds, {
-        isTsumo: true,
-        isRiichi: p[currentIndex].isRiichi,
-        seatWind,
-        roundWind,
-      });
-      const { han, fu, points } = calculateScore(
-        p[currentIndex].hand,
-        p[currentIndex].melds,
-        yaku,
-        dora,
-        { seatWind, roundWind, winType: 'tsumo' },
-      );
-      let newPlayers = payoutTsumo(p, currentIndex, points);
-      if (riichiPoolRef.current > 0) {
-        newPlayers = newPlayers.map((pl, idx) =>
-          idx === currentIndex ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
-        );
-        setRiichiPool(0);
-        riichiPoolRef.current = 0;
+      if (p[currentIndex].isAI || currentIndex !== 0) {
+        performTsumo(currentIndex);
+        return;
+      } else {
+        setTsumoOption(true);
+        return;
       }
-      setPlayers(newPlayers);
-      playersRef.current = newPlayers;
-      setMessage(
-        `${p[currentIndex].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`,
-      );
-      setTimeout(nextKyoku, 500);
-      return;
     }
 
   };
@@ -289,44 +266,13 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     playersRef.current = p;
     const winIdx = findRonWinner(p, idx, tile);
     if (winIdx !== null) {
-      const winningPlayer = p[winIdx];
-      const fullHand = [
-        ...winningPlayer.hand,
-        ...winningPlayer.melds.flatMap(m => m.tiles),
-        tile,
-      ];
-      const seatWind = winningPlayer.seat + 1;
-      const roundWind = kyokuRef.current <= 4 ? 1 : 2;
-      const yaku = detectYaku(fullHand, winningPlayer.melds, {
-        isTsumo: false,
-        isRiichi: winningPlayer.isRiichi,
-        seatWind,
-        roundWind,
-      });
-      const { han, fu, points } = calculateScore(
-        [...winningPlayer.hand, tile],
-        winningPlayer.melds,
-        yaku,
-        [],
-        { seatWind, roundWind, winType: 'ron' },
-      );
-      let updated = payoutRon(p, winIdx, idx, points);
-      if (riichiPoolRef.current > 0) {
-        updated = updated.map((pl, i) =>
-          i === winIdx ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
-        );
-        setRiichiPool(0);
-        riichiPoolRef.current = 0;
+      if (p[winIdx].isAI || winIdx !== 0) {
+        performRon(winIdx, idx, tile);
+        return;
+      } else {
+        setRonCandidate({ tile, from: idx });
+        return;
       }
-      setPlayers(updated);
-      playersRef.current = updated;
-      setMessage(
-        `${winningPlayer.name} のロン！ ${yaku
-          .map(y => y.name)
-          .join(', ')} ${han}翻 ${fu}符 ${points}点`,
-      );
-      setTimeout(nextKyoku, 500);
-      return;
     }
     if (pendingRiichi === idx) {
       p[idx] = { ...p[idx], score: p[idx].score - 1000 };
@@ -470,6 +416,71 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }, 500);
   };
 
+  const performTsumo = (idx: number) => {
+    const p = [...playersRef.current];
+    const fullHand = [...p[idx].hand, ...p[idx].melds.flatMap(m => m.tiles)];
+    const seatWind = p[idx].seat + 1;
+    const roundWind = kyokuRef.current <= 4 ? 1 : 2;
+    const yaku = detectYaku(fullHand, p[idx].melds, {
+      isTsumo: true,
+      isRiichi: p[idx].isRiichi,
+      seatWind,
+      roundWind,
+    });
+    const { han, fu, points } = calculateScore(
+      p[idx].hand,
+      p[idx].melds,
+      yaku,
+      dora,
+      { seatWind, roundWind, winType: 'tsumo' },
+    );
+    let newPlayers = payoutTsumo(p, idx, points);
+    if (riichiPoolRef.current > 0) {
+      newPlayers = newPlayers.map((pl, i) =>
+        i === idx ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
+      );
+      setRiichiPool(0);
+      riichiPoolRef.current = 0;
+    }
+    setPlayers(newPlayers);
+    playersRef.current = newPlayers;
+    setMessage(`${p[idx].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
+    setTsumoOption(false);
+    setTimeout(nextKyoku, 500);
+  };
+
+  const performRon = (winner: number, from: number, tile: Tile) => {
+    const p = [...playersRef.current];
+    const fullHand = [...p[winner].hand, ...p[winner].melds.flatMap(m => m.tiles), tile];
+    const seatWind = p[winner].seat + 1;
+    const roundWind = kyokuRef.current <= 4 ? 1 : 2;
+    const yaku = detectYaku(fullHand, p[winner].melds, {
+      isTsumo: false,
+      isRiichi: p[winner].isRiichi,
+      seatWind,
+      roundWind,
+    });
+    const { han, fu, points } = calculateScore(
+      [...p[winner].hand, tile],
+      p[winner].melds,
+      yaku,
+      [],
+      { seatWind, roundWind, winType: 'ron' },
+    );
+    let updated = payoutRon(p, winner, from, points);
+    if (riichiPoolRef.current > 0) {
+      updated = updated.map((pl, i) =>
+        i === winner ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
+      );
+      setRiichiPool(0);
+      riichiPoolRef.current = 0;
+    }
+    setPlayers(updated);
+    playersRef.current = updated;
+    setMessage(`${p[winner].name} のロン！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
+    setTimeout(nextKyoku, 500);
+  };
+
   const handleRiichi = () => {
     let p = [...playersRef.current];
     p[0] = declareRiichi(p[0]);
@@ -511,8 +522,50 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setTurn(caller);
   };
 
+  const handleTsumo = () => {
+    performTsumo(0);
+  };
+
+  const handleTsumoPass = () => {
+    setTsumoOption(false);
+  };
+
+  const handleRon = () => {
+    if (!ronCandidate) return;
+    const { tile, from } = ronCandidate;
+    setRonCandidate(null);
+    performRon(0, from, tile);
+  };
+
+  const handleRonPass = () => {
+    if (!ronCandidate) return;
+    const { tile, from } = ronCandidate;
+    setRonCandidate(null);
+    if (turnRef.current !== from) return; // safety
+    if (!playersRef.current[0].isAI) {
+      let options = getValidCallOptions(playersRef.current[0], tile);
+      options = filterChiOptions(
+        options,
+        playersRef.current[0].seat,
+        playersRef.current[from].seat,
+      );
+      const hasAction = options.some(o => o !== 'pass');
+      if (!hasAction) {
+        setCallOptions(null);
+        setLastDiscard(null);
+        nextTurn();
+      } else {
+        setCallOptions(options);
+      }
+    } else {
+      nextTurn();
+    }
+  };
+
   // ターン進行
   const nextTurn = () => {
+    setTsumoOption(false);
+    setRonCandidate(null);
     let next = (turnRef.current + 1) % 4;
     setTurn(next);
     setTimeout(() => {
@@ -567,6 +620,12 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onSelfKan={!players[0]?.isAI ? handleSelfKan : undefined}
         chiOptions={!players[0]?.isAI ? chiTileOptions ?? undefined : undefined}
         onChi={!players[0]?.isAI ? handleChiSelect : undefined}
+        tsumoOption={!players[0]?.isAI ? tsumoOption : false}
+        onTsumo={!players[0]?.isAI ? handleTsumo : undefined}
+        onTsumoPass={!players[0]?.isAI ? handleTsumoPass : undefined}
+        ronOption={!players[0]?.isAI ? !!ronCandidate : false}
+        onRon={!players[0]?.isAI ? handleRon : undefined}
+        onRonPass={!players[0]?.isAI ? handleRonPass : undefined}
         playerIsAI={playerIsAI}
         onToggleAI={togglePlayerAI}
       />

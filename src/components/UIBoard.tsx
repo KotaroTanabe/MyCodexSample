@@ -34,6 +34,12 @@ interface UIBoardProps {
   chiOptions?: Tile[][];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onChi?: (tiles: Tile[]) => void;
+  tsumoOption?: boolean;
+  onTsumo?: () => void;
+  onTsumoPass?: () => void;
+  ronOption?: boolean;
+  onRon?: () => void;
+  onRonPass?: () => void;
   playerIsAI?: boolean;
   onToggleAI?: () => void;
 }
@@ -56,6 +62,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   onSelfKan,
   chiOptions,
   onChi,
+  tsumoOption,
+  onTsumo,
+  onTsumoPass,
+  ronOption,
+  onRon,
+  onRonPass,
   playerIsAI,
   onToggleAI,
 }) => {
@@ -269,6 +281,18 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 カン
               </button>
             ))}
+          </div>
+        )}
+        {tsumoOption && (
+          <div className="flex gap-2 mt-2">
+            <button className="px-2 py-1 bg-blue-200 rounded" onClick={() => onTsumo?.()}>ツモ</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => onTsumoPass?.()}>スルー</button>
+          </div>
+        )}
+        {ronOption && (
+          <div className="flex gap-2 mt-2">
+            <button className="px-2 py-1 bg-red-200 rounded" onClick={() => onRon?.()}>ロン</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => onRonPass?.()}>スルー</button>
           </div>
         )}
         {onRiichi && isMyTurn && canDeclareRiichi(me) && (
