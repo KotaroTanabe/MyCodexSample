@@ -179,3 +179,24 @@ export function calculateScore(
   const points = base;
   return { han, fu, points };
 }
+
+export function calcBase(han: number, fu: number): number {
+  if (han >= 13) return 8000;
+  if (han >= 11) return 6000;
+  if (han >= 8) return 4000;
+  if (han >= 6) return 3000;
+  const base = fu * Math.pow(2, han + 2);
+  if (han === 5 || base >= 2000) return 2000;
+  return base;
+}
+
+export function calcRoundedScore(
+  han: number,
+  fu: number,
+  isDealer: boolean,
+  winType: 'ron' | 'tsumo',
+): number {
+  const base = calcBase(han, fu);
+  const mult = winType === 'ron' ? (isDealer ? 6 : 4) : isDealer ? 2 : 1;
+  return Math.ceil((base * mult) / 100) * 100;
+}

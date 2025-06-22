@@ -1,19 +1,11 @@
 import React from 'react';
+import { calcBase } from '../score/score';
 
 interface ScoreTableProps {
   isDealer: boolean;
   winType: 'ron' | 'tsumo';
 }
 
-function calcBase(han: number, fu: number): number {
-  if (han >= 13) return 8000; // kazoe yakuman
-  if (han >= 11) return 6000; // sanbaiman
-  if (han >= 8) return 4000; // baiman
-  if (han >= 6) return 3000; // haneman
-  const base = fu * Math.pow(2, han + 2);
-  if (han === 5 || base >= 2000) return 2000; // mangan
-  return base;
-}
 
 function formatScore(han: number, fu: number, isDealer: boolean, winType: 'ron' | 'tsumo'): string {
   const base = calcBase(han, fu);
