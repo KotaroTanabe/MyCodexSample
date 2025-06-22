@@ -18,6 +18,29 @@ function countTiles(tiles: Tile[]): Record<string, number> {
   return counts;
 }
 
+function doraFromIndicator(ind: Tile): Tile {
+  if (ind.suit === 'man' || ind.suit === 'pin' || ind.suit === 'sou') {
+    const rank = ind.rank === 9 ? 1 : ind.rank + 1;
+    return { suit: ind.suit, rank, id: '' };
+  }
+  if (ind.suit === 'wind') {
+    const rank = ind.rank === 4 ? 1 : ind.rank + 1;
+    return { suit: 'wind', rank, id: '' };
+  }
+  const rank = ind.rank === 3 ? 1 : ind.rank + 1;
+  return { suit: 'dragon', rank, id: '' };
+}
+
+function countDora(allTiles: Tile[], indicators: Tile[]): number {
+  const counts = countTiles(allTiles);
+  let total = 0;
+  for (const ind of indicators) {
+    const dora = doraFromIndicator(ind);
+    total += counts[tileKey(dora)] || 0;
+  }
+  return total;
+}
+
 export function isTanyao(tiles: Tile[]): boolean {
   return tiles.every(t =>
     (t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou') && t.rank > 1 && t.rank < 9,
@@ -316,6 +339,12 @@ export function detectYaku(
     isRiichi?: boolean;
     seatWind?: number;
     roundWind?: number;
+    ippatsu?: boolean;
+    rinshan?: boolean;
+    chankan?: boolean;
+    haitei?: boolean;
+    houtei?: boolean;
+    uraDoraIndicators?: Tile[];
   },
 ): ScoreYaku[] {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
@@ -363,6 +392,21 @@ export function detectYaku(
   if (opts?.isRiichi && isClosed) {
     result.push({ name: 'Riichi', han: 1 });
   }
+  if (opts?.ippatsu && opts?.isRiichi && isClosed) {
+    result.push({ name: 'Ippatsu', han: 1 });
+  }
+  if (opts?.rinshan) {
+    result.push({ name: 'Rinshan Kaihou', han: 1 });
+  }
+  if (opts?.chankan) {
+    result.push({ name: 'Chankan', han: 1 });
+  }
+  if (opts?.haitei) {
+    result.push({ name: 'Haitei', han: 1 });
+  }
+  if (opts?.houtei) {
+    result.push({ name: 'Houtei', han: 1 });
+  }
   if (isChinitsu(allTiles)) {
     result.push({ name: 'Chinitsu', han: isClosed ? 6 : 5 });
   } else if (isHonitsu(allTiles)) {
@@ -375,6 +419,12 @@ export function detectYaku(
   );
   for (let i = 0; i < yakuhai; i++) {
     result.push({ name: 'Yakuhai', han: 1 });
+  }
+  if (opts?.uraDoraIndicators && opts?.isRiichi) {
+    const count = countDora(allTiles, opts.uraDoraIndicators);
+    for (let i = 0; i < count; i++) {
+      result.push({ name: 'Ura Dora', han: 1 });
+    }
   }
   return result;
 }
