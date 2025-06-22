@@ -24,6 +24,7 @@ describe('ShantenQuiz', () => {
     fireEvent.change(input, { target: { value: '1' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('正解！')).toBeTruthy();
+    expect(screen.getByText('向聴数: 1')).toBeTruthy();
   });
 
   it('shows the correct answer when wrong', () => {
@@ -32,5 +33,6 @@ describe('ShantenQuiz', () => {
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('不正解。正解: 1')).toBeTruthy();
+    expect(screen.getByText('向聴数: 1')).toBeTruthy();
   });
 });

@@ -11,15 +11,28 @@ interface ShantenQuizProps {
 export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
   const { question, nextQuestion } = useShantenQuiz({ initialHand });
   const [guess, setGuess] = useState('');
-  const [result, setResult] = useState<{ shanten: number; correct: boolean } | null>(null);
+  const [result, setResult] = useState<
+    | { shanten: number; explanation: string; correct: boolean }
+    | null
+  >(null);
   const [helpOpen, setHelpOpen] = useState(false);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const s = calcShanten(question.hand);
     const shanten = Math.min(s.standard, s.chiitoi, s.kokushi);
+    let label = '';
+    if (s.chiitoi === shanten && shanten < s.standard) {
+      label = `七対子${shanten}向聴`;
+    } else if (s.kokushi === shanten && shanten < s.standard) {
+      label = `国士無双${shanten}向聴`;
+    }
+    const explanation =
+      shanten === 0
+        ? `聴牌${label ? ` (${label})` : ''}`
+        : `向聴数: ${shanten}${label ? ` (${label})` : ''}`;
     const correct = Number(guess) === shanten;
-    setResult({ shanten, correct });
+    setResult({ shanten, explanation, correct });
   };
 
   const handleNext = () => {
@@ -55,7 +68,8 @@ export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
       </form>
       {result && (
         <div className="mt-2">
-          {result.correct ? '正解！' : `不正解。正解: ${result.shanten}`}
+          <div>{result.correct ? '正解！' : `不正解。正解: ${result.shanten}`}</div>
+          <div className="text-sm mt-1">{result.explanation}</div>
         </div>
       )}
       <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">
