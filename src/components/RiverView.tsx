@@ -33,6 +33,19 @@ const shouldReverseRiver = (seat: number): boolean => {
   return rot === 90;
 };
 
+const calledOffset = (seat: number): string => {
+  switch (seat % 4) {
+    case 1:
+      return 'translateY(-6px)';
+    case 2:
+      return 'translateX(-6px)';
+    case 3:
+      return 'translateY(6px)';
+    default:
+      return 'translateX(6px)';
+  }
+};
+
 /** minimum cells to reserve for a player's discard area */
 export const RESERVED_RIVER_SLOTS = 20;
 
@@ -61,7 +74,8 @@ export const RiverView: React.FC<RiverViewProps> = ({
         <TileView
           key={tile.id}
           tile={tile}
-          rotate={seatRotation(seat) - seatRiverRotation(seat)}
+          rotate={seatRotation(seat) - seatRiverRotation(seat) + (tile.called ? 90 : 0)}
+          extraTransform={tile.called ? calledOffset(seat) : ''}
           isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
         />
       ))}

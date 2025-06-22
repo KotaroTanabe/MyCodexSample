@@ -337,7 +337,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     p[discarder] = {
       ...p[discarder],
-      discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
+      discard: p[discarder].discard.map(t =>
+        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
+      ),
     };
     p[caller] = claimMeld(
       p[caller],
@@ -386,7 +388,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     if (!meldTiles) return;
     p[discarder] = {
       ...p[discarder],
-      discard: p[discarder].discard.filter(t => t.id !== lastDiscard.tile.id),
+      discard: p[discarder].discard.map(t =>
+        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
+      ),
     };
     p[caller] = claimMeld(
       p[caller],

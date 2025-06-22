@@ -45,4 +45,14 @@ describe('RiverView', () => {
     const div = screen.getByTestId('rv');
     expect(div.children.length).toBe(RESERVED_RIVER_SLOTS);
   });
+
+  it('offsets called tiles based on seat', () => {
+    const tiles = [t('man', 1, 'a'), { ...t('man', 2, 'b'), called: true }];
+    render(<RiverView tiles={tiles} seat={1} lastDiscard={null} dataTestId="rv-call" />);
+    const div = screen.getByTestId('rv-call');
+    const tileEls = div.querySelectorAll('[aria-label]');
+    const style = tileEls[1].getAttribute('style') ?? '';
+    expect(style).toContain('rotate(90deg)');
+    expect(style).toContain('translateY(-6px)');
+  });
 });
