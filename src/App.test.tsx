@@ -12,7 +12,7 @@ describe('App mode switching', () => {
     const select = screen.getByLabelText('モード');
     fireEvent.change(select, { target: { value: 'fu-quiz' } });
     expect(
-      screen.getByRole('heading', { name: '符計算クイズ' })
+      await screen.findByRole('heading', { name: '符計算クイズ' })
     ).toBeTruthy();
   });
 });
