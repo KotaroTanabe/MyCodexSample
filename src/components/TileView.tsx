@@ -65,7 +65,7 @@ export const TileView: React.FC<{
       : honorMap[tile.suit]?.[tile.rank] ?? '';
   return (
     <span
-      className={`relative inline-block border px-1 py-0.5 bg-white tile-font-size ${className ?? ''}`}
+      className={`relative inline-block border px-0.5 py-px leading-none bg-white tile-font-size ${className ?? ''}`}
       aria-label={kanji}
       style={{ transform: `rotate(${rotate}deg) ${extraTransform}` }}
     >
