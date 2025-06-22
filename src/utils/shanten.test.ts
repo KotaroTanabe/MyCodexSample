@@ -78,4 +78,15 @@ describe('shanten calculations', () => {
     ];
     expect(calcKokushiShanten(hand)).toBe(2);
   });
+
+  it('accounts for open melds in standard shanten', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a'), t('man', 2, 'b'), t('man', 3, 'c'),
+      t('man', 4, 'd'), t('man', 5, 'e'), t('man', 6, 'f'),
+      t('man', 7, 'g'), t('man', 8, 'h'), t('man', 9, 'i'),
+      t('pin', 2, 'j'), t('pin', 2, 'k'),
+    ];
+    expect(calcStandardShanten(hand, 1)).toBe(-1);
+    expect(calcShanten(hand, 1).standard).toBe(-1);
+  });
 });

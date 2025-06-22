@@ -183,6 +183,91 @@ function isIipeikoHand(tiles: Tile[]): boolean {
   return false;
 }
 
+function isTerminalOrHonor(tile: Tile): boolean {
+  return (
+    tile.suit === 'wind' ||
+    tile.suit === 'dragon' ||
+    tile.rank === 1 ||
+    tile.rank === 9
+  );
+}
+
+function isToitoi(tiles: Tile[]): boolean {
+  const parsed = decomposeHand(tiles);
+  return !!parsed && parsed.melds.every(m => m.type === 'pon');
+}
+
+function countConcealedTriplets(parsed: { melds: ParsedMeld[] }, melds: Meld[]): number {
+  const totalTriplets = parsed.melds.filter(m => m.type === 'pon').length;
+  const openTriplets = melds.filter(m => m.type === 'pon' || m.type === 'kan').length;
+  return totalTriplets - openTriplets;
+}
+
+function isSanankou(parsed: { melds: ParsedMeld[] }, melds: Meld[]): boolean {
+  return countConcealedTriplets(parsed, melds) >= 3;
+}
+
+function isSanshokuDoujun(parsed: { melds: ParsedMeld[] }): boolean {
+  const seqMap: Record<number, Set<string>> = {};
+  for (const m of parsed.melds) {
+    if (m.type !== 'chi') continue;
+    const suit = m.tiles[0].suit;
+    const ranks = m.tiles.map(t => t.rank).sort((a, b) => a - b);
+    const start = ranks[0];
+    if (suit === 'man' || suit === 'pin' || suit === 'sou') {
+      seqMap[start] = seqMap[start] || new Set();
+      seqMap[start].add(suit);
+    }
+  }
+  return Object.values(seqMap).some(set => set.has('man') && set.has('pin') && set.has('sou'));
+}
+
+function isSanDoukou(parsed: { melds: ParsedMeld[] }): boolean {
+  const tripMap: Record<number, Set<string>> = {};
+  for (const m of parsed.melds) {
+    if (m.type !== 'pon') continue;
+    const suit = m.tiles[0].suit;
+    const rank = m.tiles[0].rank;
+    if (suit === 'man' || suit === 'pin' || suit === 'sou') {
+      tripMap[rank] = tripMap[rank] || new Set();
+      tripMap[rank].add(suit);
+    }
+  }
+  return Object.values(tripMap).some(set => set.has('man') && set.has('pin') && set.has('sou'));
+}
+
+function isIttsu(parsed: { melds: ParsedMeld[] }): boolean {
+  const seqMap: Record<string, Set<number>> = {};
+  for (const m of parsed.melds) {
+    if (m.type !== 'chi') continue;
+    const suit = m.tiles[0].suit;
+    const ranks = m.tiles.map(t => t.rank).sort((a, b) => a - b);
+    const start = ranks[0];
+    if (suit === 'man' || suit === 'pin' || suit === 'sou') {
+      seqMap[suit] = seqMap[suit] || new Set();
+      seqMap[suit].add(start);
+    }
+  }
+  return Object.values(seqMap).some(set => set.has(1) && set.has(4) && set.has(7));
+}
+
+function isChanta(parsed: { pair: Tile[]; melds: ParsedMeld[] }): boolean {
+  if (!parsed.pair.every(isTerminalOrHonor)) return false;
+  return parsed.melds.every(m => m.tiles.some(isTerminalOrHonor));
+}
+
+function isHonitsu(tiles: Tile[]): boolean {
+  const suits = new Set(tiles.filter(t => t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou').map(t => t.suit));
+  const hasHonor = tiles.some(t => t.suit === 'wind' || t.suit === 'dragon');
+  return suits.size === 1 && hasHonor;
+}
+
+function isChinitsu(tiles: Tile[]): boolean {
+  const suits = new Set(tiles.filter(t => t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou').map(t => t.suit));
+  const hasHonor = tiles.some(t => t.suit === 'wind' || t.suit === 'dragon');
+  return suits.size === 1 && !hasHonor;
+}
+
 export function isWinningHand(tiles: Tile[]): boolean {
   if (tiles.length !== 14) return false;
   if (isChiitoitsu(tiles) || isKokushi(tiles)) return true;
@@ -209,6 +294,7 @@ export function detectYaku(
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const result: Yaku[] = [];
   const counts = countTiles(allTiles);
+  const parsed = decomposeHand(allTiles);
   const isClosed = melds.length === 0;
 
   if (isChiitoitsu(allTiles)) {
@@ -219,6 +305,24 @@ export function detectYaku(
   }
   if (isTanyao(allTiles)) {
     result.push({ name: 'Tanyao', han: 1 });
+  }
+  if (parsed && isToitoi(allTiles)) {
+    result.push({ name: 'Toitoi', han: 2 });
+  }
+  if (parsed && isSanankou(parsed, melds)) {
+    result.push({ name: 'Sanankou', han: 2 });
+  }
+  if (parsed && isSanshokuDoujun(parsed)) {
+    result.push({ name: 'Sanshoku Doujun', han: isClosed ? 2 : 1 });
+  }
+  if (parsed && isSanDoukou(parsed)) {
+    result.push({ name: 'San Doukou', han: 2 });
+  }
+  if (parsed && isIttsu(parsed)) {
+    result.push({ name: 'Ittsu', han: isClosed ? 2 : 1 });
+  }
+  if (parsed && isChanta(parsed)) {
+    result.push({ name: 'Chanta', han: isClosed ? 2 : 1 });
   }
   if (isClosed && isPinfuHand(allTiles)) {
     result.push({ name: 'Pinfu', han: 1 });
@@ -231,6 +335,11 @@ export function detectYaku(
   }
   if (opts?.isRiichi && isClosed) {
     result.push({ name: 'Riichi', han: 1 });
+  }
+  if (isChinitsu(allTiles)) {
+    result.push({ name: 'Chinitsu', han: isClosed ? 6 : 5 });
+  } else if (isHonitsu(allTiles)) {
+    result.push({ name: 'Honitsu', han: isClosed ? 3 : 2 });
   }
   const yakuhai = countDragonTriplets(counts);
   for (let i = 0; i < yakuhai; i++) {

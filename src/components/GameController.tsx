@@ -13,7 +13,8 @@ import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 import { chooseAICallOption } from '../utils/ai';
-import { payoutTsumo, payoutRon } from '../utils/payout';
+import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
+import { RoundResultModal, RoundResult } from './RoundResultModal';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -22,6 +23,7 @@ export const GameController: React.FC = () => {
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [dora, setDora] = useState<Tile[]>([]);
+  const [playerIsAI, setPlayerIsAI] = useState(false);
   const [turn, setTurn] = useState(0); // 0:自分, 1-3:AI
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
@@ -31,11 +33,25 @@ export const GameController: React.FC = () => {
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
+  const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
   const wallRef = useRef<Tile[]>(wall);
   const kyokuRef = useRef(kyoku);
+
+  const togglePlayerAI = () => {
+    setPlayerIsAI(prev => {
+      const next = !prev;
+      setPlayers(ps =>
+        ps.map((pl, idx) => (idx === 0 ? { ...pl, isAI: next } : pl)),
+      );
+      playersRef.current = playersRef.current.map((pl, idx) =>
+        idx === 0 ? { ...pl, isAI: next } : pl,
+      );
+      return next;
+    });
+  };
 
   useEffect(() => {
     turnRef.current = turn;
@@ -52,7 +68,7 @@ export const GameController: React.FC = () => {
   useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
-      setShanten(calcShanten(players[0].hand));
+      setShanten(calcShanten(players[0].hand, players[0].melds.length));
     }
   }, [players]);
 
@@ -65,7 +81,7 @@ export const GameController: React.FC = () => {
     let p: PlayerState[];
     if (resetKyoku) {
       p = [
-        createInitialPlayerState('あなた', false, 0),
+        createInitialPlayerState('あなた', playerIsAI, 0),
         createInitialPlayerState('AI東家', true, 1),
         createInitialPlayerState('AI南家', true, 2),
         createInitialPlayerState('AI西家', true, 3),
@@ -78,6 +94,7 @@ export const GameController: React.FC = () => {
         melds: [],
         drawnTile: null,
         isRiichi: false,
+        isAI: pl.seat === 0 ? playerIsAI : pl.isAI,
       }));
     }
     for (let i = 0; i < 4; i++) {
@@ -97,7 +114,10 @@ export const GameController: React.FC = () => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
-    setMessage('配牌が完了しました。あなたのターンです。');
+    setRoundResult(null);
+    setMessage(
+      `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
+    );
     setPhase('playing');
   };
 
@@ -122,8 +142,23 @@ export const GameController: React.FC = () => {
   // ツモ処理
   const drawForCurrentPlayer = () => {
     if (wallRef.current.length === 0) {
+      const tenpai = playersRef.current.map(p => {
+        const s = calcShanten(p.hand, p.melds.length);
+        return Math.min(s.standard, s.chiitoi, s.kokushi) === 0;
+      });
+      const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
+      setPlayers(updated);
+      playersRef.current = updated;
+      const results: RoundResult = {
+        results: updated.map((p, idx) => ({
+          name: p.name,
+          score: p.score,
+          change: changes[idx],
+          isTenpai: tenpai[idx],
+        })),
+      };
+      setRoundResult(results);
       setMessage('牌山が尽きました。流局です。');
-      setTimeout(nextKyoku, 500);
       return;
     }
     const currentIndex = turnRef.current;
@@ -213,14 +248,21 @@ export const GameController: React.FC = () => {
       setTimeout(nextKyoku, 500);
       return;
     }
-    if (idx !== 0) {
+    if (idx !== 0 && !playersRef.current[0].isAI) {
       let options = getValidCallOptions(p[0], tile);
       options = filterChiOptions(
         options,
         playersRef.current[0].seat,
         playersRef.current[idx].seat,
       );
-      setCallOptions(options);
+      const hasAction = options.some(o => o !== 'pass');
+      if (!hasAction) {
+        setCallOptions(null);
+        setLastDiscard(null);
+        nextTurn();
+      } else {
+        setCallOptions(options);
+      }
     } else {
       nextTurn();
     }
@@ -357,18 +399,31 @@ const handleCallAction = (action: MeldType | 'pass') => {
   return (
     <div className="p-2 flex flex-col gap-4">
       <ScoreBoard players={players} kyoku={kyoku} onHelp={() => setHelpOpen(true)} />
+      <label className="flex items-center gap-2">
+        <input type="checkbox" checked={playerIsAI} onChange={togglePlayerAI} />
+        観戦モード
+      </label>
       <UIBoard
         players={players}
         dora={dora}
         onDiscard={handleDiscard}
-        isMyTurn={turn === 0}
+        isMyTurn={turn === 0 && !players[0]?.isAI}
         shanten={shanten}
         lastDiscard={lastDiscard}
-        callOptions={callOptions ?? undefined}
-        onCallAction={handleCallAction}
-        onRiichi={handleRiichi}
+        callOptions={!players[0]?.isAI ? callOptions ?? undefined : undefined}
+        onCallAction={!players[0]?.isAI ? handleCallAction : undefined}
+        onRiichi={!players[0]?.isAI ? handleRiichi : undefined}
       />
       <div className="mt-2">{message}</div>
+      {roundResult && (
+        <RoundResultModal
+          results={roundResult.results}
+          onNext={() => {
+            setRoundResult(null);
+            nextKyoku();
+          }}
+        />
+      )}
       {phase === 'end' && (
         <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleRestart}>
           リプレイ

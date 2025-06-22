@@ -44,6 +44,19 @@ describe('getValidCallOptions', () => {
     };
     expect(getValidCallOptions(player, discard)).toEqual(['chi', 'pass']);
   });
+
+  it('returns empty array when no meld is possible', () => {
+    const discard: Tile = { suit: 'wind', rank: 1, id: 'd4' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 3, id: 'x' },
+      { suit: 'pin', rank: 5, id: 'y' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    expect(getValidCallOptions(player, discard)).toEqual([]);
+  });
 });
 
 describe('selectMeldTiles', () => {
