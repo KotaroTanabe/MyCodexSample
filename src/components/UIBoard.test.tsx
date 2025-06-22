@@ -24,6 +24,7 @@ function renderBoard(shanten: { standard: number; chiitoi: number; kokushi: numb
     kyoku: 1,
     wallCount: 70,
     kyotaku: 0,
+    honba: 0,
     onDiscard: () => {},
     isMyTurn: true,
     shanten,
@@ -95,6 +96,7 @@ describe('UIBoard riichi button', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
@@ -127,6 +129,7 @@ describe('UIBoard riichi button', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 1, chiitoi: 4, kokushi: 9 }}
@@ -152,6 +155,7 @@ describe('UIBoard chi options', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
@@ -185,6 +189,7 @@ describe('UIBoard aria labels', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
@@ -219,6 +224,7 @@ describe('UIBoard discard orientation', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
@@ -257,6 +263,7 @@ describe('UIBoard win options', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
@@ -281,6 +288,7 @@ describe('UIBoard win options', () => {
         kyoku={1}
         wallCount={70}
         kyotaku={0}
+        honba={0}
         onDiscard={() => {}}
         isMyTurn={true}
         shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}

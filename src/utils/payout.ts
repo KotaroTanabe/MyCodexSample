@@ -4,12 +4,17 @@ export function payoutTsumo(
   players: PlayerState[],
   winner: number,
   points: number,
+  honba = 0,
 ): PlayerState[] {
+  const bonusEach = honba * 100;
   return players.map((p, idx) => {
     if (idx === winner) {
-      return { ...p, score: p.score + points * (players.length - 1) };
+      return {
+        ...p,
+        score: p.score + points * (players.length - 1) + honba * 300,
+      };
     }
-    return { ...p, score: p.score - points };
+    return { ...p, score: p.score - (points + bonusEach) };
   });
 }
 
@@ -18,10 +23,12 @@ export function payoutRon(
   winner: number,
   loser: number,
   points: number,
+  honba = 0,
 ): PlayerState[] {
+  const bonus = honba * 300;
   return players.map((p, idx) => {
-    if (idx === winner) return { ...p, score: p.score + points };
-    if (idx === loser) return { ...p, score: p.score - points };
+    if (idx === winner) return { ...p, score: p.score + points + bonus };
+    if (idx === loser) return { ...p, score: p.score - (points + bonus) };
     return p;
   });
 }

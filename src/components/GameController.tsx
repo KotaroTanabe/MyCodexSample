@@ -51,6 +51,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [selfKanOptions, setSelfKanOptions] = useState<Tile[][] | null>(null);
   const [chiTileOptions, setChiTileOptions] = useState<Tile[][] | null>(null);
   const [riichiPool, setRiichiPool] = useState(0);
+  const [honba, setHonba] = useState(0);
   const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
   const [tsumoOption, setTsumoOption] = useState(false);
   const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
@@ -61,6 +62,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const deadWallRef = useRef<Tile[]>(deadWall);
   const kyokuRef = useRef(kyoku);
   const riichiPoolRef = useRef(riichiPool);
+  const honbaRef = useRef(honba);
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -100,6 +102,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   useEffect(() => {
     riichiPoolRef.current = riichiPool;
   }, [riichiPool]);
+
+  useEffect(() => {
+    honbaRef.current = honba;
+  }, [honba]);
 
   useEffect(() => {
     playersRef.current = players;
@@ -160,6 +166,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     setRoundResult(null);
     if (resetKyoku) {
       setRiichiPool(0);
+      setHonba(0);
+      honbaRef.current = 0;
     }
     setMessage(
       `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
@@ -176,7 +184,15 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   }, [phase]);
 
   const maxKyoku = maxKyokuForLength(gameLength);
-  const nextKyoku = () => {
+  const nextKyoku = (dealerContinues = false) => {
+    if (dealerContinues) {
+      setHonba(h => h + 1);
+      honbaRef.current += 1;
+      startRound(false);
+      return;
+    }
+    setHonba(0);
+    honbaRef.current = 0;
     const next = kyokuRef.current + 1;
     if (next > maxKyoku) {
       setPhase('end');
@@ -434,7 +450,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       dora,
       { seatWind, roundWind, winType: 'tsumo' },
     );
-    let newPlayers = payoutTsumo(p, idx, points);
+    let newPlayers = payoutTsumo(p, idx, points, honbaRef.current);
     if (riichiPoolRef.current > 0) {
       newPlayers = newPlayers.map((pl, i) =>
         i === idx ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
@@ -446,7 +462,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     playersRef.current = newPlayers;
     setMessage(`${p[idx].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
     setTsumoOption(false);
-    setTimeout(nextKyoku, 500);
+    setTimeout(() => nextKyoku(idx === 0), 500);
   };
 
   const performRon = (winner: number, from: number, tile: Tile) => {
@@ -467,7 +483,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       [],
       { seatWind, roundWind, winType: 'ron' },
     );
-    let updated = payoutRon(p, winner, from, points);
+    let updated = payoutRon(p, winner, from, points, honbaRef.current);
     if (riichiPoolRef.current > 0) {
       updated = updated.map((pl, i) =>
         i === winner ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
@@ -478,7 +494,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setPlayers(updated);
     playersRef.current = updated;
     setMessage(`${p[winner].name} のロン！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
-    setTimeout(nextKyoku, 500);
+    setTimeout(() => nextKyoku(winner === 0), 500);
   };
 
   const handleRiichi = () => {
@@ -609,6 +625,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
         kyoku={kyoku}
         wallCount={wall.length}
         kyotaku={riichiPool}
+        honba={honba}
         onDiscard={handleDiscard}
         isMyTurn={turn === 0 && !players[0]?.isAI}
         shanten={shanten}
@@ -636,7 +653,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
           nextLabel={kyokuRef.current >= maxKyoku ? '結果発表へ' : undefined}
           onNext={() => {
             setRoundResult(null);
-            nextKyoku();
+            nextKyoku(true);
           }}
         />
       )}

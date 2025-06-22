@@ -18,6 +18,7 @@ interface UIBoardProps {
   kyoku: number;
   wallCount: number;
   kyotaku: number;
+  honba: number;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
@@ -51,6 +52,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   kyoku,
   wallCount,
   kyotaku,
+  honba,
   onDiscard,
   isMyTurn,
   shanten,
@@ -142,7 +144,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
 
       {/* ドラ表示と局情報 */}
       <div className="row-start-2 col-start-2 flex items-center gap-4">
-        <ScoreBoard kyoku={kyoku} wallCount={wallCount} kyotaku={kyotaku} />
+        <ScoreBoard kyoku={kyoku} wallCount={wallCount} kyotaku={kyotaku} honba={honba} />
         <div className="flex flex-col items-center gap-1">
           <div className="text-sm">ドラ表示</div>
           <div className="flex gap-1">
