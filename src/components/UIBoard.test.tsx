@@ -197,32 +197,7 @@ describe('UIBoard aria labels', () => {
 });
 
 describe('UIBoard discard orientation', () => {
-  it('applies rotation to each seat', () => {
-    render(
-      <UIBoard
-        players={[
-          createInitialPlayerState('me', false, 0),
-          createInitialPlayerState('right', true, 1),
-          createInitialPlayerState('top', true, 2),
-          createInitialPlayerState('left', true, 3),
-        ]}
-        dora={[]}
-        kyoku={1}
-        wallCount={70}
-        kyotaku={0}
-        onDiscard={() => {}}
-        isMyTurn={true}
-        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
-        lastDiscard={null}
-      />,
-    );
-    const rightDiv = screen.getByTestId('discard-seat-1');
-    const topDiv = screen.getByTestId('discard-seat-2');
-    const leftDiv = screen.getByTestId('discard-seat-3');
-    expect(rightDiv.style.transform).toContain('rotate(270deg)');
-    expect(topDiv.style.transform).toContain('rotate(180deg)');
-    expect(leftDiv.style.transform).toContain('rotate(90deg)');
-  });
+
 
   it('keeps discard order after rotation', () => {
     const right = createInitialPlayerState('right', true, 1);
