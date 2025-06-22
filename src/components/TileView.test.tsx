@@ -25,4 +25,12 @@ describe('TileView', () => {
     );
     expect(html).toContain('translateX(5px)');
   });
+
+  it('uses compact tile spacing', () => {
+    const tile: Tile = { suit: 'man', rank: 4, id: 'm4' };
+    const html = renderToStaticMarkup(<TileView tile={tile} />);
+    expect(html).toContain('px-0.5');
+    expect(html).toContain('py-px');
+    expect(html).toContain('leading-none');
+  });
 });
