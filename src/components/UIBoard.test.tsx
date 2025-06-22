@@ -7,6 +7,8 @@ import { createInitialPlayerState, canDeclareRiichi } from './Player';
 import { Tile } from '../types/mahjong';
 import type { PlayerState } from "../types/mahjong";
 
+const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
+
 const basePlayer = createInitialPlayerState('you', false);
 
 afterEach(() => cleanup());
@@ -55,7 +57,6 @@ describe('UIBoard shanten display', () => {
 });
 
 describe('UIBoard riichi button', () => {
-  const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
   function makePlayer(hand: Tile[]): PlayerState {
     const p = { ...createInitialPlayerState('you', false), hand, drawnTile: hand[hand.length - 1] } as PlayerState;
@@ -146,5 +147,36 @@ describe('UIBoard discard orientation', () => {
     expect(rightDiv.style.transform).toContain('rotate(90deg)');
     expect(topDiv.style.transform).toContain('rotate(180deg)');
     expect(leftDiv.style.transform).toContain('rotate(270deg)');
+  });
+
+  it('keeps discard order after rotation', () => {
+    const right = createInitialPlayerState('right', true, 1);
+    right.discard = [t('man', 1, 'a'), t('man', 2, 'b')];
+    const top = createInitialPlayerState('top', true, 2);
+    top.discard = [t('pin', 3, 'c'), t('pin', 4, 'd')];
+
+    render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('me', false, 0),
+          right,
+          top,
+          createInitialPlayerState('left', true, 3),
+        ]}
+        dora={[]}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+
+    const rightDiv = screen.getByTestId('discard-seat-1');
+    const topDiv = screen.getByTestId('discard-seat-2');
+
+    expect((rightDiv.firstChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('2萬');
+    expect((rightDiv.lastChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('1萬');
+    expect((topDiv.firstChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('4筒');
+    expect((topDiv.lastChild as HTMLElement | null)?.getAttribute('aria-label')).toBe('3筒');
   });
 });
