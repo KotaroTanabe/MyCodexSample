@@ -2,28 +2,29 @@ import React, { useState } from 'react';
 import { sortHand } from './Player';
 import { TileView } from './TileView';
 import { detectYaku } from '../score/yaku';
-import { calculateScore, calcRoundedScore } from '../score/score';
+import { calculateScore, calcBase } from '../score/score';
 import { calculateFuDetail } from '../score/calculateFuDetail';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
 
 interface ScoreQuizProps {
   initialIndex?: number;
   initialWinType?: 'ron' | 'tsumo';
+  initialSeatWind?: number;
 }
 
-export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinType }) => {
-  const { question, winType, nextQuestion } = useAgariQuiz({ initialIndex, initialWinType });
-  const seatWind = 1;
+export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinType, initialSeatWind }) => {
+  const { question, winType, seatWind, nextQuestion } = useAgariQuiz({ initialIndex, initialWinType, initialSeatWind });
   const roundWind = 1;
   const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<
     | {
-        points: number;
+        answer: string;
         han: number;
         fu: number;
         yaku: string[];
         fuSteps: string[];
+        explanation: string;
         correct: boolean;
       }
     | null
@@ -50,7 +51,24 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
         winType,
       },
     );
-    const points = calcRoundedScore(han, fu, seatWind === 1, winType);
+    const base = calcBase(han, fu);
+    let answer = '';
+    let explanation = '';
+    if (winType === 'ron') {
+      const mult = seatWind === 1 ? 6 : 4;
+      const total = Math.ceil((base * mult) / 100) * 100;
+      answer = total.toString();
+      explanation = `基本点${base}に${seatWind === 1 ? '親' : '子'}のロンなので${mult}倍して、100の位で切り上げて${total}点`;
+    } else if (seatWind === 1) {
+      const each = Math.ceil((base * 2) / 100) * 100;
+      answer = `${each}オール`;
+      explanation = `基本点${base}で親のツモなので2倍の${base * 2}を100の位で切り上げて${each}点オール`;
+    } else {
+      const nonDealer = Math.ceil(base / 100) * 100;
+      const dealerPay = Math.ceil((base * 2) / 100) * 100;
+      answer = `${nonDealer}-${dealerPay}`;
+      explanation = `基本点${base}で子のツモなので他家から${nonDealer}点、親からは2倍の${base * 2}を100の位で切り上げて${dealerPay}点`;
+    }
     const detail = calculateFuDetail(
       question.hand,
       question.melds,
@@ -58,13 +76,14 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       roundWind,
       winType,
     );
-    const correct = Number(guess) === points;
+    const correct = guess.trim() === answer;
     setResult({
-      points,
+      answer,
       han,
       fu,
       yaku: yaku.map(y => `${y.name} (${y.han}翻)`),
       fuSteps: detail.steps,
+      explanation,
       correct,
     });
   };
@@ -104,7 +123,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
           <div>
             {result.correct
               ? '正解！'
-              : `不正解。正解: ${result.points}点 (${result.han}翻 ${result.fu}符)`}
+              : `不正解。正解: ${result.answer} (${result.han}翻 ${result.fu}符)`}
           </div>
           <ul className="list-disc list-inside text-sm">
             {result.yaku.map((y, i) => (
@@ -116,6 +135,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
               <li key={`f${i}`}>{s}</li>
             ))}
           </ul>
+          <div className="text-sm mt-1">{result.explanation}</div>
         </div>
       )}
       <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">

@@ -242,3 +242,53 @@ describe('UIBoard discard orientation', () => {
     expect(leftTiles[leftTiles.length - 1].getAttribute('aria-label')).toBe('6索');
   });
 });
+
+describe('UIBoard win options', () => {
+  it('shows tsumo and pass buttons when tsumoOption true', () => {
+    render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('me', false, 0),
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+        tsumoOption={true}
+      />,
+    );
+    expect(screen.getByText('ツモ')).toBeTruthy();
+    expect(screen.getByText('スルー')).toBeTruthy();
+  });
+
+  it('shows ron and pass buttons when ronOption true', () => {
+    render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('me', false, 0),
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+        ronOption={true}
+      />,
+    );
+    expect(screen.getByText('ロン')).toBeTruthy();
+    expect(screen.getAllByText('スルー').length).toBe(1);
+  });
+});

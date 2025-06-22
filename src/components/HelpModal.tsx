@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { YAKU_LIST } from '../yaku';
+import { RULE_STATUS } from '../ruleStatus';
 import { ScoreTable } from './ScoreTable';
 
 interface HelpModalProps {
@@ -8,7 +9,7 @@ interface HelpModalProps {
 }
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
-  const [view, setView] = useState<'yaku' | 'score' | 'calc'>('yaku');
+  const [view, setView] = useState<'yaku' | 'score' | 'calc' | 'rules'>('yaku');
   const [isDealer, setIsDealer] = useState(false);
   const [winType, setWinType] = useState<'ron' | 'tsumo'>('ron');
   if (!isOpen) return null;
@@ -17,7 +18,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-lg p-4 max-w-md w-full shadow-lg">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-bold">
-            {view === 'yaku' ? '役一覧' : view === 'score' ? '点数表' : '計算方法'}
+            {view === 'yaku'
+              ? '役一覧'
+              : view === 'score'
+                ? '点数表'
+                : view === 'calc' ? '計算方法' : 'ルール対応状況'}
           </h2>
           <button
             onClick={onClose}
@@ -45,6 +50,12 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             onClick={() => setView('calc')}
           >
             計算方法
+          </button>
+          <button
+            className={`px-2 py-1 rounded ${view === 'rules' ? 'bg-blue-200' : 'bg-gray-200'}`}
+            onClick={() => setView('rules')}
+          >
+            ルール対応状況
           </button>
         </div>
         {view === 'yaku' ? (
@@ -133,6 +144,25 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 <li>例: 30符4翻 親ロン → 30 × 2^6 × 6 = 11520 → 11600</li>
               </ul>
             </div>
+          <div className="max-h-96 overflow-y-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr>
+                  <th className="border px-2 py-1">用語</th>
+                  <th className="border px-2 py-1">実装状況</th>
+                </tr>
+              </thead>
+              <tbody>
+                {RULE_STATUS.map(r => (
+                  <tr key={r.term}>
+                    <td className="border px-2 py-1 font-semibold">{r.term}</td>
+                    <td className="border px-2 py-1 text-center">
+                      {r.implemented ? '○' : '×'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
