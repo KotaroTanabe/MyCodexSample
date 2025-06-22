@@ -20,6 +20,17 @@ describe('payoutTsumo', () => {
       expect(updated[i].score).toBe(players[i].score - 1000);
     }
   });
+
+  it('includes honba bonus for tsumo', () => {
+    const players = setupPlayers();
+    const updated = payoutTsumo(players, 0, 1000, 2);
+    // 今の実装だと2本場でツモした場合、各家が1000点+200点支払いとなるため
+    // 合計3600点受け取りになるはず
+    expect(updated[0].score).toBe(players[0].score + 3600);
+    for (let i = 1; i < 4; i++) {
+      expect(updated[i].score).toBe(players[i].score - 1200);
+    }
+  });
 });
 
 describe('payoutRon', () => {
@@ -30,6 +41,15 @@ describe('payoutRon', () => {
     expect(updated[2].score).toBe(players[2].score - 2000);
     expect(updated[0].score).toBe(players[0].score);
     expect(updated[3].score).toBe(players[3].score);
+  });
+
+  it('includes honba bonus for ron', () => {
+    const players = setupPlayers();
+    const updated = payoutRon(players, 1, 2, 2000, 3);
+    // 今の実装だと3本場でロン上がりした場合、放銃者は2000点+900点支払い
+    // 和了者は同じ2900点受け取るはず
+    expect(updated[1].score).toBe(players[1].score + 2900);
+    expect(updated[2].score).toBe(players[2].score - 2900);
   });
 });
 
