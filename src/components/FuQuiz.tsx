@@ -3,6 +3,7 @@ import { Tile, Meld } from '../types/mahjong';
 import { calculateFu } from '../score/score';
 import { TileView } from './TileView';
 import { sortHand } from './Player';
+import { SAMPLE_HANDS } from '../quiz/sampleHands';
 
 // helper functions copied from score.ts for fu breakdown
 function tileKey(t: Tile): string {
@@ -134,48 +135,6 @@ function calculateFuDetail(hand: Tile[], melds: Meld[] = []): { fu: number; step
   return { fu: rounded, steps };
 }
 
-const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
-
-interface Question {
-  hand: Tile[];
-  melds: Meld[];
-}
-
-const QUESTIONS: Question[] = [
-  {
-    hand: [
-      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
-      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
-      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
-      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
-      t('pin',5,'p5a'),t('pin',5,'p5b'),
-    ],
-    melds: [],
-  },
-  {
-    hand: [
-      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
-      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
-      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
-      t('man',5,'m5a'),t('man',5,'m5b'),
-    ],
-    melds: [
-      { type: 'pon', tiles: [t('dragon',1,'d1a'),t('dragon',1,'d1b'),t('dragon',1,'d1c')], fromPlayer: 1, calledTileId: 'd1a' },
-    ],
-  },
-  {
-    hand: [
-      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
-      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
-      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
-      t('man',5,'m5a'),t('man',5,'m5b'),
-    ],
-    melds: [
-      { type: 'kan', tiles: [t('dragon',1,'k1a'),t('dragon',1,'k1b'),t('dragon',1,'k1c')], fromPlayer: 2, calledTileId: 'k1a' },
-    ],
-  },
-];
-
 interface FuQuizProps {
   initialIndex?: number;
 }
@@ -185,7 +144,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[] } | null>(null);
 
-  const question = QUESTIONS[idx];
+  const question = SAMPLE_HANDS[idx];
   const fullHand = sortHand([...question.hand, ...question.melds.flatMap(m => m.tiles)]);
 
   const onSubmit = (e: React.FormEvent) => {
@@ -196,7 +155,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   };
 
   const nextQuestion = () => {
-    setIdx((idx + 1) % QUESTIONS.length);
+    setIdx((idx + 1) % SAMPLE_HANDS.length);
     setGuess('');
     setResult(null);
   };
