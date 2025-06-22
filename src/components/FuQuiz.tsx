@@ -4,6 +4,7 @@ import { calculateFu } from '../score/score';
 import { TileView } from './TileView';
 import { sortHand } from './Player';
 import { SAMPLE_HANDS } from '../quiz/sampleHands';
+import { generateRandomAgari } from '../quiz/randomAgari';
 
 // helper functions copied from score.ts for fu breakdown
 function tileKey(t: Tile): string {
@@ -141,12 +142,13 @@ interface FuQuizProps {
 
 export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   const [idx, setIdx] = useState(initialIndex ?? 0);
+  const [question, setQuestion] = useState(() =>
+    initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
+  );
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
   );
-
-  const question = SAMPLE_HANDS[idx];
   const fullHand = sortHand([...question.hand, ...question.melds.flatMap(m => m.tiles)]);
 
   const onSubmit = (e: React.FormEvent) => {
@@ -158,7 +160,13 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   };
 
   const nextQuestion = () => {
-    setIdx((idx + 1) % SAMPLE_HANDS.length);
+    if (initialIndex !== undefined) {
+      const next = (idx + 1) % SAMPLE_HANDS.length;
+      setIdx(next);
+      setQuestion(SAMPLE_HANDS[next]);
+    } else {
+      setQuestion(generateRandomAgari());
+    }
     setGuess('');
     setResult(null);
   };
