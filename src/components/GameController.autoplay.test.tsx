@@ -15,7 +15,7 @@ describe('GameController auto play', () => {
   });
 
   it('AI discards when toggled during player turn', async () => {
-    const { container } = render(<GameController />);
+    render(<GameController />);
     await screen.findAllByText('あなたの手牌');
     const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);
