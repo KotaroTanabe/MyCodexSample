@@ -18,7 +18,7 @@ const seatRotation = (seat: number): number => {
 const seatRiverRotation = (seat: number): number => {
   switch (seat % 4) {
     case 1:
-      return 90;
+      return 270;
     case 2:
       return 180;
     case 3:
