@@ -5,16 +5,21 @@ import { generateRandomAgari } from './randomAgari';
 interface Options {
   initialIndex?: number;
   initialWinType?: 'ron' | 'tsumo';
+  initialSeatWind?: number;
 }
 
 export function useAgariQuiz(options: Options = {}) {
-  const { initialIndex, initialWinType } = options;
+  const { initialIndex, initialWinType, initialSeatWind } = options;
   const [idx, setIdx] = useState(initialIndex ?? 0);
   const [question, setQuestion] = useState(() =>
     initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
   );
   const [winType, setWinType] = useState<'ron' | 'tsumo'>(
     initialWinType ?? (Math.random() < 0.5 ? 'ron' : 'tsumo'),
+  );
+  const randomSeat = () => Math.ceil(Math.random() * 4);
+  const [seatWind, setSeatWind] = useState<number>(
+    initialSeatWind ?? randomSeat(),
   );
 
   const nextQuestion = () => {
@@ -26,7 +31,8 @@ export function useAgariQuiz(options: Options = {}) {
       setQuestion(generateRandomAgari());
     }
     setWinType(Math.random() < 0.5 ? 'ron' : 'tsumo');
+    setSeatWind(randomSeat());
   };
 
-  return { idx, question, winType, nextQuestion };
+  return { idx, question, winType, seatWind, nextQuestion };
 }
