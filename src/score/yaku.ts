@@ -74,7 +74,12 @@ function countValueTriplets(
   let total = countDragonTriplets(counts);
   if (seatWind) {
     const key = `wind-${seatWind}`;
-    total += Math.floor((counts[key] || 0) / 3);
+    const triplets = Math.floor((counts[key] || 0) / 3);
+    total += triplets;
+    if (roundWind === seatWind) {
+      // ダブ風牌は2翻になるため、もう1回加算する
+      total += triplets;
+    }
   }
   if (roundWind && roundWind !== seatWind) {
     const key = `wind-${roundWind}`;
