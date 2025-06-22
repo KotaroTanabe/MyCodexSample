@@ -93,6 +93,7 @@ export function calculateFuDetail(
   melds: Meld[] = [],
   seatWind = 1,
   roundWind = 1,
+  winType: 'ron' | 'tsumo' = 'ron',
 ): { fu: number; steps: string[] } {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const parsed = decomposeHand(allTiles);
@@ -100,6 +101,14 @@ export function calculateFuDetail(
 
   let fu = 20;
   const steps = ['基本符20'];
+
+  if (winType === 'tsumo') {
+    fu += 2;
+    steps.push('ツモ符 +2');
+  } else if (winType === 'ron' && melds.length === 0) {
+    fu += 10;
+    steps.push('面前ロン +10');
+  }
 
   let pairFu = 0;
   if (parsed.pair[0].suit === 'dragon') {

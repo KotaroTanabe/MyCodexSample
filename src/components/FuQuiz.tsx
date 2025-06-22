@@ -28,8 +28,18 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const fu = calculateFu(question.hand, question.melds, { seatWind, roundWind });
-    const detail = calculateFuDetail(question.hand, question.melds, seatWind, roundWind);
+    const fu = calculateFu(question.hand, question.melds, {
+      seatWind,
+      roundWind,
+      winType,
+    });
+    const detail = calculateFuDetail(
+      question.hand,
+      question.melds,
+      seatWind,
+      roundWind,
+      winType,
+    );
     const correct = Number(guess) === fu;
     setResult({ fu, steps: detail.steps, correct });
   };

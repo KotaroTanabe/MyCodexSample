@@ -56,4 +56,18 @@ describe('calculateFu', () => {
     // 基本符20 + ダブ南の雀頭4 = 24、切り上げで30符になるはず
     expect(fu).toBe(30);
   });
+
+  it('adds 10 fu for a closed ron', () => {
+    const { hand, melds } = SAMPLE_HANDS[0];
+    const fu = calculateFu(hand, melds, { winType: 'ron' });
+    // 基本符20 + 面前ロン10 = 30符になるはず
+    expect(fu).toBe(30);
+  });
+
+  it('adds 2 fu for tsumo win', () => {
+    const { hand, melds } = SAMPLE_HANDS[0];
+    const fu = calculateFu(hand, melds, { winType: 'tsumo' });
+    // 基本符20 + ツモ符2 = 22、切り上げで30符になるはず
+    expect(fu).toBe(30);
+  });
 });

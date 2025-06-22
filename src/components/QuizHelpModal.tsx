@@ -27,8 +27,10 @@ export const QuizHelpModal: React.FC<QuizHelpModalProps> = ({ isOpen, onClose, s
             <ul className="list-disc list-inside space-y-1">
               <li>基本符20</li>
               <li>雀頭が三元牌なら+2、自風なら+2、場風なら+2</li>
-              <li>刻子: 数牌4符 / 么九牌8符</li>
-              <li>カン: 数牌16符 / 么九牌32符</li>
+              <li>刻子: 中張牌4符 / 么九牌8符</li>
+              <li>カン: 中張牌16符 / 么九牌32符</li>
+              <li>ツモ上がり +2</li>
+              <li>面前ロン +10</li>
               <li>最後に10の位へ切り上げ</li>
             </ul>
           </div>

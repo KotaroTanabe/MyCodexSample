@@ -41,11 +41,24 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       seatWind,
       roundWind,
     });
-    const { han, fu, points } = calculateScore(question.hand, question.melds, yaku, [], {
+    const { han, fu, points } = calculateScore(
+      question.hand,
+      question.melds,
+      yaku,
+      [],
+      {
+        seatWind,
+        roundWind,
+        winType,
+      },
+    );
+    const detail = calculateFuDetail(
+      question.hand,
+      question.melds,
       seatWind,
       roundWind,
-    });
-    const detail = calculateFuDetail(question.hand, question.melds, seatWind, roundWind);
+      winType,
+    );
     const correct = Number(guess) === points;
     setResult({
       points,

@@ -251,7 +251,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         p[currentIndex].melds,
         yaku,
         dora,
-        { seatWind, roundWind },
+        { seatWind, roundWind, winType: 'tsumo' },
       );
       let newPlayers = payoutTsumo(p, currentIndex, points);
       if (riichiPoolRef.current > 0) {
@@ -311,7 +311,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         winningPlayer.melds,
         yaku,
         [],
-        { seatWind, roundWind },
+        { seatWind, roundWind, winType: 'ron' },
       );
       let updated = payoutRon(p, winIdx, idx, points);
       if (riichiPoolRef.current > 0) {

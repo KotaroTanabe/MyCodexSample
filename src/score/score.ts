@@ -97,13 +97,19 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
 export function calculateFu(
   hand: Tile[],
   melds: Meld[] = [],
-  opts?: { seatWind?: number; roundWind?: number },
+  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
 ): number {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const parsed = decomposeHand(allTiles);
   if (!parsed) return 0;
 
   let fu = 20; // base fu for a winning hand
+
+  if (opts?.winType === 'tsumo') {
+    fu += 2;
+  } else if (opts?.winType === 'ron' && melds.length === 0) {
+    fu += 10;
+  }
 
   // pair fu (dragons, seat wind, and round wind are value tiles)
   let pairFu = 0;
@@ -163,7 +169,7 @@ export function calculateScore(
   melds: Meld[],
   yaku: Yaku[],
   doraIndicators: Tile[] = [],
-  opts?: { seatWind?: number; roundWind?: number },
+  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
 ): { han: number; fu: number; points: number } {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const dora = countDora(allTiles, doraIndicators);
