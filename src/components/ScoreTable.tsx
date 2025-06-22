@@ -32,7 +32,23 @@ function formatScore(han: number, fu: number, isDealer: boolean, winType: 'ron' 
 }
 
 export const ScoreTable: React.FC<ScoreTableProps> = ({ isDealer, winType }) => {
-  const fuList = [20, 25, 30, 40, 50, 60, 70];
+  // Display fu values up to the rarely-seen limit of 130
+  // so that even edge cases are shown in the table.
+  const fuList = [
+    20,
+    25,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+  ];
   const hanList = [1, 2, 3, 4];
   return (
     <table className="w-full border-collapse text-sm">
