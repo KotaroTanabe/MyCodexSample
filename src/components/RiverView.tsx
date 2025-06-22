@@ -28,10 +28,6 @@ const seatRiverRotation = (seat: number): number => {
   }
 };
 
-const shouldReverseRiver = (seat: number): boolean => {
-  const rot = seatRiverRotation(seat) % 360;
-  return rot === 90;
-};
 
 /** minimum cells to reserve for a player's discard area */
 export const RESERVED_RIVER_SLOTS = 20;
@@ -49,7 +45,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
   lastDiscard,
   dataTestId,
 }) => {
-  const ordered = shouldReverseRiver(seat) ? [...tiles].reverse() : tiles;
+  const ordered = tiles;
   const placeholdersCount = Math.max(0, RESERVED_RIVER_SLOTS - ordered.length);
   return (
     <div

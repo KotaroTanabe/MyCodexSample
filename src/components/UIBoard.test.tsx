@@ -185,7 +185,7 @@ describe('UIBoard discard orientation', () => {
     expect(rightTiles[rightTiles.length - 1].getAttribute('aria-label')).toBe('2萬');
     expect(topTiles[0].getAttribute('aria-label')).toBe('3筒');
     expect(topTiles[topTiles.length - 1].getAttribute('aria-label')).toBe('4筒');
-    expect(leftTiles[0].getAttribute('aria-label')).toBe('6索');
-    expect(leftTiles[leftTiles.length - 1].getAttribute('aria-label')).toBe('5索');
+    expect(leftTiles[0].getAttribute('aria-label')).toBe('5索');
+    expect(leftTiles[leftTiles.length - 1].getAttribute('aria-label')).toBe('6索');
   });
 });
