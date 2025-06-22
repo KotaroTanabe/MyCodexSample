@@ -135,6 +135,18 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 ))}
               </tbody>
             </table>
+            <p className="text-sm mt-2">
+              詳細は
+              <a
+                href="https://github.com/KotaroTanabe/MyCodexSample#rules-supported"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline ml-1"
+              >
+                README
+              </a>
+              を参照してください。
+            </p>
           </div>
         )}
       </div>
