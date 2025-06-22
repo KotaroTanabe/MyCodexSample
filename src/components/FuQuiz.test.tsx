@@ -10,7 +10,7 @@ import { FuQuiz } from './FuQuiz';
 afterEach(() => cleanup());
 describe('FuQuiz', () => {
   it('shows "正解！" when the guess is correct', () => {
-    render(<FuQuiz initialIndex={0} />);
+    render(<FuQuiz initialIndex={0} initialWinType="ron" />);
     const input = screen.getByPlaceholderText('符を入力');
     fireEvent.change(input, { target: { value: '20' } });
     const button = screen.getByText('答える');
@@ -19,7 +19,7 @@ describe('FuQuiz', () => {
   });
 
   it('shows the correct answer when the guess is wrong', () => {
-    render(<FuQuiz initialIndex={0} />);
+    render(<FuQuiz initialIndex={0} initialWinType="ron" />);
     const input = screen.getByPlaceholderText('符を入力');
     fireEvent.change(input, { target: { value: '30' } });
     const button = screen.getByText('答える');
@@ -27,8 +27,8 @@ describe('FuQuiz', () => {
     expect(screen.getByText('不正解。正解: 20符')).toBeTruthy();
   });
 
-  it('displays seat and round wind', () => {
-    render(<FuQuiz initialIndex={0} />);
-    expect(screen.getByText('場風: 東 / 自風: 東')).toBeTruthy();
+  it('displays seat and round wind and win type', () => {
+    render(<FuQuiz initialIndex={0} initialWinType="ron" />);
+    expect(screen.getByText('場風: 東 / 自風: 東 / ロン')).toBeTruthy();
   });
 });

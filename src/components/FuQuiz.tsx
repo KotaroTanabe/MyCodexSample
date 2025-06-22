@@ -150,9 +150,10 @@ function calculateFuDetail(
 
 interface FuQuizProps {
   initialIndex?: number;
+  initialWinType?: 'ron' | 'tsumo';
 }
 
-export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
+export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) => {
   const [idx, setIdx] = useState(initialIndex ?? 0);
   const [question, setQuestion] = useState(() =>
     initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
@@ -160,6 +161,9 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   const seatWind = 1;
   const roundWind = 1;
   const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
+  const [winType, setWinType] = useState<'ron' | 'tsumo'>(
+    initialWinType ?? (Math.random() < 0.5 ? 'ron' : 'tsumo'),
+  );
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
@@ -182,13 +186,17 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
     } else {
       setQuestion(generateRandomAgari());
     }
+    setWinType(Math.random() < 0.5 ? 'ron' : 'tsumo');
     setGuess('');
     setResult(null);
   };
 
   return (
     <div className="p-4 border rounded">
-      <div className="text-sm mb-1">場風: {windNames[roundWind]} / 自風: {windNames[seatWind]}</div>
+      <div className="text-sm mb-1">
+        場風: {windNames[roundWind]} / 自風: {windNames[seatWind]} /
+        {winType === 'tsumo' ? ' ツモ' : ' ロン'}
+      </div>
       <div className="flex gap-1 mb-2 flex-wrap">
         {fullHand.map(t => (
           <TileView key={t.id} tile={t} />
