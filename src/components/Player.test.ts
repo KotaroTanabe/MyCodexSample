@@ -11,6 +11,7 @@ import {
   isTenpaiAfterDiscard,
   canDiscardTile,
   canCallMeld,
+  removeDiscardTile,
 } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
@@ -53,6 +54,21 @@ describe('drawTiles', () => {
     const player = createInitialPlayerState('Alice', false);
     const { player: updated } = drawTiles(player, wall, 1);
     expect(updated.drawnTile).toEqual(updated.hand[0]);
+  });
+});
+
+describe('removeDiscardTile', () => {
+  it('removes the specified tile from the discard pile', () => {
+    const player: PlayerState = {
+      ...createInitialPlayerState('test', false),
+      discard: [
+        { suit: 'man', rank: 1, id: 'a' },
+        { suit: 'man', rank: 2, id: 'b' },
+      ],
+    };
+    const updated = removeDiscardTile(player, 'a');
+    expect(updated.discard).toHaveLength(1);
+    expect(updated.discard[0].id).toBe('b');
   });
 });
 

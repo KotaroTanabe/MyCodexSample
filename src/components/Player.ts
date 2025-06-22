@@ -74,6 +74,16 @@ export function canCallMeld(player: PlayerState): boolean {
   return !player.isRiichi;
 }
 
+export function removeDiscardTile(
+  player: PlayerState,
+  tileId: string,
+): PlayerState {
+  return {
+    ...player,
+    discard: player.discard.filter(t => t.id !== tileId),
+  };
+}
+
 export function claimMeld(
   player: PlayerState,
   tiles: Tile[],
