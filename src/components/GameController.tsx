@@ -16,6 +16,8 @@ import { chooseAICallOption } from '../utils/ai';
 import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import { RoundResultModal, RoundResult } from './RoundResultModal';
 
+const DEAD_WALL_SIZE = 14;
+
 type GamePhase = 'init' | 'playing' | 'end';
 
 export const GameController: React.FC = () => {
@@ -23,6 +25,7 @@ export const GameController: React.FC = () => {
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [dora, setDora] = useState<Tile[]>([]);
+  const [deadWall, setDeadWall] = useState<Tile[]>([]);
   const [playerIsAI, setPlayerIsAI] = useState(false);
   const [turn, setTurn] = useState(0); // 0:自分, 1-3:AI
   const [phase, setPhase] = useState<GamePhase>('init');
@@ -39,6 +42,7 @@ export const GameController: React.FC = () => {
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
   const wallRef = useRef<Tile[]>(wall);
+  const deadWallRef = useRef<Tile[]>(deadWall);
   const kyokuRef = useRef(kyoku);
 
   const togglePlayerAI = () => {
@@ -63,6 +67,10 @@ export const GameController: React.FC = () => {
   }, [wall]);
 
   useEffect(() => {
+    deadWallRef.current = deadWall;
+  }, [deadWall]);
+
+  useEffect(() => {
     kyokuRef.current = kyoku;
   }, [kyoku]);
 
@@ -76,9 +84,11 @@ export const GameController: React.FC = () => {
   // ラウンド初期化関数
   const startRound = (resetKyoku: boolean) => {
     let wallStack = generateTileWall();
-    const doraResult = drawDoraIndicator(wallStack, 1);
+    let wanpai = wallStack.slice(0, DEAD_WALL_SIZE);
+    wallStack = wallStack.slice(DEAD_WALL_SIZE);
+    const doraResult = drawDoraIndicator(wanpai, 1);
     const doraTiles = doraResult.dora;
-    wallStack = doraResult.wall;
+    wanpai = doraResult.wall;
     let p: PlayerState[];
     if (resetKyoku) {
       p = [
@@ -111,6 +121,8 @@ export const GameController: React.FC = () => {
     playersRef.current = p;
     setWall(wallStack);
     wallRef.current = wallStack;
+    setDeadWall(wanpai);
+    deadWallRef.current = wanpai;
     setDora(doraTiles);
     setTurn(0);
     setDiscardCounts({});
@@ -303,10 +315,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
     playersRef.current = p;
 
     if (action === 'kan') {
-      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      const doraResult = drawDoraIndicator(deadWallRef.current, 1);
       setDora(prev => [...prev, ...doraResult.dora]);
-      setWall(doraResult.wall);
-      wallRef.current = doraResult.wall;
+      setDeadWall(doraResult.wall);
+      deadWallRef.current = doraResult.wall;
       turnRef.current = caller;
       drawForCurrentPlayer();
     }
@@ -323,10 +335,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setPlayers(p);
     playersRef.current = p;
 
-    const doraResult = drawDoraIndicator(wallRef.current, 1);
+    const doraResult = drawDoraIndicator(deadWallRef.current, 1);
     setDora(prev => [...prev, ...doraResult.dora]);
-    setWall(doraResult.wall);
-    wallRef.current = doraResult.wall;
+    setDeadWall(doraResult.wall);
+    deadWallRef.current = doraResult.wall;
     turnRef.current = caller;
     drawForCurrentPlayer();
   };
@@ -353,10 +365,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setMessage(`${p[caller].name} が ${action}しました。`);
 
     if (action === 'kan') {
-      const doraResult = drawDoraIndicator(wallRef.current, 1);
+      const doraResult = drawDoraIndicator(deadWallRef.current, 1);
       setDora(prev => [...prev, ...doraResult.dora]);
-      setWall(doraResult.wall);
-      wallRef.current = doraResult.wall;
+      setDeadWall(doraResult.wall);
+      deadWallRef.current = doraResult.wall;
       turnRef.current = caller;
       drawForCurrentPlayer();
     }
@@ -386,6 +398,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     let next = (turnRef.current + 1) % 4;
     setTurn(next);
     setTimeout(() => {
+      if (wallRef.current.length === 0) return;
       if (playersRef.current[next].isAI) {
         // Check if the AI wants to call on the previous discard
         if (lastDiscard && lastDiscard.player !== next) {
@@ -400,6 +413,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
           setLastDiscard(null);
         }
         drawForCurrentPlayer();
+        if (wallRef.current.length === 0) return;
         // AIの打牌ロジック（現時点はランダム）
         setTimeout(() => {
           const tile = playersRef.current[next].hand[0];
