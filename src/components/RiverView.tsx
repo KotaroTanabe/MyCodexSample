@@ -22,7 +22,7 @@ const seatRiverRotation = (seat: number): number => {
     case 2:
       return 180;
     case 3:
-      return 270;
+      return 90;
     default:
       return 0;
   }
@@ -30,7 +30,7 @@ const seatRiverRotation = (seat: number): number => {
 
 const shouldReverseRiver = (seat: number): boolean => {
   const rot = seatRiverRotation(seat) % 360;
-  return rot === 90 || rot === 180;
+  return rot === 90;
 };
 
 /** minimum cells to reserve for a player's discard area */
