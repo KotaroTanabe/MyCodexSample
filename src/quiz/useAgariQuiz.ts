@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SAMPLE_HANDS } from './sampleHands';
-import { generateRandomAgari } from './randomAgari';
+import { generateRandomAgari, AgariHand } from './randomAgari';
 
 interface Options {
   initialIndex?: number;
@@ -8,10 +8,12 @@ interface Options {
   initialSeatWind?: number;
 }
 
+export interface AgariQuestion extends AgariHand {}
+
 export function useAgariQuiz(options: Options = {}) {
   const { initialIndex, initialWinType, initialSeatWind } = options;
   const [idx, setIdx] = useState(initialIndex ?? 0);
-  const [question, setQuestion] = useState(() =>
+  const [question, setQuestion] = useState<AgariQuestion>(() =>
     initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
   );
   const [winType, setWinType] = useState<'ron' | 'tsumo'>(

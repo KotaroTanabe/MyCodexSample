@@ -5,6 +5,7 @@ import { sortHand } from '../components/Player';
 export interface AgariHand {
   hand: Tile[];
   melds: Meld[];
+  winningTile: Tile;
 }
 
 function drawTiles(wall: Tile[], suit: Suit, rank: number, count: number): Tile[] {
@@ -68,7 +69,8 @@ export function generateRandomAgari(): AgariHand {
         }
       }
 
-      return { hand: sortHand(hand), melds: [] };
+      const sorted = sortHand(hand);
+      return { hand: sorted, melds: [], winningTile: sorted[sorted.length - 1] };
     } catch (e) {
       // Retry if a draw failed due to insufficient tiles
     }

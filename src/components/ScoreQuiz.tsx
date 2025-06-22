@@ -5,6 +5,7 @@ import { detectYaku } from '../score/yaku';
 import { calculateScore, calcBase } from '../score/score';
 import { calculateFuDetail } from '../score/calculateFuDetail';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
+import { tileToKanji } from '../utils/tileString';
 import { QuizHelpModal } from './QuizHelpModal';
 
 interface ScoreQuizProps {
@@ -101,7 +102,9 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       <div className="flex justify-between items-center text-sm mb-1">
         <div>
           場風: {windNames[roundWind]} / 自風: {windNames[seatWind]} /
-          {winType === 'tsumo' ? ' ツモ' : ' ロン'}
+          {winType === 'tsumo'
+            ? ' ツモ'
+            : ` ロン: ${tileToKanji(question.winningTile)}`}
         </div>
         <button
           onClick={() => setHelpOpen(true)}

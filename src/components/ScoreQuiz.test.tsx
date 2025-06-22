@@ -34,7 +34,7 @@ describe('ScoreQuiz', () => {
 
   it('displays seat and round wind and win type', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="ron" initialSeatWind={1} />);
-    expect(screen.getByText('場風: 東 / 自風: 東 / ロン')).toBeTruthy();
+    expect(screen.getByText('場風: 東 / 自風: 東 / ロン: 5筒')).toBeTruthy();
   });
 
   it('handles tsumo answers with split payments', () => {
