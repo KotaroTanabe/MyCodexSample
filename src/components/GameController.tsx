@@ -3,7 +3,12 @@ import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi, isTenpaiAfterDiscard } from './Player';
 import { MeldType } from '../types/mahjong';
-import { selectMeldTiles, getValidCallOptions, getSelfKanOptions } from '../utils/meld';
+import {
+  selectMeldTiles,
+  getValidCallOptions,
+  getSelfKanOptions,
+  getChiOptions,
+} from '../utils/meld';
 import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
@@ -47,6 +52,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [selfKanOptions, setSelfKanOptions] = useState<Tile[][] | null>(null);
+  const [chiTileOptions, setChiTileOptions] = useState<Tile[][] | null>(null);
   const [riichiPool, setRiichiPool] = useState(0);
   const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
 
@@ -277,6 +283,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       return;
     }
     setSelfKanOptions(null);
+    setChiTileOptions(null);
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
@@ -353,23 +360,32 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
 
 
 const handleCallAction = (action: MeldType | 'pass') => {
-    if (!lastDiscard) return;
-    if (action === 'pass') {
-      setCallOptions(null);
-      setLastDiscard(null);
-      setSelfKanOptions(null);
-      nextTurn();
+  if (!lastDiscard) return;
+  if (action === 'pass') {
+    setCallOptions(null);
+    setLastDiscard(null);
+    setSelfKanOptions(null);
+    setChiTileOptions(null);
+    nextTurn();
+    return;
+  }
+  const caller = 0;
+  const discarder = lastDiscard.player;
+  let p = [...playersRef.current];
+  if (action === 'chi') {
+    const options = getChiOptions(p[caller], lastDiscard.tile);
+    if (options.length > 1 && !chiTileOptions) {
+      setChiTileOptions(options);
+      setCallOptions(['pass']);
       return;
     }
-    const caller = 0;
-    const discarder = lastDiscard.player;
-    let p = [...playersRef.current];
-    const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
-    if (!meldTiles) {
-      setCallOptions(null);
-      setLastDiscard(null);
-      nextTurn();
-      return;
+  }
+  const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
+  if (!meldTiles) {
+    setCallOptions(null);
+    setLastDiscard(null);
+    nextTurn();
+    return;
     }
     p[discarder] = {
       ...p[discarder],
@@ -396,9 +412,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
       drawForCurrentPlayer();
     }
 
-    setCallOptions(null);
-    setLastDiscard(null);
-    setSelfKanOptions(null);
+  setCallOptions(null);
+  setLastDiscard(null);
+  setSelfKanOptions(null);
+  setChiTileOptions(null);
   setTurn(caller);
 };
 
@@ -470,6 +487,33 @@ const handleCallAction = (action: MeldType | 'pass') => {
     performSelfKan(0, tiles);
   };
 
+  const handleChiSelect = (tiles: Tile[]) => {
+    if (!lastDiscard) return;
+    const caller = 0;
+    const discarder = lastDiscard.player;
+    let p = [...playersRef.current];
+    p[discarder] = {
+      ...p[discarder],
+      discard: p[discarder].discard.map(t =>
+        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
+      ),
+    };
+    p[caller] = claimMeld(
+      p[caller],
+      [...tiles, lastDiscard.tile],
+      'chi',
+      discarder,
+      lastDiscard.tile.id,
+    );
+    setPlayers(p);
+    playersRef.current = p;
+    setCallOptions(null);
+    setLastDiscard(null);
+    setChiTileOptions(null);
+    setSelfKanOptions(null);
+    setTurn(caller);
+  };
+
   // ターン進行
   const nextTurn = () => {
     let next = (turnRef.current + 1) % 4;
@@ -528,6 +572,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onRiichi={!players[0]?.isAI ? handleRiichi : undefined}
         selfKanOptions={!players[0]?.isAI ? selfKanOptions ?? undefined : undefined}
         onSelfKan={!players[0]?.isAI ? handleSelfKan : undefined}
+        chiOptions={!players[0]?.isAI ? chiTileOptions ?? undefined : undefined}
+        onChi={!players[0]?.isAI ? handleChiSelect : undefined}
         playerIsAI={playerIsAI}
         onToggleAI={togglePlayerAI}
       />

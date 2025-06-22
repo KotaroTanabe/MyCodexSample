@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getValidCallOptions, selectMeldTiles, getSelfKanOptions } from './meld';
+import { getValidCallOptions, selectMeldTiles, getSelfKanOptions, getChiOptions } from './meld';
 import { PlayerState, Tile } from '../types/mahjong';
 import { createInitialPlayerState } from '../components/Player';
 
@@ -72,6 +72,24 @@ describe('selectMeldTiles', () => {
     };
     const result = selectMeldTiles(player, tile, 'pon');
     expect(result?.length).toBe(2);
+  });
+});
+
+describe('getChiOptions', () => {
+  it('returns multiple chi candidates', () => {
+    const discard: Tile = { suit: 'man', rank: 3, id: 'd' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'a' },
+      { suit: 'man', rank: 2, id: 'b' },
+      { suit: 'man', rank: 4, id: 'c' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    const opts = getChiOptions(player, discard);
+    // 1-2-3 と 2-3-4 の二通りが考えられるため2件になる
+    expect(opts.length).toBe(2);
   });
 });
 
