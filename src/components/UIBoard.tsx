@@ -6,6 +6,12 @@ import { MeldView } from './MeldView';
 import { RiverView } from './RiverView';
 import { ScoreBoard } from './ScoreBoard';
 
+const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
+const honorMap: Record<string, Record<number, string>> = {
+  wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
+  dragon: { 1: '白', 2: '發', 3: '中' },
+};
+
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
@@ -175,26 +181,41 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             : my.hand;
           return (
             <div className="flex gap-2 items-center">
-              {handTiles.map(tile => (
-                <button
-                  key={tile.id}
-                  className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-                  onClick={() => onDiscard(tile.id)}
-                  disabled={!isMyTurn}
-                >
-                  <TileView tile={tile} />
-                </button>
-              ))}
-              {my.drawnTile && (
-                <button
-                  key={my.drawnTile.id}
-                  className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-                  onClick={() => onDiscard(my.drawnTile!.id)}
-                  disabled={!isMyTurn}
-                >
-                  <TileView tile={my.drawnTile} />
-                </button>
-              )}
+              {handTiles.map(tile => {
+                const kanji =
+                  tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
+                    ? `${tile.rank}${suitMap[tile.suit]}`
+                    : honorMap[tile.suit]?.[tile.rank] ?? '';
+                return (
+                  <button
+                    key={tile.id}
+                    className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                    onClick={() => onDiscard(tile.id)}
+                    disabled={!isMyTurn}
+                    aria-label={kanji}
+                  >
+                    <TileView tile={tile} />
+                  </button>
+                );
+              })}
+              {my.drawnTile && (() => {
+                const t = my.drawnTile;
+                const kanji =
+                  t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou'
+                    ? `${t.rank}${suitMap[t.suit]}`
+                    : honorMap[t.suit]?.[t.rank] ?? '';
+                return (
+                  <button
+                    key={t.id}
+                    className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                    onClick={() => onDiscard(t.id)}
+                    disabled={!isMyTurn}
+                    aria-label={kanji}
+                  >
+                    <TileView tile={t} />
+                  </button>
+                );
+              })()}
             </div>
           );
         })()}
@@ -213,18 +234,28 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         )}
         {chiOptions && chiOptions.length > 0 && (
           <div className="flex gap-2 mt-2">
-            {chiOptions.map((tiles, idx) => (
-              <button
-                key={idx}
-                className="px-2 py-1 bg-yellow-200 rounded flex gap-1"
-                onClick={() => onChi?.(tiles)}
-              >
-                チー
-                {tiles.map(t => (
-                  <TileView key={t.id} tile={t} />
-                ))}
-              </button>
-            ))}
+            {chiOptions.map((tiles, idx) => {
+              const labels = tiles
+                .map(t =>
+                  t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou'
+                    ? `${t.rank}${suitMap[t.suit]}`
+                    : honorMap[t.suit]?.[t.rank] ?? ''
+                )
+                .join('');
+              return (
+                <button
+                  key={idx}
+                  className="px-2 py-1 bg-yellow-200 rounded flex gap-1"
+                  onClick={() => onChi?.(tiles)}
+                  aria-label={labels}
+                >
+                  チー
+                  {tiles.map(t => (
+                    <TileView key={t.id} tile={t} />
+                  ))}
+                </button>
+              );
+            })}
           </div>
         )}
         {selfKanOptions && selfKanOptions.length > 0 && (
