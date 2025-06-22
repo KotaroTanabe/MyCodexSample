@@ -11,4 +11,10 @@ describe('TileView', () => {
     expect(html).toContain('★');
     expect(html).toContain('absolute');
   });
+
+  it('applies rotation style', () => {
+    const tile: Tile = { suit: 'man', rank: 2, id: 'm2' };
+    const html = renderToStaticMarkup(<TileView tile={tile} rotate={90} />);
+    expect(html).toContain('rotate(90deg)');
+  });
 });
