@@ -30,6 +30,11 @@ const seatRiverRotation = (seat: number) => {
   }
 };
 
+const shouldReverseRiver = (seat: number) => {
+  const rot = seatRiverRotation(seat) % 360;
+  return rot === 90 || rot === 180;
+};
+
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
@@ -90,7 +95,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           style={{ transform: `rotate(${seatRiverRotation(top.seat)}deg)` }}
           data-testid="discard-seat-2"
         >
-          {top.discard.map(tile => (
+          {(shouldReverseRiver(top.seat) ? [...top.discard].reverse() : top.discard).map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
@@ -116,7 +121,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           style={{ transform: `rotate(${seatRiverRotation(right.seat)}deg)` }}
           data-testid="discard-seat-1"
         >
-          {right.discard.map(tile => (
+          {(shouldReverseRiver(right.seat) ? [...right.discard].reverse() : right.discard).map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
