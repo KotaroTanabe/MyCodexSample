@@ -22,6 +22,7 @@ export const GameController: React.FC = () => {
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [dora, setDora] = useState<Tile[]>([]);
+  const [playerIsAI, setPlayerIsAI] = useState(false);
   const [turn, setTurn] = useState(0); // 0:自分, 1-3:AI
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
@@ -36,6 +37,19 @@ export const GameController: React.FC = () => {
   const playersRef = useRef<PlayerState[]>(players);
   const wallRef = useRef<Tile[]>(wall);
   const kyokuRef = useRef(kyoku);
+
+  const togglePlayerAI = () => {
+    setPlayerIsAI(prev => {
+      const next = !prev;
+      setPlayers(ps =>
+        ps.map((pl, idx) => (idx === 0 ? { ...pl, isAI: next } : pl)),
+      );
+      playersRef.current = playersRef.current.map((pl, idx) =>
+        idx === 0 ? { ...pl, isAI: next } : pl,
+      );
+      return next;
+    });
+  };
 
   useEffect(() => {
     turnRef.current = turn;
@@ -65,7 +79,7 @@ export const GameController: React.FC = () => {
     let p: PlayerState[];
     if (resetKyoku) {
       p = [
-        createInitialPlayerState('あなた', false, 0),
+        createInitialPlayerState('あなた', playerIsAI, 0),
         createInitialPlayerState('AI東家', true, 1),
         createInitialPlayerState('AI南家', true, 2),
         createInitialPlayerState('AI西家', true, 3),
@@ -78,6 +92,7 @@ export const GameController: React.FC = () => {
         melds: [],
         drawnTile: null,
         isRiichi: false,
+        isAI: pl.seat === 0 ? playerIsAI : pl.isAI,
       }));
     }
     for (let i = 0; i < 4; i++) {
@@ -97,7 +112,9 @@ export const GameController: React.FC = () => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
-    setMessage('配牌が完了しました。あなたのターンです。');
+    setMessage(
+      `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
+    );
     setPhase('playing');
   };
 
@@ -201,14 +218,15 @@ export const GameController: React.FC = () => {
       setTimeout(nextKyoku, 500);
       return;
     }
-    if (idx !== 0) {
+    if (idx !== 0 && !playersRef.current[0].isAI) {
       let options = getValidCallOptions(p[0], tile);
       options = filterChiOptions(
         options,
         playersRef.current[0].seat,
         playersRef.current[idx].seat,
       );
-      if (options.length === 0) {
+      const hasAction = options.some(o => o !== 'pass');
+      if (!hasAction) {
         setCallOptions(null);
         setLastDiscard(null);
         nextTurn();
@@ -351,16 +369,20 @@ const handleCallAction = (action: MeldType | 'pass') => {
   return (
     <div className="p-2 flex flex-col gap-4">
       <ScoreBoard players={players} kyoku={kyoku} onHelp={() => setHelpOpen(true)} />
+      <label className="flex items-center gap-2">
+        <input type="checkbox" checked={playerIsAI} onChange={togglePlayerAI} />
+        観戦モード
+      </label>
       <UIBoard
         players={players}
         dora={dora}
         onDiscard={handleDiscard}
-        isMyTurn={turn === 0}
+        isMyTurn={turn === 0 && !players[0]?.isAI}
         shanten={shanten}
         lastDiscard={lastDiscard}
-        callOptions={callOptions ?? undefined}
-        onCallAction={handleCallAction}
-        onRiichi={handleRiichi}
+        callOptions={!players[0]?.isAI ? callOptions ?? undefined : undefined}
+        onCallAction={!players[0]?.isAI ? handleCallAction : undefined}
+        onRiichi={!players[0]?.isAI ? handleRiichi : undefined}
       />
       <div className="mt-2">{message}</div>
       {phase === 'end' && (
