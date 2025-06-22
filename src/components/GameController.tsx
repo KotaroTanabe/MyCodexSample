@@ -152,26 +152,30 @@ export const GameController: React.FC = () => {
     }
   };
 
+  const handleWallExhaustion = () => {
+    const tenpai = playersRef.current.map(p => {
+      const s = calcShanten(p.hand, p.melds.length);
+      return Math.min(s.standard, s.chiitoi, s.kokushi) === 0;
+    });
+    const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
+    setPlayers(updated);
+    playersRef.current = updated;
+    const results: RoundResult = {
+      results: updated.map((p, idx) => ({
+        name: p.name,
+        score: p.score,
+        change: changes[idx],
+        isTenpai: tenpai[idx],
+      })),
+    };
+    setRoundResult(results);
+    setMessage('牌山が尽きました。流局です。');
+  };
+
   // ツモ処理
   const drawForCurrentPlayer = () => {
     if (wallRef.current.length === 0) {
-      const tenpai = playersRef.current.map(p => {
-        const s = calcShanten(p.hand, p.melds.length);
-        return Math.min(s.standard, s.chiitoi, s.kokushi) === 0;
-      });
-      const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
-      setPlayers(updated);
-      playersRef.current = updated;
-      const results: RoundResult = {
-        results: updated.map((p, idx) => ({
-          name: p.name,
-          score: p.score,
-          change: changes[idx],
-          isTenpai: tenpai[idx],
-        })),
-      };
-      setRoundResult(results);
-      setMessage('牌山が尽きました。流局です。');
+      handleWallExhaustion();
       return;
     }
     const currentIndex = turnRef.current;
@@ -182,6 +186,10 @@ export const GameController: React.FC = () => {
     playersRef.current = p;
     setWall(result.wall);
     wallRef.current = result.wall;
+    if (result.wall.length === 0) {
+      handleWallExhaustion();
+      return;
+    }
     if (!playersRef.current[currentIndex].isAI) {
       const opts = getSelfKanOptions(playersRef.current[currentIndex]);
       setSelfKanOptions(opts.length > 0 ? opts : null);
