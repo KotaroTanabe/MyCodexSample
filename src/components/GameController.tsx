@@ -28,6 +28,7 @@ import { chooseAICallOption } from '../utils/ai';
 import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import { RoundResultModal, RoundResult } from './RoundResultModal';
 import { FinalResultModal } from './FinalResultModal';
+import { WinResultModal, WinResult } from './WinResultModal';
 
 const DEAD_WALL_SIZE = 14;
 
@@ -57,6 +58,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
+  const [winResult, setWinResult] = useState<WinResult | null>(null);
   const [selfKanOptions, setSelfKanOptions] = useState<Tile[][] | null>(null);
   const [chiTileOptions, setChiTileOptions] = useState<Tile[][] | null>(null);
   const [riichiPool, setRiichiPool] = useState(0);
@@ -173,6 +175,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     setTsumoOption(false);
     setRonCandidate(null);
     setRoundResult(null);
+    setWinResult(null);
     if (resetKyoku) {
       setRiichiPool(0);
       setHonba(0);
@@ -481,9 +484,17 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(newPlayers);
     playersRef.current = newPlayers;
-    setMessage(`${p[idx].name} の和了！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
+    setMessage(`${p[idx].name} の和了！`);
     setTsumoOption(false);
-    setTimeout(() => nextKyoku(idx === 0), 500);
+    setWinResult({
+      players: newPlayers,
+      winner: idx,
+      winType: 'tsumo',
+      yaku: yaku.map(y => y.name),
+      han,
+      fu,
+      points,
+    });
   };
 
   const performRon = (winner: number, from: number, tile: Tile) => {
@@ -514,8 +525,16 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(updated);
     playersRef.current = updated;
-    setMessage(`${p[winner].name} のロン！ ${yaku.map(y => y.name).join(', ')} ${han}翻 ${fu}符 ${points}点`);
-    setTimeout(() => nextKyoku(winner === 0), 500);
+    setMessage(`${p[winner].name} のロン！`);
+    setWinResult({
+      players: updated,
+      winner,
+      winType: 'ron',
+      yaku: yaku.map(y => y.name),
+      han,
+      fu,
+      points,
+    });
   };
 
   const handleRiichi = () => {
@@ -670,6 +689,17 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onToggleAI={togglePlayerAI}
       />
       <div className="mt-2">{message}</div>
+      {winResult && (
+        <WinResultModal
+          {...winResult}
+          nextLabel={kyokuRef.current >= maxKyoku ? '結果発表へ' : undefined}
+          onNext={() => {
+            const dealerWon = winResult.winner === 0;
+            setWinResult(null);
+            nextKyoku(dealerWon);
+          }}
+        />
+      )}
       {roundResult && (
         <RoundResultModal
           results={roundResult.results}
