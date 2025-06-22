@@ -197,15 +197,20 @@ export const GameController: React.FC = () => {
         ...p[currentIndex].hand,
         ...p[currentIndex].melds.flatMap(m => m.tiles),
       ];
+      const seatWind = p[currentIndex].seat + 1;
+      const roundWind = kyokuRef.current <= 4 ? 1 : 2;
       const yaku = detectYaku(fullHand, p[currentIndex].melds, {
         isTsumo: true,
         isRiichi: p[currentIndex].isRiichi,
+        seatWind,
+        roundWind,
       });
       const { han, fu, points } = calculateScore(
         p[currentIndex].hand,
         p[currentIndex].melds,
         yaku,
         dora,
+        { seatWind, roundWind },
       );
       const newPlayers = payoutTsumo(p, currentIndex, points);
       setPlayers(newPlayers);
@@ -240,14 +245,20 @@ export const GameController: React.FC = () => {
         ...winningPlayer.melds.flatMap(m => m.tiles),
         tile,
       ];
+      const seatWind = winningPlayer.seat + 1;
+      const roundWind = kyokuRef.current <= 4 ? 1 : 2;
       const yaku = detectYaku(fullHand, winningPlayer.melds, {
         isTsumo: false,
         isRiichi: winningPlayer.isRiichi,
+        seatWind,
+        roundWind,
       });
       const { han, fu, points } = calculateScore(
         [...winningPlayer.hand, tile],
         winningPlayer.melds,
         yaku,
+        [],
+        { seatWind, roundWind },
       );
       const updated = payoutRon(p, winIdx, idx, points);
       setPlayers(updated);

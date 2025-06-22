@@ -95,7 +95,12 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
   return null;
 }
 
-function calculateFuDetail(hand: Tile[], melds: Meld[] = []): { fu: number; steps: string[] } {
+function calculateFuDetail(
+  hand: Tile[],
+  melds: Meld[] = [],
+  seatWind = 1,
+  roundWind = 1,
+): { fu: number; steps: string[] } {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const parsed = decomposeHand(allTiles);
   if (!parsed) return { fu: 0, steps: ['invalid hand'] };
@@ -103,7 +108,11 @@ function calculateFuDetail(hand: Tile[], melds: Meld[] = []): { fu: number; step
   let fu = 20;
   const steps = ['基本符20'];
 
-  if (parsed.pair[0].suit === 'dragon') {
+  if (
+    parsed.pair[0].suit === 'dragon' ||
+    (parsed.pair[0].suit === 'wind' &&
+      (parsed.pair[0].rank === seatWind || parsed.pair[0].rank === roundWind))
+  ) {
     fu += 2;
     steps.push('役牌の雀頭 +2');
   }
@@ -145,6 +154,8 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   const [question, setQuestion] = useState(() =>
     initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
   );
+  const seatWind = 1;
+  const roundWind = 1;
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
@@ -153,8 +164,8 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const fu = calculateFu(question.hand, question.melds);
-    const detail = calculateFuDetail(question.hand, question.melds);
+    const fu = calculateFu(question.hand, question.melds, { seatWind, roundWind });
+    const detail = calculateFuDetail(question.hand, question.melds, seatWind, roundWind);
     const correct = Number(guess) === fu;
     setResult({ fu, steps: detail.steps, correct });
   };
