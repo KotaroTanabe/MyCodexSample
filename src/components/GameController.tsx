@@ -13,7 +13,8 @@ import { HelpModal } from './HelpModal';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 import { chooseAICallOption } from '../utils/ai';
-import { payoutTsumo, payoutRon } from '../utils/payout';
+import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
+import { RoundResultModal, RoundResult } from './RoundResultModal';
 
 type GamePhase = 'init' | 'playing' | 'end';
 
@@ -31,6 +32,7 @@ export const GameController: React.FC = () => {
   const [discardCounts, setDiscardCounts] = useState<Record<string, number>>({});
   const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
+  const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -97,6 +99,7 @@ export const GameController: React.FC = () => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
+    setRoundResult(null);
     setMessage('配牌が完了しました。あなたのターンです。');
     setPhase('playing');
   };
@@ -122,8 +125,23 @@ export const GameController: React.FC = () => {
   // ツモ処理
   const drawForCurrentPlayer = () => {
     if (wallRef.current.length === 0) {
+      const tenpai = playersRef.current.map(p => {
+        const s = calcShanten(p.hand, p.melds.length);
+        return Math.min(s.standard, s.chiitoi, s.kokushi) === 0;
+      });
+      const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
+      setPlayers(updated);
+      playersRef.current = updated;
+      const results: RoundResult = {
+        results: updated.map((p, idx) => ({
+          name: p.name,
+          score: p.score,
+          change: changes[idx],
+          isTenpai: tenpai[idx],
+        })),
+      };
+      setRoundResult(results);
       setMessage('牌山が尽きました。流局です。');
-      setTimeout(nextKyoku, 500);
       return;
     }
     const currentIndex = turnRef.current;
@@ -364,6 +382,15 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onRiichi={handleRiichi}
       />
       <div className="mt-2">{message}</div>
+      {roundResult && (
+        <RoundResultModal
+          results={roundResult.results}
+          onNext={() => {
+            setRoundResult(null);
+            nextKyoku();
+          }}
+        />
+      )}
       {phase === 'end' && (
         <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleRestart}>
           リプレイ
