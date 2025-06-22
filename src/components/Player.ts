@@ -96,3 +96,10 @@ export function canDeclareRiichi(player: PlayerState): boolean {
   }
   return false;
 }
+
+export function isTenpaiAfterDiscard(player: PlayerState, tileId: string): boolean {
+  const remaining = player.hand.filter(t => t.id !== tileId);
+  const shanten = calcShanten(remaining, player.melds.length);
+  const base = Math.min(shanten.standard, shanten.chiitoi, shanten.kokushi);
+  return base === 0;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
-import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi, isTenpaiAfterDiscard } from './Player';
 import { MeldType } from '../types/mahjong';
 import { selectMeldTiles, getValidCallOptions, getSelfKanOptions } from '../utils/meld';
 import { filterChiOptions } from '../utils/table';
@@ -47,12 +47,15 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [selfKanOptions, setSelfKanOptions] = useState<Tile[][] | null>(null);
+  const [riichiPool, setRiichiPool] = useState(0);
+  const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
   const wallRef = useRef<Tile[]>(wall);
   const deadWallRef = useRef<Tile[]>(deadWall);
   const kyokuRef = useRef(kyoku);
+  const riichiPoolRef = useRef(riichiPool);
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -88,6 +91,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   useEffect(() => {
     kyokuRef.current = kyoku;
   }, [kyoku]);
+
+  useEffect(() => {
+    riichiPoolRef.current = riichiPool;
+  }, [riichiPool]);
 
   useEffect(() => {
     playersRef.current = players;
@@ -142,7 +149,11 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
+    setPendingRiichi(null);
     setRoundResult(null);
+    if (resetKyoku) {
+      setRiichiPool(0);
+    }
     setMessage(
       `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
     );
@@ -236,7 +247,14 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         dora,
         { seatWind, roundWind },
       );
-      const newPlayers = payoutTsumo(p, currentIndex, points);
+      let newPlayers = payoutTsumo(p, currentIndex, points);
+      if (riichiPoolRef.current > 0) {
+        newPlayers = newPlayers.map((pl, idx) =>
+          idx === currentIndex ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
+        );
+        setRiichiPool(0);
+        riichiPoolRef.current = 0;
+      }
       setPlayers(newPlayers);
       playersRef.current = newPlayers;
       setMessage(
@@ -254,6 +272,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
+    if (pendingRiichi === idx && !isTenpaiAfterDiscard(p[idx], tileId)) {
+      setMessage('その牌ではリーチできません');
+      return;
+    }
     setSelfKanOptions(null);
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
@@ -284,7 +306,14 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         [],
         { seatWind, roundWind },
       );
-      const updated = payoutRon(p, winIdx, idx, points);
+      let updated = payoutRon(p, winIdx, idx, points);
+      if (riichiPoolRef.current > 0) {
+        updated = updated.map((pl, i) =>
+          i === winIdx ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
+        );
+        setRiichiPool(0);
+        riichiPoolRef.current = 0;
+      }
       setPlayers(updated);
       playersRef.current = updated;
       setMessage(
@@ -294,6 +323,13 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       );
       setTimeout(nextKyoku, 500);
       return;
+    }
+    if (pendingRiichi === idx) {
+      p[idx] = { ...p[idx], score: p[idx].score - 1000 };
+      setRiichiPool(prev => prev + 1);
+      setPendingRiichi(null);
+      setPlayers(p);
+      playersRef.current = p;
     }
     if (idx !== 0 && !playersRef.current[0].isAI) {
       let options = getValidCallOptions(p[0], tile);
@@ -421,6 +457,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     p[0] = declareRiichi(p[0]);
     setPlayers(p);
     playersRef.current = p;
+    setPendingRiichi(0);
+    setMessage('リーチする牌を選んでください');
   };
 
   const handleSelfKan = (tiles: Tile[]) => {
@@ -471,6 +509,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
         players={players}
         kyoku={kyoku}
         wallCount={wall.length}
+        kyotaku={riichiPool}
         onHelp={() => setHelpOpen(true)}
       />
       <UIBoard
