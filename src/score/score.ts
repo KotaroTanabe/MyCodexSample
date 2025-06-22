@@ -175,8 +175,9 @@ export function calculateScore(
   const dora = countDora(allTiles, doraIndicators);
   const han = yaku.reduce((sum, y) => sum + y.han, 0) + dora;
   const fu = calculateFu(hand, melds, opts);
-  const base = fu * Math.pow(2, han + 2);
-  const points = base;
+  const isDealer = opts?.seatWind === 1;
+  const winType = opts?.winType ?? 'ron';
+  const points = calcRoundedScore(han, fu, isDealer, winType);
   return { han, fu, points };
 }
 
