@@ -168,6 +168,34 @@ describe('UIBoard chi options', () => {
   });
 });
 
+describe('UIBoard aria labels', () => {
+  it('adds aria-labels to discard buttons', () => {
+    const me = { ...createInitialPlayerState('me', false) } as PlayerState;
+    me.hand = [t('man', 1, 'a1')];
+    me.drawnTile = t('pin', 3, 'b1');
+    render(
+      <UIBoard
+        players={[
+          me,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
+        lastDiscard={null}
+      />,
+    );
+    expect(screen.getByRole('button', { name: '1萬' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '3筒' })).toBeTruthy();
+  });
+});
+
 describe('UIBoard discard orientation', () => {
   it('applies rotation to each seat', () => {
     render(
