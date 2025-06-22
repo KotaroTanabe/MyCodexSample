@@ -139,7 +139,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             } else if (shanten.kokushi === base && base < shanten.standard) {
               label = `国士無双${base}向聴`;
             }
-            return <>向聴数: {base}{label && ` (${label})`}</>;
+            return base === 0
+              ? <>聴牌{label && ` (${label})`}</>
+              : <>向聴数: {base}{label && ` (${label})`}</>;
           })()}
         </div>
         {(() => {
