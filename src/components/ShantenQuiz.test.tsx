@@ -5,7 +5,9 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { ShantenQuiz } from './ShantenQuiz';
 import { Tile } from '../types/mahjong';
 
-// The hand below is 1-shanten (standard 1, chiitoi 4, kokushi 9)
+// The hand below is 1-shanten.
+// Standard calculation finds 3 melds, 1 pair and no taatsu:
+// 8 - 3*2 - 0 - 1 = 1. Chiitoi = 4, Kokushi = 9.
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 const hand: Tile[] = [
   t('man',1,'a'), t('man',2,'b'), t('man',3,'c'),
@@ -24,7 +26,7 @@ describe('ShantenQuiz', () => {
     fireEvent.change(input, { target: { value: '1' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('正解！')).toBeTruthy();
-    expect(screen.getByText('向聴数: 1')).toBeTruthy();
+    expect(screen.getByText('向聴数: 1 - 標準形: 面子3組、対子1組、ターツ0組 -> 8 - 3*2 - 0 - 1 = 1')).toBeTruthy();
   });
 
   it('shows the correct answer when wrong', () => {
@@ -33,6 +35,6 @@ describe('ShantenQuiz', () => {
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('不正解。正解: 1')).toBeTruthy();
-    expect(screen.getByText('向聴数: 1')).toBeTruthy();
+    expect(screen.getByText('向聴数: 1 - 標準形: 面子3組、対子1組、ターツ0組 -> 8 - 3*2 - 0 - 1 = 1')).toBeTruthy();
   });
 });

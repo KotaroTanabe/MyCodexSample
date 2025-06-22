@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TileView } from './TileView';
 import { useShantenQuiz } from '../quiz/useShantenQuiz';
-import { calcShanten } from '../utils/shanten';
+import { explainShanten } from '../utils/shantenExplain';
 import { QuizHelpModal } from './QuizHelpModal';
 
 interface ShantenQuizProps {
@@ -19,20 +19,13 @@ export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const s = calcShanten(question.hand);
-    const shanten = Math.min(s.standard, s.chiitoi, s.kokushi);
-    let label = '';
-    if (s.chiitoi === shanten && shanten < s.standard) {
-      label = `七対子${shanten}向聴`;
-    } else if (s.kokushi === shanten && shanten < s.standard) {
-      label = `国士無双${shanten}向聴`;
-    }
-    const explanation =
-      shanten === 0
-        ? `聴牌${label ? ` (${label})` : ''}`
-        : `向聴数: ${shanten}${label ? ` (${label})` : ''}`;
+    const { shanten, explanation, label } = explainShanten(question.hand);
     const correct = Number(guess) === shanten;
-    setResult({ shanten, explanation, correct });
+    const fullExplanation =
+      shanten === 0
+        ? `${explanation}${label ? ` (${label})` : ''}`
+        : `向聴数: ${shanten}${label ? ` (${label})` : ''} - ${explanation}`;
+    setResult({ shanten, explanation: fullExplanation, correct });
   };
 
   const handleNext = () => {
