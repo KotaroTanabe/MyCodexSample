@@ -1,5 +1,5 @@
 import { Tile, Meld } from '../types/mahjong';
-import { Yaku } from './yaku';
+import { ScoreYaku } from './yaku';
 
 function tileKey(t: Tile): string {
   return `${t.suit}-${t.rank}`;
@@ -167,7 +167,7 @@ function countDora(allTiles: Tile[], indicators: Tile[]): number {
 export function calculateScore(
   hand: Tile[],
   melds: Meld[],
-  yaku: Yaku[],
+  yaku: ScoreYaku[],
   doraIndicators: Tile[] = [],
   opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
 ): { han: number; fu: number; points: number } {

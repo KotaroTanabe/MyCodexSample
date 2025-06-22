@@ -1,6 +1,6 @@
 import { Tile, Meld } from '../types/mahjong';
 
-export interface Yaku {
+export interface ScoreYaku {
   name: string;
   han: number;
 }
@@ -317,9 +317,9 @@ export function detectYaku(
     seatWind?: number;
     roundWind?: number;
   },
-): Yaku[] {
+): ScoreYaku[] {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
-  const result: Yaku[] = [];
+  const result: ScoreYaku[] = [];
   const counts = countTiles(allTiles);
   const parsed = decomposeHand(allTiles);
   const isClosed = melds.length === 0;
