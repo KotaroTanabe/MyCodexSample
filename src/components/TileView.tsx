@@ -6,7 +6,8 @@ export const TileView: React.FC<{
   isShonpai?: boolean;
   className?: string;
   rotate?: number;
-}> = ({ tile, isShonpai, className, rotate = 0 }) => {
+  extraTransform?: string;
+}> = ({ tile, isShonpai, className, rotate = 0, extraTransform = '' }) => {
   const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
   const honorMap: Record<string, Record<number, string>> = {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
@@ -66,7 +67,7 @@ export const TileView: React.FC<{
     <span
       className={`relative inline-block border px-1 py-0.5 bg-white tile-font-size ${className ?? ''}`}
       aria-label={kanji}
-      style={{ transform: `rotate(${rotate}deg)` }}
+      style={{ transform: `rotate(${rotate}deg) ${extraTransform}` }}
     >
       <span className="font-emoji">{emojiMap[tile.suit]?.[tile.rank] ?? kanji}</span>
       {isShonpai && (

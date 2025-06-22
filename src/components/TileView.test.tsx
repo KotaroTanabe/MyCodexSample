@@ -17,4 +17,12 @@ describe('TileView', () => {
     const html = renderToStaticMarkup(<TileView tile={tile} rotate={90} />);
     expect(html).toContain('rotate(90deg)');
   });
+
+  it('includes extra transform', () => {
+    const tile: Tile = { suit: 'man', rank: 3, id: 'm3' };
+    const html = renderToStaticMarkup(
+      <TileView tile={tile} extraTransform="translateX(5px)" />,
+    );
+    expect(html).toContain('translateX(5px)');
+  });
 });
