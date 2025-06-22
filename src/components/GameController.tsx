@@ -18,9 +18,17 @@ import { RoundResultModal, RoundResult } from './RoundResultModal';
 
 const DEAD_WALL_SIZE = 14;
 
+export type GameLength = 'east1' | 'tonpu' | 'tonnan';
+export const maxKyokuForLength = (len: GameLength): number =>
+  len === 'tonnan' ? 8 : len === 'tonpu' ? 4 : 1;
+
 type GamePhase = 'init' | 'playing' | 'end';
 
-export const GameController: React.FC = () => {
+interface Props {
+  gameLength: GameLength;
+}
+
+export const GameController: React.FC<Props> = ({ gameLength }) => {
   // ゲーム状態
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
@@ -148,9 +156,10 @@ export const GameController: React.FC = () => {
     }
   }, [phase]);
 
+  const maxKyoku = maxKyokuForLength(gameLength);
   const nextKyoku = () => {
     const next = kyokuRef.current + 1;
-    if (next > 8) {
+    if (next > maxKyoku) {
       setPhase('init');
     } else {
       setKyoku(next);

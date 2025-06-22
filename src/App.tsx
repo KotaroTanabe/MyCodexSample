@@ -6,6 +6,9 @@ import { ScoreQuiz } from './components/ScoreQuiz';
 function App() {
   const [tileFont, setTileFont] = useState(2);
   const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz'>('game');
+  const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
+    'tonnan',
+  );
 
   return (
     <div
@@ -39,7 +42,32 @@ function App() {
             <option value="score-quiz">点数クイズ</option>
           </select>
         </div>
-        {mode === 'game' ? <GameController /> : mode === 'fu-quiz' ? <FuQuiz /> : <ScoreQuiz />}
+        {mode === 'game' && (
+          <div className="flex items-center gap-2">
+            <label htmlFor="length">試合形式</label>
+            <select
+              id="length"
+              value={gameLength}
+              onChange={e =>
+                setGameLength(
+                  e.target.value as 'east1' | 'tonpu' | 'tonnan',
+                )
+              }
+              className="border px-2 py-1"
+            >
+              <option value="east1">東1局のみ</option>
+              <option value="tonpu">東風戦</option>
+              <option value="tonnan">東南戦</option>
+            </select>
+          </div>
+        )}
+        {mode === 'game' ? (
+          <GameController key={gameLength} gameLength={gameLength} />
+        ) : mode === 'fu-quiz' ? (
+          <FuQuiz />
+        ) : (
+          <ScoreQuiz />
+        )}
       </div>
     </div>
   );
