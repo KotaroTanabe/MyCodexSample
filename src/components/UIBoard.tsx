@@ -115,7 +115,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 自分の手牌 */}
-      <div className="row-start-3 col-start-2 flex flex-col items-center mt-4">
+      <div className="row-start-3 col-start-2 flex flex-col items-center mt-2">
         {me.melds.length > 0 && (
           <div className="flex gap-2 mb-2">
             {me.melds.map((m, idx) => (
