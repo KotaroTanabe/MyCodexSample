@@ -118,7 +118,14 @@ describe('claimMeld', () => {
     const updated = claimMeld(player, tiles, 'chi' as MeldType, 1, 'm2');
     expect(updated.hand).toHaveLength(1);
     expect(updated.hand[0].id).toBe('p1');
-    expect(updated.melds).toEqual([{ type: 'chi', tiles, fromPlayer: 1, calledTileId: 'm2' }]);
+    expect(updated.melds).toEqual([
+      {
+        type: 'chi',
+        tiles: [tiles[0], tiles[2], tiles[1]],
+        fromPlayer: 1,
+        calledTileId: 'm2',
+      },
+    ]);
   });
 });
 
