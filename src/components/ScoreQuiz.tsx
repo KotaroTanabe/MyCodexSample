@@ -19,6 +19,8 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
   const roundWind = 1;
   const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
   const [guess, setGuess] = useState('');
+  const [childGuess, setChildGuess] = useState('');
+  const [parentGuess, setParentGuess] = useState('');
   const [result, setResult] = useState<
     | {
         answer: string;
@@ -79,7 +81,11 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       roundWind,
       winType,
     );
-    const correct = guess.trim() === answer;
+    let guessStr = guess.trim();
+    if (winType === 'tsumo' && seatWind !== 1) {
+      guessStr = `${childGuess.trim()}-${parentGuess.trim()}`;
+    }
+    const correct = guessStr === answer;
     setResult({
       answer,
       han,
@@ -94,6 +100,8 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
   const handleNext = () => {
     nextQuestion();
     setGuess('');
+    setChildGuess('');
+    setParentGuess('');
     setResult(null);
   };
 
@@ -101,7 +109,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
     <div className="p-4 border rounded">
       <div className="flex justify-between items-center text-sm mb-1">
         <div>
-          場風: {windNames[roundWind]} / 自風: {windNames[seatWind]} /
+          場風: {windNames[roundWind]} / 自風: {windNames[seatWind]} ({seatWind === 1 ? '親' : '子'}) /
           {winType === 'tsumo'
             ? ' ツモ'
             : ` ロン: ${tileToKanji(question.winningTile)}`}
@@ -120,12 +128,30 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
         ))}
       </div>
       <form onSubmit={onSubmit} className="flex gap-2 items-center mb-2">
-        <input
-          className="border px-2 py-1 w-24"
-          value={guess}
-          onChange={e => setGuess(e.target.value)}
-          placeholder="点数を入力"
-        />
+        {winType === 'tsumo' && seatWind !== 1 ? (
+          <>
+            <input
+              className="border px-2 py-1 w-20"
+              value={childGuess}
+              onChange={e => setChildGuess(e.target.value)}
+              placeholder="子の支払い"
+            />
+            <span>-</span>
+            <input
+              className="border px-2 py-1 w-20"
+              value={parentGuess}
+              onChange={e => setParentGuess(e.target.value)}
+              placeholder="親の支払い"
+            />
+          </>
+        ) : (
+          <input
+            className="border px-2 py-1 w-24"
+            value={guess}
+            onChange={e => setGuess(e.target.value)}
+            placeholder="点数を入力"
+          />
+        )}
         <button type="submit" className="px-2 py-1 bg-blue-200 rounded">
           答える
         </button>
