@@ -64,7 +64,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
     <div className="w-full grid grid-rows-3 grid-cols-3 gap-2 place-items-center">
       {/* 対面 */}
       <div className="row-start-1 col-start-2 flex flex-col items-center">
-        <div className="text-sm mb-1">{top.name}</div>
+        <div className="text-sm mb-1">
+          {top.name}: <span className="font-mono">{top.score}</span>
+        </div>
         {top.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
             {top.melds.map((m, idx) => (
@@ -82,7 +84,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
 
       {/* 右側：下家 */}
       <div className="row-start-2 col-start-3 flex flex-col items-center">
-        <div className="text-sm mb-1">{right.name}</div>
+        <div className="text-sm mb-1">
+          {right.name}: <span className="font-mono">{right.score}</span>
+        </div>
         {right.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
             {right.melds.map((m, idx) => (
@@ -100,7 +104,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
 
       {/* 左側：上家 */}
       <div className="row-start-2 col-start-1 flex flex-col items-center">
-        <div className="text-sm mb-1">{left.name}</div>
+        <div className="text-sm mb-1">
+          {left.name}: <span className="font-mono">{left.score}</span>
+        </div>
         {left.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
             {left.melds.map((m, idx) => (
@@ -116,8 +122,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         />
       </div>
 
-      {/* ドラ表示とスコア */}
-      <div className="row-start-2 col-start-2 flex flex-col items-center gap-2">
+      {/* ドラ表示と局情報 */}
+      <div className="row-start-2 col-start-2 flex items-center gap-4">
+        <ScoreBoard kyoku={kyoku} wallCount={wallCount} kyotaku={kyotaku} />
         <div className="flex flex-col items-center gap-1">
           <div className="text-sm">ドラ表示</div>
           <div className="flex gap-1">
@@ -126,12 +133,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         </div>
-        <ScoreBoard
-          players={players}
-          kyoku={kyoku}
-          wallCount={wallCount}
-          kyotaku={kyotaku}
-        />
       </div>
 
       {/* 自分の手牌 */}
@@ -149,6 +150,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           lastDiscard={lastDiscard}
           dataTestId="discard-seat-0"
         />
+        <div className="text-sm mb-1">
+          {me.name}: <span className="font-mono">{me.score}</span>
+        </div>
         <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
           {(() => {
