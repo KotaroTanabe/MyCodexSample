@@ -17,50 +17,54 @@ function App() {
     >
       <div className="w-full max-w-4xl mx-auto px-4 space-y-6">
         <h1 className="text-2xl font-bold text-center">麻雀 Web アプリ（1人用デモ）</h1>
-        <div className="flex items-center gap-2">
-          <label htmlFor="size">牌サイズ</label>
-          <input
-            id="size"
-            type="range"
-            min="1"
-            max="4"
-            step="0.1"
-            value={tileFont}
-            onChange={e => setTileFont(parseFloat(e.target.value))}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="mode">モード</label>
-          <select
-            id="mode"
-            value={mode}
-            onChange={e => setMode(e.target.value as 'game' | 'fu-quiz' | 'score-quiz')}
-            className="border px-2 py-1"
-          >
-            <option value="game">ゲーム</option>
-            <option value="fu-quiz">符クイズ</option>
-            <option value="score-quiz">点数クイズ</option>
-          </select>
-        </div>
-        {mode === 'game' && (
+        <div className="flex flex-wrap items-end gap-4">
           <div className="flex items-center gap-2">
-            <label htmlFor="length">試合形式</label>
+            <label htmlFor="size">牌サイズ</label>
+            <input
+              id="size"
+              type="range"
+              min="1"
+              max="4"
+              step="0.1"
+              value={tileFont}
+              onChange={e => setTileFont(parseFloat(e.target.value))}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="mode">モード</label>
             <select
-              id="length"
-              value={gameLength}
+              id="mode"
+              value={mode}
               onChange={e =>
-                setGameLength(
-                  e.target.value as 'east1' | 'tonpu' | 'tonnan',
-                )
+                setMode(e.target.value as 'game' | 'fu-quiz' | 'score-quiz')
               }
               className="border px-2 py-1"
             >
-              <option value="east1">東1局のみ</option>
-              <option value="tonpu">東風戦</option>
-              <option value="tonnan">東南戦</option>
+              <option value="game">ゲーム</option>
+              <option value="fu-quiz">符クイズ</option>
+              <option value="score-quiz">点数クイズ</option>
             </select>
           </div>
-        )}
+          {mode === 'game' && (
+            <div className="flex items-center gap-2">
+              <label htmlFor="length">試合形式</label>
+              <select
+                id="length"
+                value={gameLength}
+                onChange={e =>
+                  setGameLength(
+                    e.target.value as 'east1' | 'tonpu' | 'tonnan',
+                  )
+                }
+                className="border px-2 py-1"
+              >
+                <option value="east1">東1局のみ</option>
+                <option value="tonpu">東風戦</option>
+                <option value="tonnan">東南戦</option>
+              </select>
+            </div>
+          )}
+        </div>
         {mode === 'game' ? (
           <GameController key={gameLength} gameLength={gameLength} />
         ) : mode === 'fu-quiz' ? (
