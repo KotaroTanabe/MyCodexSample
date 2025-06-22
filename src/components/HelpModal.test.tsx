@@ -25,6 +25,9 @@ describe('HelpModal', () => {
     fireEvent.click(screen.getByText('点数表'));
     expect(screen.getByRole('heading', { name: '点数表' })).toBeTruthy();
     expect(screen.getByText('符\\翻')).toBeTruthy();
+    fireEvent.click(screen.getByText('計算方法'));
+    expect(screen.getByRole('heading', { name: '計算方法' })).toBeTruthy();
+    expect(screen.getByText('基本符20')).toBeTruthy();
     fireEvent.click(screen.getByText('役一覧'));
     expect(screen.getByRole('heading', { name: '役一覧' })).toBeTruthy();
     expect(screen.queryByText('符\\翻')).toBeNull();

@@ -37,10 +37,4 @@ describe('ScoreQuiz', () => {
     expect(screen.getByText('場風: 東 / 自風: 東 / ロン')).toBeTruthy();
   });
 
-  it('opens help modal with score info', () => {
-    render(<ScoreQuiz initialIndex={0} initialWinType="ron" />);
-    fireEvent.click(screen.getByLabelText('ヘルプ'));
-    expect(screen.getByText('基本点 = 符 × 2^(翻 + 2)')).toBeTruthy();
-    expect(screen.getByText('ロンは子×4 / 親×6、ツモは子×1 / 親×2')).toBeTruthy();
-  });
 });

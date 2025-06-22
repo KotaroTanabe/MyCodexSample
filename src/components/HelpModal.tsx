@@ -8,7 +8,7 @@ interface HelpModalProps {
 }
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
-  const [view, setView] = useState<'yaku' | 'score'>('yaku');
+  const [view, setView] = useState<'yaku' | 'score' | 'calc'>('yaku');
   const [isDealer, setIsDealer] = useState(false);
   const [winType, setWinType] = useState<'ron' | 'tsumo'>('ron');
   if (!isOpen) return null;
@@ -16,7 +16,9 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 max-w-md w-full shadow-lg">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-bold">{view === 'yaku' ? '役一覧' : '点数表'}</h2>
+          <h2 className="text-lg font-bold">
+            {view === 'yaku' ? '役一覧' : view === 'score' ? '点数表' : '計算方法'}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-black font-bold"
@@ -37,6 +39,12 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             onClick={() => setView('score')}
           >
             点数表
+          </button>
+          <button
+            className={`px-2 py-1 rounded ${view === 'calc' ? 'bg-blue-200' : 'bg-gray-200'}`}
+            onClick={() => setView('calc')}
+          >
+            計算方法
           </button>
         </div>
         {view === 'yaku' ? (
@@ -62,7 +70,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               </tbody>
             </table>
           </div>
-        ) : (
+        ) : view === 'score' ? (
           <div className="space-y-2">
             <div className="flex gap-2">
               <label>
@@ -100,6 +108,30 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="max-h-96 overflow-y-auto">
               <ScoreTable isDealer={isDealer} winType={winType} />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <div>
+              <h3 className="font-semibold mb-1">符計算</h3>
+              <ul className="list-disc list-inside space-y-1">
+                <li>基本符20</li>
+                <li>雀頭が三元牌なら+2、自風なら+2、場風なら+2</li>
+                <li>刻子: 中張牌4符 / 么九牌8符</li>
+                <li>カン: 中張牌16符 / 么九牌32符</li>
+                <li>ツモ上がり +2</li>
+                <li>面前ロン +10</li>
+                <li>最後に10の位へ切り上げ</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">点数計算</h3>
+              <ul className="list-disc list-inside space-y-1">
+                <li>基本点 = 符 × 2^(翻 + 2)</li>
+                <li>ロンは子×4 / 親×6、ツモは子×1 / 親×2</li>
+                <li>掛けた後100点単位へ切り上げ</li>
+                <li>例: 30符4翻 親ロン → 30 × 2^6 × 6 = 11520 → 11600</li>
+              </ul>
             </div>
           </div>
         )}
