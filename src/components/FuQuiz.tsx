@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tile, Meld } from '../types/mahjong';
+import { calculateFu } from '../score/score';
 import { TileView } from './TileView';
 import { sortHand } from './Player';
 
@@ -189,8 +190,9 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const fu = calculateFu(question.hand, question.melds);
     const detail = calculateFuDetail(question.hand, question.melds);
-    setResult(detail);
+    setResult({ fu, steps: detail.steps });
   };
 
   const nextQuestion = () => {
