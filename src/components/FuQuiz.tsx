@@ -142,7 +142,9 @@ interface FuQuizProps {
 export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   const [idx, setIdx] = useState(initialIndex ?? 0);
   const [guess, setGuess] = useState('');
-  const [result, setResult] = useState<{ fu: number; steps: string[] } | null>(null);
+  const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
+    null,
+  );
 
   const question = SAMPLE_HANDS[idx];
   const fullHand = sortHand([...question.hand, ...question.melds.flatMap(m => m.tiles)]);
@@ -151,7 +153,8 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
     e.preventDefault();
     const fu = calculateFu(question.hand, question.melds);
     const detail = calculateFuDetail(question.hand, question.melds);
-    setResult({ fu, steps: detail.steps });
+    const correct = Number(guess) === fu;
+    setResult({ fu, steps: detail.steps, correct });
   };
 
   const nextQuestion = () => {
@@ -178,7 +181,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
       </form>
       {result && (
         <div className="mt-2">
-          <div>正解: {result.fu}符</div>
+          <div>{result.correct ? '正解！' : `不正解。正解: ${result.fu}符`}</div>
           <ul className="list-disc list-inside text-sm">
             {result.steps.map((s, i) => (
               <li key={i}>{s}</li>
