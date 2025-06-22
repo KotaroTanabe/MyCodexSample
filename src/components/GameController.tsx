@@ -52,7 +52,7 @@ export const GameController: React.FC = () => {
   useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
-      setShanten(calcShanten(players[0].hand));
+      setShanten(calcShanten(players[0].hand, players[0].melds.length));
     }
   }, [players]);
 
@@ -220,7 +220,14 @@ export const GameController: React.FC = () => {
         playersRef.current[0].seat,
         playersRef.current[idx].seat,
       );
-      setCallOptions(options);
+      const hasAction = options.some(o => o !== 'pass');
+      if (!hasAction) {
+        setCallOptions(null);
+        setLastDiscard(null);
+        nextTurn();
+      } else {
+        setCallOptions(options);
+      }
     } else {
       nextTurn();
     }

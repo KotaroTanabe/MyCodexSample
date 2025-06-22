@@ -5,7 +5,7 @@ function tileIndex(tile: Tile): number {
   return base[tile.suit] + tile.rank - 1;
 }
 
-export function calcStandardShanten(hand: Tile[]): number {
+export function calcStandardShanten(hand: Tile[], openMelds = 0): number {
   const counts = new Array(34).fill(0);
   for (const t of hand) counts[tileIndex(t)]++;
   let melds = 0;
@@ -57,6 +57,7 @@ export function calcStandardShanten(hand: Tile[]): number {
     }
   }
   if (pairs > 1) pairs = 1;
+  melds += openMelds;
   if (taatsu > 4 - melds) taatsu = 4 - melds;
   return 8 - melds * 2 - taatsu - pairs;
 }
@@ -91,13 +92,13 @@ export function calcKokushiShanten(hand: Tile[]): number {
   return 13 - unique - (hasPair ? 1 : 0);
 }
 
-export function calcShanten(hand: Tile[]): {
+export function calcShanten(hand: Tile[], openMelds = 0): {
   standard: number;
   chiitoi: number;
   kokushi: number;
 } {
   return {
-    standard: calcStandardShanten(hand),
+    standard: calcStandardShanten(hand, openMelds),
     chiitoi: calcChiitoiShanten(hand),
     kokushi: calcKokushiShanten(hand),
   };

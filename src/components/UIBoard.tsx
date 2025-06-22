@@ -1,6 +1,7 @@
 import React from 'react';
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
 import { TileView } from './TileView';
+import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
 
 interface UIBoardProps {
@@ -140,11 +141,10 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        {onRiichi && (
+        {onRiichi && isMyTurn && canDeclareRiichi(players[0]) && (
           <button
             className="mt-2 px-2 py-1 bg-red-200 rounded"
             onClick={() => onRiichi()}
-            disabled={!isMyTurn || players[0].isRiichi}
           >
             リーチ
           </button>
