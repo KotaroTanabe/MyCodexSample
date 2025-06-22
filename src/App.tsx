@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { GameController } from './components/GameController';
+import { FuQuiz } from './components/FuQuiz';
 
 function App() {
   const [tileFont, setTileFont] = useState(2);
+  const [mode, setMode] = useState<'game' | 'fu-quiz'>('game');
 
   return (
     <div
@@ -23,7 +25,19 @@ function App() {
             onChange={e => setTileFont(parseFloat(e.target.value))}
           />
         </div>
-        <GameController />
+        <div className="flex items-center gap-2">
+          <label htmlFor="mode">モード</label>
+          <select
+            id="mode"
+            value={mode}
+            onChange={e => setMode(e.target.value as 'game' | 'fu-quiz')}
+            className="border px-2 py-1"
+          >
+            <option value="game">ゲーム</option>
+            <option value="fu-quiz">符クイズ</option>
+          </select>
+        </div>
+        {mode === 'game' ? <GameController /> : <FuQuiz />}
       </div>
     </div>
   );
