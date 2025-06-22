@@ -26,4 +26,9 @@ describe('FuQuiz', () => {
     fireEvent.click(button);
     expect(screen.getByText('不正解。正解: 20符')).toBeTruthy();
   });
+
+  it('displays seat and round wind', () => {
+    render(<FuQuiz initialIndex={0} />);
+    expect(screen.getByText('場風: 東 / 自風: 東')).toBeTruthy();
+  });
 });

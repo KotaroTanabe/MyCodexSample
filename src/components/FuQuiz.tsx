@@ -108,13 +108,16 @@ function calculateFuDetail(
   let fu = 20;
   const steps = ['基本符20'];
 
-  if (
-    parsed.pair[0].suit === 'dragon' ||
-    (parsed.pair[0].suit === 'wind' &&
-      (parsed.pair[0].rank === seatWind || parsed.pair[0].rank === roundWind))
-  ) {
-    fu += 2;
-    steps.push('役牌の雀頭 +2');
+  let pairFu = 0;
+  if (parsed.pair[0].suit === 'dragon') {
+    pairFu = 2;
+  } else if (parsed.pair[0].suit === 'wind') {
+    if (parsed.pair[0].rank === seatWind) pairFu += 2;
+    if (parsed.pair[0].rank === roundWind) pairFu += 2;
+  }
+  if (pairFu > 0) {
+    fu += pairFu;
+    steps.push(`役牌の雀頭 +${pairFu}`);
   }
 
   for (const meld of parsed.melds) {
@@ -156,6 +159,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
   );
   const seatWind = 1;
   const roundWind = 1;
+  const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
@@ -184,6 +188,7 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex }) => {
 
   return (
     <div className="p-4 border rounded">
+      <div className="text-sm mb-1">場風: {windNames[roundWind]} / 自風: {windNames[seatWind]}</div>
       <div className="flex gap-1 mb-2 flex-wrap">
         {fullHand.map(t => (
           <TileView key={t.id} tile={t} />
