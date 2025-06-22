@@ -15,6 +15,7 @@ import { incrementDiscardCount, findRonWinner } from './DiscardUtil';
 import { chooseAICallOption } from '../utils/ai';
 import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import { RoundResultModal, RoundResult } from './RoundResultModal';
+import { FinalResultModal } from './FinalResultModal';
 
 const DEAD_WALL_SIZE = 14;
 
@@ -160,7 +161,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const nextKyoku = () => {
     const next = kyokuRef.current + 1;
     if (next > maxKyoku) {
-      setPhase('init');
+      setPhase('end');
     } else {
       setKyoku(next);
       startRound(false);
@@ -491,6 +492,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       {roundResult && (
         <RoundResultModal
           results={roundResult.results}
+          nextLabel={kyokuRef.current >= maxKyoku ? '結果発表へ' : undefined}
           onNext={() => {
             setRoundResult(null);
             nextKyoku();
@@ -498,9 +500,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
         />
       )}
       {phase === 'end' && (
-        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleRestart}>
-          リプレイ
-        </button>
+        <FinalResultModal players={players} onReplay={handleRestart} />
       )}
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>

@@ -14,9 +14,10 @@ export interface RoundResult {
 interface Props {
   results: RoundResultRow[];
   onNext: () => void;
+  nextLabel?: string;
 }
 
-export const RoundResultModal: React.FC<Props> = ({ results, onNext }) => {
+export const RoundResultModal: React.FC<Props> = ({ results, onNext, nextLabel = '次局へ' }) => {
   if (results.length === 0) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -42,7 +43,7 @@ export const RoundResultModal: React.FC<Props> = ({ results, onNext }) => {
             ))}
           </tbody>
         </table>
-        <button className="mt-2 px-4 py-1 bg-blue-500 text-white rounded" onClick={onNext}>次局へ</button>
+        <button className="mt-2 px-4 py-1 bg-blue-500 text-white rounded" onClick={onNext}>{nextLabel}</button>
       </div>
     </div>
   );
