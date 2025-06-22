@@ -17,6 +17,19 @@ const seatRotation = (seat: number) => {
   }
 };
 
+const seatRiverRotation = (seat: number) => {
+  switch (seat % 4) {
+    case 1:
+      return 90; // shimocha (right)
+    case 2:
+      return 180; // toimen
+    case 3:
+      return 270; // kamicha (left)
+    default:
+      return 0; // self
+  }
+};
+
 interface UIBoardProps {
   players: PlayerState[];
   dora: Tile[];
@@ -68,12 +81,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div className="grid grid-cols-6 gap-1">
+        <div
+          className="grid grid-cols-6 gap-1"
+          style={{ transform: `rotate(${seatRiverRotation(top.seat)}deg)` }}
+          data-testid="discard-seat-2"
+        >
           {top.discard.map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
-              rotate={seatRotation(top.seat)}
+              rotate={seatRotation(top.seat) - seatRiverRotation(top.seat)}
               isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
@@ -90,12 +107,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div className="grid grid-cols-6 gap-1">
+        <div
+          className="grid grid-cols-6 gap-1"
+          style={{ transform: `rotate(${seatRiverRotation(right.seat)}deg)` }}
+          data-testid="discard-seat-1"
+        >
           {right.discard.map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
-              rotate={seatRotation(right.seat)}
+              rotate={seatRotation(right.seat) - seatRiverRotation(right.seat)}
               isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
@@ -112,12 +133,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div className="grid grid-cols-6 gap-1">
+        <div
+          className="grid grid-cols-6 gap-1"
+          style={{ transform: `rotate(${seatRiverRotation(left.seat)}deg)` }}
+          data-testid="discard-seat-3"
+        >
           {left.discard.map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
-              rotate={seatRotation(left.seat)}
+              rotate={seatRotation(left.seat) - seatRiverRotation(left.seat)}
               isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
@@ -143,12 +168,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div className="flex gap-1 mb-2">
+        <div
+          className="flex gap-1 mb-2"
+          style={{ transform: `rotate(${seatRiverRotation(me.seat)}deg)` }}
+          data-testid="discard-seat-0"
+        >
           {me.discard.map(tile => (
             <TileView
               key={tile.id}
               tile={tile}
-              rotate={seatRotation(me.seat)}
+              rotate={seatRotation(me.seat) - seatRiverRotation(me.seat)}
               isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
             />
           ))}
