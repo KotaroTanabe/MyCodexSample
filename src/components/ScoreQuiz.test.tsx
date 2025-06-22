@@ -4,7 +4,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { ScoreQuiz } from './ScoreQuiz';
 
-// SAMPLE_HANDS[0] をロン和了すると 4翻20符で 1280 点になる
+// SAMPLE_HANDS[0] をロン和了すると 4翻30符で 1920 点になる
 
 afterEach(() => cleanup());
 
@@ -12,7 +12,7 @@ describe('ScoreQuiz', () => {
   it('shows "正解！" when the guess is correct', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="ron" />);
     const input = screen.getByPlaceholderText('点数を入力');
-    fireEvent.change(input, { target: { value: '1280' } });
+    fireEvent.change(input, { target: { value: '1920' } });
     const button = screen.getByText('答える');
     fireEvent.click(button);
     expect(screen.getByText('正解！')).toBeTruthy();
@@ -26,7 +26,7 @@ describe('ScoreQuiz', () => {
     fireEvent.change(input, { target: { value: '1000' } });
     const button = screen.getByText('答える');
     fireEvent.click(button);
-    expect(screen.getByText('不正解。正解: 1280点 (4翻 20符)')).toBeTruthy();
+    expect(screen.getByText('不正解。正解: 1920点 (4翻 30符)')).toBeTruthy();
     expect(screen.getByText('Tanyao (1翻)')).toBeTruthy();
     expect(screen.getByText('基本符20')).toBeTruthy();
   });
