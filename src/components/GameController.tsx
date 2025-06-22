@@ -409,7 +409,6 @@ const handleCallAction = (action: MeldType | 'pass') => {
     let next = (turnRef.current + 1) % 4;
     setTurn(next);
     setTimeout(() => {
-      if (wallRef.current.length === 0) return;
       if (playersRef.current[next].isAI) {
         // Check if the AI wants to call on the previous discard
         if (lastDiscard && lastDiscard.player !== next) {
@@ -444,7 +443,12 @@ const handleCallAction = (action: MeldType | 'pass') => {
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
-      <ScoreBoard players={players} kyoku={kyoku} onHelp={() => setHelpOpen(true)} />
+      <ScoreBoard
+        players={players}
+        kyoku={kyoku}
+        wallCount={wall.length}
+        onHelp={() => setHelpOpen(true)}
+      />
       <label className="flex items-center gap-2">
         <input type="checkbox" checked={playerIsAI} onChange={togglePlayerAI} />
         観戦モード
