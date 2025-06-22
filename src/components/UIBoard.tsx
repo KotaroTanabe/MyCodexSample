@@ -17,6 +17,9 @@ interface UIBoardProps {
   onCallAction?: (action: MeldType | 'pass') => void;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onRiichi?: () => void;
+  selfKanOptions?: Tile[][];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  onSelfKan?: (tiles: Tile[]) => void;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
@@ -30,6 +33,8 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   callOptions,
   onCallAction,
   onRiichi,
+  selfKanOptions,
+  onSelfKan,
 }) => {
   if (players.length === 0) {
     return null;
@@ -137,6 +142,19 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 onClick={() => onCallAction?.(act)}
               >
                 {act === 'pon' ? 'ポン' : act === 'chi' ? 'チー' : act === 'kan' ? 'カン' : 'スルー'}
+              </button>
+            ))}
+          </div>
+        )}
+        {selfKanOptions && selfKanOptions.length > 0 && (
+          <div className="flex gap-2 mt-2">
+            {selfKanOptions.map((tiles, idx) => (
+              <button
+                key={idx}
+                className="px-2 py-1 bg-green-200 rounded"
+                onClick={() => onSelfKan?.(tiles)}
+              >
+                カン
               </button>
             ))}
           </div>

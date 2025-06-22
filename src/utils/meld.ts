@@ -40,3 +40,14 @@ export function getValidCallOptions(
   if (actions.length > 0) actions.push('pass');
   return actions;
 }
+
+export function getSelfKanOptions(player: PlayerState): Tile[][] {
+  const groups: Record<string, Tile[]> = {};
+  for (const t of player.hand) {
+    const key = `${t.suit}-${t.rank}`;
+    (groups[key] = groups[key] || []).push(t);
+  }
+  return Object.values(groups)
+    .filter(arr => arr.length >= 4)
+    .map(arr => arr.slice(0, 4));
+}

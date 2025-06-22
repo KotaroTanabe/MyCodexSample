@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getValidCallOptions, selectMeldTiles } from './meld';
+import { getValidCallOptions, selectMeldTiles, getSelfKanOptions } from './meld';
 import { PlayerState, Tile } from '../types/mahjong';
 import { createInitialPlayerState } from '../components/Player';
 
@@ -72,5 +72,36 @@ describe('selectMeldTiles', () => {
     };
     const result = selectMeldTiles(player, tile, 'pon');
     expect(result?.length).toBe(2);
+  });
+});
+
+describe('getSelfKanOptions', () => {
+  it('detects four of a kind in hand', () => {
+    const hand: Tile[] = [
+      { suit: 'pin', rank: 5, id: 'a' },
+      { suit: 'pin', rank: 5, id: 'b' },
+      { suit: 'pin', rank: 5, id: 'c' },
+      { suit: 'pin', rank: 5, id: 'd' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    const options = getSelfKanOptions(player);
+    expect(options).toHaveLength(1);
+    expect(options[0].length).toBe(4);
+  });
+
+  it('returns empty array when no kan possible', () => {
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'a' },
+      { suit: 'man', rank: 1, id: 'b' },
+      { suit: 'man', rank: 1, id: 'c' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+    };
+    expect(getSelfKanOptions(player)).toHaveLength(0);
   });
 });

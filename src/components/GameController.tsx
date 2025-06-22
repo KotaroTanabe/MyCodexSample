@@ -3,7 +3,7 @@ import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi } from './Player';
 import { MeldType } from '../types/mahjong';
-import { selectMeldTiles, getValidCallOptions } from '../utils/meld';
+import { selectMeldTiles, getValidCallOptions, getSelfKanOptions } from '../utils/meld';
 import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
@@ -34,6 +34,7 @@ export const GameController: React.FC = () => {
   const [lastDiscard, setLastDiscard] = useState<{ tile: Tile; player: number; isShonpai: boolean } | null>(null);
   const [callOptions, setCallOptions] = useState<(MeldType | 'pass')[] | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
+  const [selfKanOptions, setSelfKanOptions] = useState<Tile[][] | null>(null);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -169,6 +170,16 @@ export const GameController: React.FC = () => {
     playersRef.current = p;
     setWall(result.wall);
     wallRef.current = result.wall;
+    if (!playersRef.current[currentIndex].isAI) {
+      const opts = getSelfKanOptions(playersRef.current[currentIndex]);
+      setSelfKanOptions(opts.length > 0 ? opts : null);
+    } else {
+      const opts = getSelfKanOptions(playersRef.current[currentIndex]);
+      if (opts.length > 0) {
+        performSelfKan(currentIndex, opts[0]);
+        return;
+      }
+    }
     if (isWinningHand([...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)])) {
       const fullHand = [
         ...p[currentIndex].hand,
@@ -202,6 +213,7 @@ export const GameController: React.FC = () => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
+    setSelfKanOptions(null);
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
@@ -262,6 +274,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     if (action === 'pass') {
       setCallOptions(null);
       setLastDiscard(null);
+      setSelfKanOptions(null);
       nextTurn();
       return;
     }
@@ -300,8 +313,23 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
     setCallOptions(null);
     setLastDiscard(null);
+    setSelfKanOptions(null);
   setTurn(caller);
 };
+
+  const performSelfKan = (caller: number, tiles: Tile[]) => {
+    let p = [...playersRef.current];
+    p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
+    setPlayers(p);
+    playersRef.current = p;
+
+    const doraResult = drawDoraIndicator(wallRef.current, 1);
+    setDora(prev => [...prev, ...doraResult.dora]);
+    setWall(doraResult.wall);
+    wallRef.current = doraResult.wall;
+    turnRef.current = caller;
+    drawForCurrentPlayer();
+  };
 
   const performAICall = (caller: number, action: MeldType) => {
     if (!lastDiscard) return;
@@ -346,6 +374,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
     p[0] = declareRiichi(p[0]);
     setPlayers(p);
     playersRef.current = p;
+  };
+
+  const handleSelfKan = (tiles: Tile[]) => {
+    setSelfKanOptions(null);
+    performSelfKan(0, tiles);
   };
 
   // ターン進行
@@ -401,6 +434,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
         callOptions={!players[0]?.isAI ? callOptions ?? undefined : undefined}
         onCallAction={!players[0]?.isAI ? handleCallAction : undefined}
         onRiichi={!players[0]?.isAI ? handleRiichi : undefined}
+        selfKanOptions={!players[0]?.isAI ? selfKanOptions ?? undefined : undefined}
+        onSelfKan={!players[0]?.isAI ? handleSelfKan : undefined}
       />
       <div className="mt-2">{message}</div>
       {roundResult && (
