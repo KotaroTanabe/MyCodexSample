@@ -12,7 +12,7 @@ describe('GameController auto play', () => {
   it('disables tile buttons when enabled', async () => {
     vi.useRealTimers();
     const { container } = render(<GameController gameLength="tonnan" />);
-    await screen.findAllByText('あなたの手牌');
+    await screen.findAllByText('手牌');
     const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);
     const buttons = container.querySelectorAll('button');
@@ -22,7 +22,7 @@ describe('GameController auto play', () => {
   it('AI discards when toggled during player turn', async () => {
     vi.useRealTimers();
     render(<GameController gameLength="tonnan" />);
-    await screen.findAllByText('あなたの手牌');
+    await screen.findAllByText('手牌');
     vi.useFakeTimers();
     const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);

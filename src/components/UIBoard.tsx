@@ -159,7 +159,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         <div className="text-sm mb-1">
           {me.name}: <span className="font-mono">{me.score}</span>
         </div>
-        <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
           {(() => {
             const base = Math.min(shanten.standard, shanten.chiitoi, shanten.kokushi);
@@ -181,6 +180,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             : my.hand;
           return (
             <div className="flex gap-2 items-center">
+              <span className="text-xs text-gray-600">手牌</span>
               {handTiles.map(tile => {
                 const kanji =
                   tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
