@@ -24,4 +24,13 @@ describe('ScoreTable', () => {
     // console.log(row30.textContent, cells.map(c => c.textContent));
     expect(cells[2].textContent).toBe('500-1000');
   });
+
+  it('includes 120fu row showing child ron score', () => {
+    render(<ScoreTable isDealer={false} winType="ron" />);
+    const rows = screen.getAllByRole('row');
+    const row120 = rows[12];
+    const cells = within(row120).getAllByRole('cell');
+    // 120fu 1han -> base 120 * 2^3 = 960, ron child => 960*4=3840 -> 3900 after rounding
+    expect(cells[1].textContent).toBe('3900');
+  });
 });
