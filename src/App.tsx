@@ -12,11 +12,10 @@ function App() {
 
   return (
     <div
-      className="min-h-screen bg-green-100 flex items-center justify-center py-8"
+      className="min-h-screen bg-green-100 flex items-center justify-center py-2"
       style={{ ['--tile-font-size' as any]: `${tileFont}rem` } as React.CSSProperties}
     >
-      <div className="w-full max-w-4xl mx-auto px-4 space-y-6">
-        <h1 className="text-2xl font-bold text-center">麻雀 Web アプリ（1人用デモ）</h1>
+      <div className="w-full mx-auto px-4 space-y-4">
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex items-center gap-2">
             <label htmlFor="size">牌サイズ</label>
