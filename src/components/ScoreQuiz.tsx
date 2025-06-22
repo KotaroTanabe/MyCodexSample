@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { sortHand } from './Player';
 import { TileView } from './TileView';
 import { detectYaku } from '../score/yaku';
-import { calculateScore } from '../score/score';
+import { calculateScore, calcRoundedScore } from '../score/score';
 import { calculateFuDetail } from '../score/calculateFuDetail';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
 import { QuizHelpModal } from './QuizHelpModal';
@@ -41,7 +41,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       seatWind,
       roundWind,
     });
-    const { han, fu, points } = calculateScore(
+    const { han, fu } = calculateScore(
       question.hand,
       question.melds,
       yaku,
@@ -52,6 +52,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
         winType,
       },
     );
+    const points = calcRoundedScore(han, fu, seatWind === 1, winType);
     const detail = calculateFuDetail(
       question.hand,
       question.melds,
