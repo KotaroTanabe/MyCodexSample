@@ -83,10 +83,25 @@ export function claimMeld(
 ): PlayerState {
   // remove called tiles from hand
   const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
+  let meldTiles = tiles;
+  if (type === 'chi') {
+    const idx = tiles.findIndex(t => t.id === calledTileId);
+    if (idx >= 0) {
+      const called = tiles[idx];
+      const others = tiles.filter((_, i) => i !== idx);
+      // when calling from the player on the left (standard chi),
+      // place the called tile at the leftmost position
+      if (fromPlayer === (player.seat + 3) % 4) {
+        meldTiles = [called, ...others];
+      } else {
+        meldTiles = [...others, called];
+      }
+    }
+  }
   return {
     ...player,
     hand: sortHand(hand),
-    melds: [...player.melds, { type, tiles, fromPlayer, calledTileId }],
+    melds: [...player.melds, { type, tiles: meldTiles, fromPlayer, calledTileId }],
   };
 }
 
