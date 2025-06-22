@@ -22,6 +22,8 @@ interface UIBoardProps {
   selfKanOptions?: Tile[][];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   onSelfKan?: (tiles: Tile[]) => void;
+  playerIsAI?: boolean;
+  onToggleAI?: () => void;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
@@ -37,6 +39,8 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   onRiichi,
   selfKanOptions,
   onSelfKan,
+  playerIsAI,
+  onToggleAI,
 }) => {
   if (players.length === 0) {
     return null;
@@ -218,6 +222,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           >
             リーチ
           </button>
+        )}
+        {onToggleAI && (
+          <label className="flex items-center gap-2 mt-2">
+            <input type="checkbox" checked={playerIsAI} onChange={onToggleAI} />
+            観戦モード
+          </label>
         )}
       </div>
     </div>
