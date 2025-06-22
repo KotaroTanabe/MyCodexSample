@@ -104,45 +104,49 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 右側：下家 */}
-      <div className="row-start-2 col-start-3 flex flex-col items-center">
-        <div className="text-sm mb-1">
+      <div className="row-start-2 col-start-3 flex items-start gap-2">
+        <div className="flex flex-col items-center">
+          {right.melds.length > 0 && (
+            <div className="flex gap-1 mb-1">
+              {right.melds.map((m, idx) => (
+                <MeldView key={idx} meld={m} seat={right.seat} />
+              ))}
+            </div>
+          )}
+          {right.isRiichi && <div className="text-xs">1000点棒</div>}
+          <RiverView
+            tiles={right.discard}
+            seat={right.seat}
+            lastDiscard={lastDiscard}
+            dataTestId="discard-seat-1"
+          />
+        </div>
+        <div className="text-sm">
           {right.name}: <span className="font-mono">{right.score}</span>
         </div>
-        {right.melds.length > 0 && (
-          <div className="flex gap-1 mb-1">
-            {right.melds.map((m, idx) => (
-              <MeldView key={idx} meld={m} seat={right.seat} />
-            ))}
-          </div>
-        )}
-        {right.isRiichi && <div className="text-xs">1000点棒</div>}
-        <RiverView
-          tiles={right.discard}
-          seat={right.seat}
-          lastDiscard={lastDiscard}
-          dataTestId="discard-seat-1"
-        />
       </div>
 
       {/* 左側：上家 */}
-      <div className="row-start-2 col-start-1 flex flex-col items-center">
-        <div className="text-sm mb-1">
+      <div className="row-start-2 col-start-1 flex items-start gap-2">
+        <div className="text-sm">
           {left.name}: <span className="font-mono">{left.score}</span>
         </div>
-        {left.melds.length > 0 && (
-          <div className="flex gap-1 mb-1">
-            {left.melds.map((m, idx) => (
-              <MeldView key={idx} meld={m} seat={left.seat} />
-            ))}
-          </div>
-        )}
-        {left.isRiichi && <div className="text-xs">1000点棒</div>}
-        <RiverView
-          tiles={left.discard}
-          seat={left.seat}
-          lastDiscard={lastDiscard}
-          dataTestId="discard-seat-3"
-        />
+        <div className="flex flex-col items-center">
+          {left.melds.length > 0 && (
+            <div className="flex gap-1 mb-1">
+              {left.melds.map((m, idx) => (
+                <MeldView key={idx} meld={m} seat={left.seat} />
+              ))}
+            </div>
+          )}
+          {left.isRiichi && <div className="text-xs">1000点棒</div>}
+          <RiverView
+            tiles={left.discard}
+            seat={left.seat}
+            lastDiscard={lastDiscard}
+            dataTestId="discard-seat-3"
+          />
+        </div>
       </div>
 
       {/* ドラ表示と局情報 */}
