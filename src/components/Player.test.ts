@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { incrementDiscardCount } from './DiscardUtil';
-import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld, declareRiichi, canDeclareRiichi } from './Player';
+import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld, declareRiichi, canDeclareRiichi, isTenpaiAfterDiscard } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
 
@@ -180,5 +180,35 @@ describe('canDeclareRiichi', () => {
       drawnTile: null,
     };
     expect(canDeclareRiichi(player)).toBe(false);
+  });
+});
+
+describe('isTenpaiAfterDiscard', () => {
+  const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
+
+  it('detects tenpai after discarding a tile', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a1'), t('man', 1, 'a2'),
+      t('man', 2, 'b1'), t('man', 2, 'b2'),
+      t('pin', 3, 'c1'), t('pin', 3, 'c2'),
+      t('pin', 4, 'd1'), t('pin', 4, 'd2'),
+      t('sou', 5, 'e1'), t('sou', 5, 'e2'),
+      t('sou', 6, 'f1'), t('sou', 6, 'f2'),
+      t('man', 7, 'g1'), t('man', 8, 'h1'),
+    ];
+    const player: PlayerState = { ...createInitialPlayerState('test', false), hand };
+    expect(isTenpaiAfterDiscard(player, 'h1')).toBe(true);
+  });
+
+  it('returns false if noten after discard', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a'), t('man', 2, 'b'), t('man', 3, 'c'),
+      t('man', 4, 'd'), t('man', 5, 'e'), t('man', 6, 'f'),
+      t('man', 7, 'g'), t('man', 8, 'h'), t('man', 9, 'i'),
+      t('pin', 1, 'j'), t('pin', 1, 'k'),
+      t('sou', 2, 'l'), t('sou', 2, 'm'), t('sou', 3, 'n'),
+    ];
+    const player: PlayerState = { ...createInitialPlayerState('bad', false), hand };
+    expect(isTenpaiAfterDiscard(player, 'a')).toBe(false);
   });
 });
