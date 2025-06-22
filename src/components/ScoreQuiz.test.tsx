@@ -16,15 +16,19 @@ describe('ScoreQuiz', () => {
     const button = screen.getByText('答える');
     fireEvent.click(button);
     expect(screen.getByText('正解！')).toBeTruthy();
+    expect(screen.getByText('Tanyao (1翻)')).toBeTruthy();
+    expect(screen.getByText('基本符20')).toBeTruthy();
   });
 
-  it('shows the correct answer with han and fu when wrong', () => {
+  it('shows the correct answer with details when wrong', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="ron" />);
     const input = screen.getByPlaceholderText('点数を入力');
     fireEvent.change(input, { target: { value: '1000' } });
     const button = screen.getByText('答える');
     fireEvent.click(button);
     expect(screen.getByText('不正解。正解: 1280点 (4翻 20符)')).toBeTruthy();
+    expect(screen.getByText('Tanyao (1翻)')).toBeTruthy();
+    expect(screen.getByText('基本符20')).toBeTruthy();
   });
 
   it('displays seat and round wind and win type', () => {
