@@ -33,6 +33,9 @@ const shouldReverseRiver = (seat: number): boolean => {
   return rot === 90 || rot === 180;
 };
 
+/** minimum cells to reserve for a player's discard area */
+export const RESERVED_RIVER_SLOTS = 20;
+
 interface RiverViewProps {
   tiles: Tile[];
   seat: number;
@@ -47,6 +50,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
   dataTestId,
 }) => {
   const ordered = shouldReverseRiver(seat) ? [...tiles].reverse() : tiles;
+  const placeholdersCount = Math.max(0, RESERVED_RIVER_SLOTS - ordered.length);
   return (
     <div
       className="grid grid-cols-6 gap-1"
@@ -59,6 +63,13 @@ export const RiverView: React.FC<RiverViewProps> = ({
           tile={tile}
           rotate={seatRotation(seat) - seatRiverRotation(seat)}
           isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+        />
+      ))}
+      {Array.from({ length: placeholdersCount }).map((_, idx) => (
+        <span
+          key={`placeholder-${idx}`}
+          className="inline-block border px-1 py-0.5 bg-white tile-font-size opacity-0"
+          style={{ transform: `rotate(${seatRotation(seat) - seatRiverRotation(seat)}deg)` }}
         />
       ))}
     </div>
