@@ -3,6 +3,7 @@ import { sortHand } from './Player';
 import { TileView } from './TileView';
 import { detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
+import { calculateFuDetail } from '../score/calculateFuDetail';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
 
 interface ScoreQuizProps {
@@ -17,7 +18,15 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
   const windNames: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
   const [guess, setGuess] = useState('');
   const [result, setResult] = useState<
-    { points: number; han: number; fu: number; correct: boolean } | null
+    | {
+        points: number;
+        han: number;
+        fu: number;
+        yaku: string[];
+        fuSteps: string[];
+        correct: boolean;
+      }
+    | null
   >(null);
 
   const fullHand = sortHand([...question.hand, ...question.melds.flatMap(m => m.tiles)]);
@@ -34,8 +43,16 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       seatWind,
       roundWind,
     });
+    const detail = calculateFuDetail(question.hand, question.melds, seatWind, roundWind);
     const correct = Number(guess) === points;
-    setResult({ points, han, fu, correct });
+    setResult({
+      points,
+      han,
+      fu,
+      yaku: yaku.map(y => `${y.name} (${y.han}翻)`),
+      fuSteps: detail.steps,
+      correct,
+    });
   };
 
   const handleNext = () => {
@@ -73,6 +90,16 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
               ? '正解！'
               : `不正解。正解: ${result.points}点 (${result.han}翻 ${result.fu}符)`}
           </div>
+          <ul className="list-disc list-inside text-sm">
+            {result.yaku.map((y, i) => (
+              <li key={`y${i}`}>{y}</li>
+            ))}
+          </ul>
+          <ul className="list-disc list-inside text-sm">
+            {result.fuSteps.map((s, i) => (
+              <li key={`f${i}`}>{s}</li>
+            ))}
+          </ul>
         </div>
       )}
       <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">
