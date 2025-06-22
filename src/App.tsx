@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { GameController } from './components/GameController';
 import { FuQuiz } from './components/FuQuiz';
 import { ScoreQuiz } from './components/ScoreQuiz';
+import { ShantenQuiz } from './components/ShantenQuiz';
 import { HelpModal } from './components/HelpModal';
 
 function App() {
   const [tileFont, setTileFont] = useState(2);
-  const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz'>('game');
+  const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz'>('game');
   const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
     'east1',
   );
@@ -37,13 +38,17 @@ function App() {
               id="mode"
               value={mode}
               onChange={e =>
-                setMode(e.target.value as 'game' | 'fu-quiz' | 'score-quiz')
+                setMode(
+                  e.target.value as
+                    'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz',
+                )
               }
               className="border px-2 py-1"
             >
               <option value="game">ゲーム</option>
               <option value="fu-quiz">符クイズ</option>
               <option value="score-quiz">点数クイズ</option>
+              <option value="shanten-quiz">向聴数クイズ</option>
             </select>
           </div>
         {mode === 'game' && (
@@ -77,8 +82,10 @@ function App() {
         <GameController key={gameLength} gameLength={gameLength} />
       ) : mode === 'fu-quiz' ? (
         <FuQuiz />
-      ) : (
+      ) : mode === 'score-quiz' ? (
         <ScoreQuiz />
+      ) : (
+        <ShantenQuiz />
       )}
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       </div>
