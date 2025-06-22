@@ -3,37 +3,7 @@ import { PlayerState, Tile, MeldType } from '../types/mahjong';
 import { TileView } from './TileView';
 import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
-
-const seatRotation = (seat: number) => {
-  switch (seat % 4) {
-    case 1:
-      return 270; // shimocha (right)
-    case 3:
-      return 90; // kamicha (left)
-    case 2:
-      return 180; // toimen
-    default:
-      return 0; // self
-  }
-};
-
-const seatRiverRotation = (seat: number) => {
-  switch (seat % 4) {
-    case 1:
-      return 90; // shimocha (right)
-    case 2:
-      return 180; // toimen
-    case 3:
-      return 270; // kamicha (left)
-    default:
-      return 0; // self
-  }
-};
-
-const shouldReverseRiver = (seat: number) => {
-  const rot = seatRiverRotation(seat) % 360;
-  return rot === 90 || rot === 180;
-};
+import { RiverView } from './RiverView';
 
 interface UIBoardProps {
   players: PlayerState[];
@@ -90,20 +60,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div
-          className="grid grid-cols-6 gap-1"
-          style={{ transform: `rotate(${seatRiverRotation(top.seat)}deg)` }}
-          data-testid="discard-seat-2"
-        >
-          {(shouldReverseRiver(top.seat) ? [...top.discard].reverse() : top.discard).map(tile => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              rotate={seatRotation(top.seat) - seatRiverRotation(top.seat)}
-              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-            />
-          ))}
-        </div>
+        <RiverView
+          tiles={top.discard}
+          seat={top.seat}
+          lastDiscard={lastDiscard}
+          dataTestId="discard-seat-2"
+        />
       </div>
 
       {/* 右側：下家 */}
@@ -116,20 +78,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div
-          className="grid grid-cols-6 gap-1"
-          style={{ transform: `rotate(${seatRiverRotation(right.seat)}deg)` }}
-          data-testid="discard-seat-1"
-        >
-          {(shouldReverseRiver(right.seat) ? [...right.discard].reverse() : right.discard).map(tile => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              rotate={seatRotation(right.seat) - seatRiverRotation(right.seat)}
-              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-            />
-          ))}
-        </div>
+        <RiverView
+          tiles={right.discard}
+          seat={right.seat}
+          lastDiscard={lastDiscard}
+          dataTestId="discard-seat-1"
+        />
       </div>
 
       {/* 左側：上家 */}
@@ -142,20 +96,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div
-          className="grid grid-cols-6 gap-1"
-          style={{ transform: `rotate(${seatRiverRotation(left.seat)}deg)` }}
-          data-testid="discard-seat-3"
-        >
-          {left.discard.map(tile => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              rotate={seatRotation(left.seat) - seatRiverRotation(left.seat)}
-              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-            />
-          ))}
-        </div>
+        <RiverView
+          tiles={left.discard}
+          seat={left.seat}
+          lastDiscard={lastDiscard}
+          dataTestId="discard-seat-3"
+        />
       </div>
 
       {/* ドラ表示 */}
@@ -177,20 +123,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        <div
-          className="flex gap-1 mb-2"
-          style={{ transform: `rotate(${seatRiverRotation(me.seat)}deg)` }}
-          data-testid="discard-seat-0"
-        >
-          {me.discard.map(tile => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              rotate={seatRotation(me.seat) - seatRiverRotation(me.seat)}
-              isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-            />
-          ))}
-        </div>
+        <RiverView
+          tiles={me.discard}
+          seat={me.seat}
+          lastDiscard={lastDiscard}
+          dataTestId="discard-seat-0"
+        />
         <div className="text-lg mb-1">あなたの手牌</div>
         <div className="text-sm mb-2">
           {(() => {
