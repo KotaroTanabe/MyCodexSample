@@ -10,6 +10,7 @@ import {
   isTenpaiAfterDiscard,
   canDiscardTile,
   canCallMeld,
+  removeDiscardTile,
 } from './Player';
 import { MeldType } from '../types/mahjong';
 import {
@@ -368,12 +369,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     nextTurn();
     return;
     }
-    p[discarder] = {
-      ...p[discarder],
-      discard: p[discarder].discard.map(t =>
-        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
-      ),
-    };
+  p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
     p[caller] = claimMeld(
       p[caller],
       [...meldTiles, lastDiscard.tile],
@@ -422,12 +418,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     let p = [...playersRef.current];
     const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
     if (!meldTiles) return;
-    p[discarder] = {
-      ...p[discarder],
-      discard: p[discarder].discard.map(t =>
-        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
-      ),
-    };
+    p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
     p[caller] = claimMeld(
       p[caller],
       [...meldTiles, lastDiscard.tile],
@@ -558,12 +549,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const caller = 0;
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];
-    p[discarder] = {
-      ...p[discarder],
-      discard: p[discarder].discard.map(t =>
-        t.id === lastDiscard.tile.id ? { ...t, called: true } : t,
-      ),
-    };
+    p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
     p[caller] = claimMeld(
       p[caller],
       [...tiles, lastDiscard.tile],
