@@ -47,10 +47,14 @@ export function drawTiles(player: PlayerState, wall: Tile[], count: number): { p
   };
 }
 
-export function discardTile(player: PlayerState, tileId: string): PlayerState {
+export function discardTile(
+  player: PlayerState,
+  tileId: string,
+  riichiDiscard = false,
+): PlayerState {
   const idx = player.hand.findIndex(t => t.id === tileId);
   if (idx === -1) return player;
-  const tile = player.hand[idx];
+  const tile = { ...player.hand[idx], riichiDiscard };
   const newHand = [...player.hand];
   newHand.splice(idx, 1);
   return {
@@ -59,6 +63,15 @@ export function discardTile(player: PlayerState, tileId: string): PlayerState {
     discard: [...player.discard, tile],
     drawnTile: null,
   };
+}
+
+export function canDiscardTile(player: PlayerState, tileId: string): boolean {
+  if (!player.isRiichi) return true;
+  return player.drawnTile?.id === tileId;
+}
+
+export function canCallMeld(player: PlayerState): boolean {
+  return !player.isRiichi;
 }
 
 export function claimMeld(

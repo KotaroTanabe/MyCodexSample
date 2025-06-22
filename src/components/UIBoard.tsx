@@ -94,6 +94,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
+        {top.isRiichi && <div className="text-xs">1000点棒</div>}
         <RiverView
           tiles={top.discard}
           seat={top.seat}
@@ -114,6 +115,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
+        {right.isRiichi && <div className="text-xs">1000点棒</div>}
         <RiverView
           tiles={right.discard}
           seat={right.seat}
@@ -134,6 +136,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
+        {left.isRiichi && <div className="text-xs">1000点棒</div>}
         <RiverView
           tiles={left.discard}
           seat={left.seat}
@@ -164,6 +167,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
+        {me.isRiichi && <div className="text-xs">1000点棒</div>}
         <RiverView
           tiles={me.discard}
           seat={me.seat}

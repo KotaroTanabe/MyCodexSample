@@ -35,4 +35,11 @@ describe('RiverView', () => {
     expect(div.children.length).toBe(RESERVED_RIVER_SLOTS);
   });
 
+  it('rotates riichi discards', () => {
+    const tiles = [t('man', 1, 'a'), { ...t('man', 2, 'b'), riichiDiscard: true }];
+    render(<RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv" />);
+    const tileEls = screen.getByTestId('rv').querySelectorAll('[style]');
+    expect(tileEls[1].getAttribute('style')).toContain('rotate(90deg)');
+  });
+
 });

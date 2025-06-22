@@ -249,6 +249,30 @@ describe('UIBoard discard orientation', () => {
   });
 });
 
+describe('UIBoard riichi indicators', () => {
+  it('shows 1000点棒 in front of rivers', () => {
+    const me = { ...createInitialPlayerState('me', false, 0), isRiichi: true };
+    me.discard = [t('man', 1, 'a')];
+    const ai = { ...createInitialPlayerState('ai', true, 1), isRiichi: true };
+    ai.discard = [t('pin', 2, 'b')];
+    render(
+      <UIBoard
+        players={[me, ai, createInitialPlayerState('ai2', true, 2), createInitialPlayerState('ai3', true, 3)]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+    expect(screen.getAllByText('1000点棒').length).toBe(2);
+  });
+});
+
 describe('UIBoard win options', () => {
   it('shows tsumo and pass buttons when tsumoOption true', () => {
     render(
