@@ -24,8 +24,8 @@ function formatScore(han: number, fu: number, isDealer: boolean, winType: 'ron' 
 }
 
 export const ScoreTable: React.FC<ScoreTableProps> = ({ isDealer, winType }) => {
-  // Display fu values up to the rarely-seen limit of 130
-  // so that even edge cases are shown in the table.
+  // Display fu values up to 110. Higher fu are extremely rare
+  // and are omitted to keep the table compact.
   const fuList = [
     20,
     25,
@@ -38,8 +38,6 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({ isDealer, winType }) => 
     90,
     100,
     110,
-    120,
-    130,
   ];
   const hanList = [1, 2, 3, 4];
   return (
@@ -65,14 +63,6 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({ isDealer, winType }) => 
             ))}
           </tr>
         ))}
-        <tr>
-          <td className="border px-2 py-1 text-center">満貫以上</td>
-          {hanList.map(h => (
-            <td key={`m${h}`} className="border px-2 py-1 text-center">
-              {formatScore(Math.max(h, 5), 30, isDealer, winType)}
-            </td>
-          ))}
-        </tr>
       </tbody>
     </table>
   );
