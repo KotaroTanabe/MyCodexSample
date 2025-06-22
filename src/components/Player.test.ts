@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { incrementDiscardCount } from './DiscardUtil';
-import { createInitialPlayerState, drawTiles, discardTile, sortHand, claimMeld, declareRiichi, canDeclareRiichi, isTenpaiAfterDiscard } from './Player';
+import {
+  createInitialPlayerState,
+  drawTiles,
+  discardTile,
+  sortHand,
+  claimMeld,
+  declareRiichi,
+  canDeclareRiichi,
+  isTenpaiAfterDiscard,
+  canDiscardTile,
+  canCallMeld,
+} from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
 
@@ -59,7 +70,10 @@ describe('discardTile', () => {
     expect(updated.hand).toEqual(
       sortHand(drawn.hand.filter(t => t.id !== tileToDiscard.id))
     );
-    expect(updated.discard[updated.discard.length - 1]).toEqual(tileToDiscard);
+    expect(updated.discard[updated.discard.length - 1]).toEqual({
+      ...tileToDiscard,
+      riichiDiscard: false,
+    });
     expect(updated.drawnTile).toBeNull();
   });
 
@@ -73,6 +87,21 @@ describe('discardTile', () => {
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
     const updated = discardTile(player, 's1');
     expect(updated.hand).toEqual(sortHand(hand.filter(t => t.id !== 's1')));
+  });
+
+  it('marks riichi discards', () => {
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'a' },
+      { suit: 'man', rank: 2, id: 'b' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('Bob', false),
+      hand,
+      isRiichi: true,
+      drawnTile: hand[1],
+    };
+    const updated = discardTile(player, 'b', true);
+    expect(updated.discard[updated.discard.length - 1].riichiDiscard).toBe(true);
   });
 });
 
@@ -210,5 +239,23 @@ describe('isTenpaiAfterDiscard', () => {
     ];
     const player: PlayerState = { ...createInitialPlayerState('bad', false), hand };
     expect(isTenpaiAfterDiscard(player, 'a')).toBe(false);
+  });
+});
+
+describe('riichi restrictions', () => {
+  it('allows discarding only drawn tile after riichi', () => {
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'a' },
+      { suit: 'man', rank: 2, id: 'b' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('r', false),
+      hand,
+      isRiichi: true,
+      drawnTile: hand[0],
+    };
+    expect(canDiscardTile(player, 'a')).toBe(true);
+    expect(canDiscardTile(player, 'b')).toBe(false);
+    expect(canCallMeld(player)).toBe(false);
   });
 });

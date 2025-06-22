@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
-import { createInitialPlayerState, drawTiles, discardTile, claimMeld, declareRiichi, isTenpaiAfterDiscard } from './Player';
+import {
+  createInitialPlayerState,
+  drawTiles,
+  discardTile,
+  claimMeld,
+  declareRiichi,
+  isTenpaiAfterDiscard,
+  canDiscardTile,
+  canCallMeld,
+} from './Player';
 import { MeldType } from '../types/mahjong';
 import {
   selectMeldTiles,
@@ -268,6 +277,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
+    if (!canDiscardTile(p[idx], tileId)) {
+      setMessage('リーチ後はツモ牌しか切れません');
+      return;
+    }
     if (pendingRiichi === idx && !isTenpaiAfterDiscard(p[idx], tileId)) {
       setMessage('その牌ではリーチできません');
       return;
@@ -277,7 +290,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
-    p[idx] = discardTile(p[idx], tileId);
+    const isRiichi = p[idx].isRiichi;
+    p[idx] = discardTile(p[idx], tileId, isRiichi);
     setPlayers(p);
     playersRef.current = p;
     const winIdx = findRonWinner(p, idx, tile);
@@ -320,6 +334,11 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
 
 const handleCallAction = (action: MeldType | 'pass') => {
   if (!lastDiscard) return;
+  if (!canCallMeld(playersRef.current[0])) {
+    setCallOptions(null);
+    setLastDiscard(null);
+    return;
+  }
   if (action === 'pass') {
     setCallOptions(null);
     setLastDiscard(null);
@@ -379,6 +398,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
 };
 
   const performSelfKan = (caller: number, tiles: Tile[]) => {
+    if (!canCallMeld(playersRef.current[caller])) return;
     let p = [...playersRef.current];
     p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
     setPlayers(p);
@@ -394,6 +414,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   const performAICall = (caller: number, action: MeldType) => {
     if (!lastDiscard) return;
+    if (!canCallMeld(playersRef.current[caller])) return;
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];
     const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
@@ -507,12 +528,14 @@ const handleCallAction = (action: MeldType | 'pass') => {
   };
 
   const handleSelfKan = (tiles: Tile[]) => {
+    if (!canCallMeld(playersRef.current[0])) return;
     setSelfKanOptions(null);
     performSelfKan(0, tiles);
   };
 
   const handleChiSelect = (tiles: Tile[]) => {
     if (!lastDiscard) return;
+    if (!canCallMeld(playersRef.current[0])) return;
     const caller = 0;
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];

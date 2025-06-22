@@ -70,7 +70,11 @@ export const RiverView: React.FC<RiverViewProps> = ({
         <TileView
           key={tile.id}
           tile={tile}
-          rotate={seatRotation(seat) - seatRiverRotation(seat) + (tile.called ? 90 : 0)}
+          rotate={
+            seatRotation(seat) -
+            seatRiverRotation(seat) +
+            (tile.called || tile.riichiDiscard ? 90 : 0)
+          }
           extraTransform={tile.called ? calledOffset(seat) : ''}
           isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
         />
