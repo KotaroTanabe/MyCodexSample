@@ -6,7 +6,7 @@ import { GameController } from './GameController';
 
 describe('GameController auto play', () => {
   it('disables tile buttons when enabled', async () => {
-    const { container } = render(<GameController />);
+    const { container } = render(<GameController gameLength="tonnan" />);
     await screen.findAllByText('あなたの手牌');
     const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);
@@ -15,7 +15,7 @@ describe('GameController auto play', () => {
   });
 
   it('AI discards when toggled during player turn', async () => {
-    render(<GameController />);
+    render(<GameController gameLength="tonnan" />);
     await screen.findAllByText('あなたの手牌');
     const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);
