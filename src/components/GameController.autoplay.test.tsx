@@ -7,10 +7,20 @@ import { GameController } from './GameController';
 describe('GameController auto play', () => {
   it('disables tile buttons when enabled', async () => {
     const { container } = render(<GameController />);
-    await screen.findByText('あなたの手牌');
-    const checkbox = screen.getByLabelText('観戦モード');
+    await screen.findAllByText('あなたの手牌');
+    const checkbox = screen.getAllByLabelText('観戦モード')[0];
     fireEvent.click(checkbox);
     const buttons = container.querySelectorAll('button');
     expect(Array.from(buttons).some(b => (b as HTMLButtonElement).disabled)).toBe(true);
+  });
+
+  it('AI discards when toggled during player turn', async () => {
+    render(<GameController />);
+    await screen.findAllByText('あなたの手牌');
+    const checkbox = screen.getAllByLabelText('観戦モード')[0];
+    fireEvent.click(checkbox);
+    await new Promise(r => setTimeout(r, 600));
+    const star = await screen.findByText('★');
+    expect(star).toBeTruthy();
   });
 });

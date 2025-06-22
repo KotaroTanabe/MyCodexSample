@@ -54,6 +54,12 @@ export const GameController: React.FC = () => {
       playersRef.current = playersRef.current.map((pl, idx) =>
         idx === 0 ? { ...pl, isAI: next } : pl,
       );
+      if (next && turnRef.current === 0) {
+        setTimeout(() => {
+          const tile = playersRef.current[0].hand[0];
+          handleDiscard(tile.id);
+        }, 500);
+      }
       return next;
     });
   };
@@ -457,10 +463,6 @@ const handleCallAction = (action: MeldType | 'pass') => {
         wallCount={wall.length}
         onHelp={() => setHelpOpen(true)}
       />
-      <label className="flex items-center gap-2">
-        <input type="checkbox" checked={playerIsAI} onChange={togglePlayerAI} />
-        観戦モード
-      </label>
       <UIBoard
         players={players}
         dora={dora}
@@ -473,6 +475,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onRiichi={!players[0]?.isAI ? handleRiichi : undefined}
         selfKanOptions={!players[0]?.isAI ? selfKanOptions ?? undefined : undefined}
         onSelfKan={!players[0]?.isAI ? handleSelfKan : undefined}
+        playerIsAI={playerIsAI}
+        onToggleAI={togglePlayerAI}
       />
       <div className="mt-2">{message}</div>
       {roundResult && (
