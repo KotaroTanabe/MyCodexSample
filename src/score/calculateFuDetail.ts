@@ -1,4 +1,5 @@
 import { Tile, Meld } from '../types/mahjong';
+import { tileToKanji } from '../utils/tileString';
 
 function tileKey(t: Tile): string {
   return `${t.suit}-${t.rank}`;
@@ -72,6 +73,10 @@ function findMelds(counts: Record<string, number>): ParsedMeld[] | null {
   return null;
 }
 
+function tilesToString(tiles: Tile[]): string {
+  return tiles.map(tileToKanji).join('');
+}
+
 function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | null {
   const counts = countTiles(tiles);
   const tileKeys = Object.keys(counts);
@@ -126,10 +131,10 @@ export function calculateFuDetail(
     if (meld.type === 'pon') {
       if (isTerminalOrHonor(meld.tiles[0])) {
         fu += 8;
-        steps.push('么九刻子 +8');
+        steps.push(`么九刻子 +8 (${tilesToString(meld.tiles)})`);
       } else {
         fu += 4;
-        steps.push('刻子 +4');
+        steps.push(`刻子 +4 (${tilesToString(meld.tiles)})`);
       }
     }
   }
@@ -139,7 +144,7 @@ export function calculateFuDetail(
       const base = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
       const kanFu = isTerminalOrHonor(meld.tiles[0]) ? 32 : 16;
       fu += kanFu - base;
-      steps.push(`カンボーナス +${kanFu - base}`);
+      steps.push(`カンボーナス +${kanFu - base} (${tilesToString(meld.tiles)})`);
     }
   }
 
