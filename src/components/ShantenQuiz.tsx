@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { TileView } from './TileView';
 import { useShantenQuiz } from '../quiz/useShantenQuiz';
 import { explainShanten } from '../utils/shantenExplain';
-import { QuizHelpModal } from './QuizHelpModal';
 
 interface ShantenQuizProps {
   initialHand?: import('../types/mahjong').Tile[];
@@ -15,7 +14,6 @@ export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
     | { shanten: number; explanation: string; correct: boolean }
     | null
   >(null);
-  const [helpOpen, setHelpOpen] = useState(false);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,15 +34,7 @@ export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
 
   return (
     <div className="p-4 border rounded">
-      <div className="flex justify-end mb-1 text-sm">
-        <button
-          onClick={() => setHelpOpen(true)}
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-white shadow text-xs font-bold hover:bg-gray-100"
-          aria-label="ヘルプ"
-        >
-          ?
-        </button>
-      </div>
+      <div className="flex justify-end mb-1 text-sm" />
       <div className="flex gap-1 mb-2 flex-wrap">
         {question.hand.map(t => (
           <TileView key={t.id} tile={t} />
@@ -68,7 +58,6 @@ export const ShantenQuiz: React.FC<ShantenQuizProps> = ({ initialHand }) => {
       <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">
         次の問題
       </button>
-      <QuizHelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };

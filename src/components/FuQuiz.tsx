@@ -5,7 +5,6 @@ import { TileView } from './TileView';
 import { sortHand } from './Player';
 import { useAgariQuiz } from '../quiz/useAgariQuiz';
 import { tileToKanji } from '../utils/tileString';
-import { QuizHelpModal } from './QuizHelpModal';
 
 interface FuQuizProps {
   initialIndex?: number;
@@ -24,7 +23,6 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
   const [result, setResult] = useState<{ fu: number; steps: string[]; correct: boolean } | null>(
     null,
   );
-  const [helpOpen, setHelpOpen] = useState(false);
   const fullHand = sortHand([...question.hand, ...question.melds.flatMap(m => m.tiles)]);
 
   const onSubmit = (e: React.FormEvent) => {
@@ -60,13 +58,6 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
             ? ' ツモ'
             : ` ロン: ${tileToKanji(question.winningTile)}`}
         </div>
-        <button
-          onClick={() => setHelpOpen(true)}
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-white shadow text-xs font-bold hover:bg-gray-100"
-          aria-label="ヘルプ"
-        >
-          ?
-        </button>
       </div>
       <div className="flex gap-1 mb-2 flex-wrap">
         {fullHand.map(t => (
@@ -95,7 +86,6 @@ export const FuQuiz: React.FC<FuQuizProps> = ({ initialIndex, initialWinType }) 
       <button onClick={handleNext} className="mt-2 px-2 py-1 bg-green-200 rounded">
         次の問題
       </button>
-      <QuizHelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };

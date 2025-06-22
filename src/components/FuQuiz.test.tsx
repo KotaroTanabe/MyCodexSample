@@ -32,9 +32,4 @@ describe('FuQuiz', () => {
     expect(screen.getByText('場風: 東 / 自風: 東 / ロン: 5筒')).toBeTruthy();
   });
 
-  it('opens help modal', () => {
-    render(<FuQuiz initialIndex={0} initialWinType="ron" />);
-    fireEvent.click(screen.getByLabelText('ヘルプ'));
-    expect(screen.getByText('基本符20')).toBeTruthy();
-  });
 });
