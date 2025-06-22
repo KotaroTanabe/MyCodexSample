@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { GameController } from './components/GameController';
 import { FuQuiz } from './components/FuQuiz';
+import { ScoreQuiz } from './components/ScoreQuiz';
 
 function App() {
   const [tileFont, setTileFont] = useState(2);
-  const [mode, setMode] = useState<'game' | 'fu-quiz'>('game');
+  const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz'>('game');
 
   return (
     <div
@@ -30,14 +31,15 @@ function App() {
           <select
             id="mode"
             value={mode}
-            onChange={e => setMode(e.target.value as 'game' | 'fu-quiz')}
+            onChange={e => setMode(e.target.value as 'game' | 'fu-quiz' | 'score-quiz')}
             className="border px-2 py-1"
           >
             <option value="game">ゲーム</option>
             <option value="fu-quiz">符クイズ</option>
+            <option value="score-quiz">点数クイズ</option>
           </select>
         </div>
-        {mode === 'game' ? <GameController /> : <FuQuiz />}
+        {mode === 'game' ? <GameController /> : mode === 'fu-quiz' ? <FuQuiz /> : <ScoreQuiz />}
       </div>
     </div>
   );
