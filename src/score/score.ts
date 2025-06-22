@@ -106,14 +106,14 @@ export function calculateFu(
   let fu = 20; // base fu for a winning hand
 
   // pair fu (dragons, seat wind, and round wind are value tiles)
-  if (
-    parsed.pair[0].suit === 'dragon' ||
-    (parsed.pair[0].suit === 'wind' &&
-      (parsed.pair[0].rank === opts?.seatWind ||
-        parsed.pair[0].rank === opts?.roundWind))
-  ) {
-    fu += 2;
+  let pairFu = 0;
+  if (parsed.pair[0].suit === 'dragon') {
+    pairFu = 2;
+  } else if (parsed.pair[0].suit === 'wind') {
+    if (parsed.pair[0].rank === opts?.seatWind) pairFu += 2;
+    if (parsed.pair[0].rank === opts?.roundWind) pairFu += 2;
   }
+  fu += pairFu;
 
   for (const meld of parsed.melds) {
     if (meld.type === 'pon') {

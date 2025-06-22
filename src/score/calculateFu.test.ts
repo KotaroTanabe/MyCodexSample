@@ -43,4 +43,17 @@ describe('calculateFu', () => {
     // 基本符20 + 自風の雀頭2 = 22、切り上げで30符になるはず
     expect(fu).toBe(30);
   });
+
+  it('adds 4 fu when seat and round wind are the same', () => {
+    const hand = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('wind',2,'s1'),t('wind',2,'s2'),
+    ];
+    const fu = calculateFu(hand, [], { seatWind: 2, roundWind: 2 });
+    // 基本符20 + ダブ南の雀頭4 = 24、切り上げで30符になるはず
+    expect(fu).toBe(30);
+  });
 });
