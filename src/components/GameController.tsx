@@ -208,7 +208,8 @@ export const GameController: React.FC = () => {
         playersRef.current[0].seat,
         playersRef.current[idx].seat,
       );
-      if (options.length === 0) {
+      const hasAction = options.some(o => o !== 'pass');
+      if (!hasAction) {
         setCallOptions(null);
         setLastDiscard(null);
         nextTurn();
