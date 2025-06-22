@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Tile, Meld } from '../types/mahjong';
-import { detectYaku, isTanyao, isWinningHand } from './yaku';
+import { detectYaku, isTanyao, isWinningHand, ScoreYaku } from './yaku';
 import { calculateScore } from './score';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -242,11 +242,31 @@ describe('Scoring', () => {
     ];
     const yaku = detectYaku(hand, [], { isTsumo: true });
     const { han, fu, points } = calculateScore(hand, [], yaku, []);
-    // 今の実装では基本点 = fu * 2^(han + 2)
-    // この手は20符5翻なので 20 * 2^(5 + 2) = 2560 となるはず
+    // 20符5翻は満貫扱いなので、子ロンなら 2000 * 4 = 8000 点になるはず
     expect(han).toBe(5);
     expect(fu).toBe(20);
-    expect(points).toBe(2560);
+    expect(points).toBe(8000);
+  });
+
+  it('calculates dealer tsumo for haneman', () => {
+    const hand: Tile[] = [
+      t('man',2,'d1'),t('man',3,'d2'),t('man',4,'d3'),
+      t('pin',2,'d4'),t('pin',3,'d5'),t('pin',4,'d6'),
+      t('sou',2,'d7'),t('sou',3,'d8'),t('sou',4,'d9'),
+      t('man',6,'d10'),t('man',7,'d11'),t('man',8,'d12'),
+      t('pin',5,'d13'),t('pin',5,'d14'),
+    ];
+    const yaku: ScoreYaku[] = [{ name: 'Test', han: 6 }];
+    const { han, fu, points } = calculateScore(hand, [], yaku, [], {
+      seatWind: 1,
+      roundWind: 1,
+      winType: 'tsumo',
+    });
+    // 20符はツモなので22符、切り上げで30符。6翻は跳満で基本点3000、
+    // 親ツモは2倍支払いの6000オールになるはず
+    expect(han).toBe(6);
+    expect(fu).toBe(30);
+    expect(points).toBe(6000);
   });
 
   it('adds fu for honor triplets', () => {
