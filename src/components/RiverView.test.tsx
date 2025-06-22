@@ -17,15 +17,27 @@ describe('RiverView', () => {
     render(<RiverView tiles={[]} seat={1} lastDiscard={null} dataTestId="rv-1" />);
     div = screen.getByTestId('rv-1');
     expect(div.style.transform).toContain('rotate(270deg)');
+    render(<RiverView tiles={[]} seat={3} lastDiscard={null} dataTestId="rv-3" />);
+    div = screen.getByTestId('rv-3');
+    expect(div.style.transform).toContain('rotate(90deg)');
   });
 
   it('reverses order when needed', () => {
     const tiles = [t('man', 1, 'a'), t('man', 2, 'b')];
-    render(<RiverView tiles={tiles} seat={2} lastDiscard={null} dataTestId="rv" />);
+    render(<RiverView tiles={tiles} seat={3} lastDiscard={null} dataTestId="rv" />);
     const div = screen.getByTestId('rv');
     const tileEls = div.querySelectorAll('[aria-label]');
     expect(tileEls[0].getAttribute('aria-label')).toBe('2萬');
     expect(tileEls[tileEls.length - 1].getAttribute('aria-label')).toBe('1萬');
+  });
+
+  it('keeps order when reverse not needed', () => {
+    const tiles = [t('man', 1, 'a'), t('man', 2, 'b')];
+    render(<RiverView tiles={tiles} seat={2} lastDiscard={null} dataTestId="rv-nr" />);
+    const div = screen.getByTestId('rv-nr');
+    const tileEls = div.querySelectorAll('[aria-label]');
+    expect(tileEls[0].getAttribute('aria-label')).toBe('1萬');
+    expect(tileEls[tileEls.length - 1].getAttribute('aria-label')).toBe('2萬');
   });
 
   it('reserves space for empty river', () => {

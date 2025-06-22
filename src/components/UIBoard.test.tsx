@@ -146,7 +146,7 @@ describe('UIBoard discard orientation', () => {
     const leftDiv = screen.getByTestId('discard-seat-3');
     expect(rightDiv.style.transform).toContain('rotate(270deg)');
     expect(topDiv.style.transform).toContain('rotate(180deg)');
-    expect(leftDiv.style.transform).toContain('rotate(270deg)');
+    expect(leftDiv.style.transform).toContain('rotate(90deg)');
   });
 
   it('keeps discard order after rotation', () => {
@@ -154,6 +154,8 @@ describe('UIBoard discard orientation', () => {
     right.discard = [t('man', 1, 'a'), t('man', 2, 'b')];
     const top = createInitialPlayerState('top', true, 2);
     top.discard = [t('pin', 3, 'c'), t('pin', 4, 'd')];
+    const left = createInitialPlayerState('left', true, 3);
+    left.discard = [t('sou', 5, 'e'), t('sou', 6, 'f')];
 
     render(
       <UIBoard
@@ -161,7 +163,7 @@ describe('UIBoard discard orientation', () => {
           createInitialPlayerState('me', false, 0),
           right,
           top,
-          createInitialPlayerState('left', true, 3),
+          left,
         ]}
         dora={[]}
         onDiscard={() => {}}
@@ -173,13 +175,17 @@ describe('UIBoard discard orientation', () => {
 
     const rightDiv = screen.getByTestId('discard-seat-1');
     const topDiv = screen.getByTestId('discard-seat-2');
+    const leftDiv = screen.getByTestId('discard-seat-3');
 
     const rightTiles = rightDiv.querySelectorAll('[aria-label]');
     const topTiles = topDiv.querySelectorAll('[aria-label]');
+    const leftTiles = leftDiv.querySelectorAll('[aria-label]');
 
     expect(rightTiles[0].getAttribute('aria-label')).toBe('1萬');
     expect(rightTiles[rightTiles.length - 1].getAttribute('aria-label')).toBe('2萬');
-    expect(topTiles[0].getAttribute('aria-label')).toBe('4筒');
-    expect(topTiles[topTiles.length - 1].getAttribute('aria-label')).toBe('3筒');
+    expect(topTiles[0].getAttribute('aria-label')).toBe('3筒');
+    expect(topTiles[topTiles.length - 1].getAttribute('aria-label')).toBe('4筒');
+    expect(leftTiles[0].getAttribute('aria-label')).toBe('6索');
+    expect(leftTiles[leftTiles.length - 1].getAttribute('aria-label')).toBe('5索');
   });
 });
