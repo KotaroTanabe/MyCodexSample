@@ -66,6 +66,23 @@ function countDragonTriplets(counts: Record<string, number>): number {
   return yakuhai;
 }
 
+function countValueTriplets(
+  counts: Record<string, number>,
+  seatWind?: number,
+  roundWind?: number,
+): number {
+  let total = countDragonTriplets(counts);
+  if (seatWind) {
+    const key = `wind-${seatWind}`;
+    total += Math.floor((counts[key] || 0) / 3);
+  }
+  if (roundWind && roundWind !== seatWind) {
+    const key = `wind-${roundWind}`;
+    total += Math.floor((counts[key] || 0) / 3);
+  }
+  return total;
+}
+
 function canFormSets(counts: Record<string, number>, memo = new Map<string, boolean>()): boolean {
   const serialized = JSON.stringify(counts);
   if (memo.has(serialized)) return memo.get(serialized)!;
@@ -289,7 +306,12 @@ export function isWinningHand(tiles: Tile[]): boolean {
 export function detectYaku(
   hand: Tile[],
   melds: Meld[] = [],
-  opts?: { isTsumo?: boolean; isRiichi?: boolean },
+  opts?: {
+    isTsumo?: boolean;
+    isRiichi?: boolean;
+    seatWind?: number;
+    roundWind?: number;
+  },
 ): Yaku[] {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const result: Yaku[] = [];
@@ -341,7 +363,11 @@ export function detectYaku(
   } else if (isHonitsu(allTiles)) {
     result.push({ name: 'Honitsu', han: isClosed ? 3 : 2 });
   }
-  const yakuhai = countDragonTriplets(counts);
+  const yakuhai = countValueTriplets(
+    counts,
+    opts?.seatWind,
+    opts?.roundWind,
+  );
   for (let i = 0; i < yakuhai; i++) {
     result.push({ name: 'Yakuhai', han: 1 });
   }
