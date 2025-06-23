@@ -1,6 +1,7 @@
 import { Tile, Meld, Suit } from '../types/mahjong';
 import { generateTileWall } from '../components/TileWall';
 import { sortHand } from '../components/Player';
+import { random } from '../utils/random';
 
 export interface AgariHand {
   hand: Tile[];
@@ -23,7 +24,7 @@ function drawTiles(wall: Tile[], suit: Suit, rank: number, count: number): Tile[
 }
 
 function randomFrom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(random() * arr.length)];
 }
 
 export function generateRandomAgari(): AgariHand {
@@ -36,9 +37,9 @@ export function generateRandomAgari(): AgariHand {
       const allSuits: Suit[] = ['man', 'pin', 'sou', 'wind', 'dragon'];
 
       for (let i = 0; i < 4; i++) {
-        if (Math.random() < 0.5) {
+        if (random() < 0.5) {
           const suit = randomFrom(suits);
-          const base = 1 + Math.floor(Math.random() * 7);
+          const base = 1 + Math.floor(random() * 7);
           hand.push(...drawTiles(wall, suit, base, 1));
           hand.push(...drawTiles(wall, suit, base + 1, 1));
           hand.push(...drawTiles(wall, suit, base + 2, 1));
@@ -47,7 +48,7 @@ export function generateRandomAgari(): AgariHand {
           while (!added) {
             const suit = randomFrom(allSuits);
             const maxRank = suit === 'wind' ? 4 : suit === 'dragon' ? 3 : 9;
-            const rank = 1 + Math.floor(Math.random() * maxRank);
+            const rank = 1 + Math.floor(random() * maxRank);
             const count = wall.filter(t => t.suit === suit && t.rank === rank).length;
             if (count >= 3) {
               hand.push(...drawTiles(wall, suit, rank, 3));
@@ -61,7 +62,7 @@ export function generateRandomAgari(): AgariHand {
       while (!paired) {
         const suit = randomFrom(allSuits);
         const maxRank = suit === 'wind' ? 4 : suit === 'dragon' ? 3 : 9;
-        const rank = 1 + Math.floor(Math.random() * maxRank);
+        const rank = 1 + Math.floor(random() * maxRank);
         const count = wall.filter(t => t.suit === suit && t.rank === rank).length;
         if (count >= 2) {
           hand.push(...drawTiles(wall, suit, rank, 2));

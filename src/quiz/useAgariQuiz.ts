@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SAMPLE_HANDS } from './sampleHands';
 import { generateRandomAgari, AgariHand } from './randomAgari';
+import { random } from '../utils/random';
 
 interface Options {
   initialIndex?: number;
@@ -17,9 +18,9 @@ export function useAgariQuiz(options: Options = {}) {
     initialIndex !== undefined ? SAMPLE_HANDS[initialIndex] : generateRandomAgari(),
   );
   const [winType, setWinType] = useState<'ron' | 'tsumo'>(
-    initialWinType ?? (Math.random() < 0.5 ? 'ron' : 'tsumo'),
+    initialWinType ?? (random() < 0.5 ? 'ron' : 'tsumo'),
   );
-  const randomSeat = () => Math.ceil(Math.random() * 4);
+  const randomSeat = () => Math.ceil(random() * 4);
   const [seatWind, setSeatWind] = useState<number>(
     initialSeatWind ?? randomSeat(),
   );
@@ -32,7 +33,7 @@ export function useAgariQuiz(options: Options = {}) {
     } else {
       setQuestion(generateRandomAgari());
     }
-    setWinType(Math.random() < 0.5 ? 'ron' : 'tsumo');
+    setWinType(random() < 0.5 ? 'ron' : 'tsumo');
     setSeatWind(randomSeat());
   };
 
