@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tile, PlayerState } from '../types/mahjong';
+import { Tile, PlayerState, LogEntry, MeldType } from '../types/mahjong';
 import { generateTileWall, drawDoraIndicator } from './TileWall';
 import {
   createInitialPlayerState,
@@ -13,7 +13,6 @@ import {
   canCallMeld,
   removeDiscardTile,
 } from './Player';
-import { MeldType } from '../types/mahjong';
 import {
   selectMeldTiles,
   getValidCallOptions,
@@ -31,6 +30,7 @@ import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import { RoundResultModal, RoundResult } from './RoundResultModal';
 import { FinalResultModal } from './FinalResultModal';
 import { WinResultModal, WinResult } from './WinResultModal';
+import { logToJSON } from '../utils/paifuExport';
 
 const DEAD_WALL_SIZE = 14;
 
@@ -68,6 +68,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
   const [tsumoOption, setTsumoOption] = useState(false);
   const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
+  const [log, setLog] = useState<LogEntry[]>([]);
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -76,6 +77,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const kyokuRef = useRef(kyoku);
   const riichiPoolRef = useRef(riichiPool);
   const honbaRef = useRef(honba);
+  const logRef = useRef<LogEntry[]>(log);
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -121,6 +123,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   }, [honba]);
 
   useEffect(() => {
+    logRef.current = log;
+  }, [log]);
+
+  useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
       setShanten(calcShanten(players[0].hand, players[0].melds.length));
@@ -128,7 +134,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   }, [players]);
 
   // ラウンド初期化関数
-  const startRound = (resetKyoku: boolean) => {
+  const startRound = (resetKyoku: boolean, roundNumber: number = kyokuRef.current) => {
     let wallStack = generateTileWall();
     let wanpai = wallStack.slice(0, DEAD_WALL_SIZE);
     wallStack = wallStack.slice(DEAD_WALL_SIZE);
@@ -186,6 +192,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     setMessage(
       `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
     );
+    setLog([{ type: 'startRound', kyoku: roundNumber }]);
+    logRef.current = [{ type: 'startRound', kyoku: roundNumber }];
     setPhase('playing');
   };
 
@@ -193,7 +201,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   useEffect(() => {
     if (phase === 'init') {
       setKyoku(1);
-      startRound(true);
+      startRound(true, 1);
     }
   }, [phase]);
 
@@ -202,7 +210,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     if (dealerContinues) {
       setHonba(h => h + 1);
       honbaRef.current += 1;
-      startRound(false);
+      startRound(false, kyokuRef.current);
       return;
     }
     setHonba(0);
@@ -212,7 +220,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       setPhase('end');
     } else {
       setKyoku(next);
-      startRound(false);
+      startRound(false, next);
     }
   };
 
@@ -250,6 +258,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     playersRef.current = p;
     setWall(result.wall);
     wallRef.current = result.wall;
+    setLog(prev => [...prev, { type: 'draw', player: currentIndex, tile: result.player.drawnTile as Tile }]);
+    logRef.current = [...logRef.current, { type: 'draw', player: currentIndex, tile: result.player.drawnTile as Tile }];
     if (result.wall.length === 0) {
       handleWallExhaustion();
       return;
@@ -302,6 +312,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     p[idx] = discardTile(p[idx], tileId, isRiichi);
     setPlayers(p);
     playersRef.current = p;
+    setLog(prev => [...prev, { type: 'discard', player: idx, tile }]);
+    logRef.current = [...logRef.current, { type: 'discard', player: idx, tile }];
     const winIdx = findRonWinner(p, idx, tile);
     if (winIdx !== null) {
       if (p[winIdx].isAI || winIdx !== 0) {
@@ -375,15 +387,35 @@ const handleCallAction = (action: MeldType | 'pass') => {
     return;
     }
   p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
-    p[caller] = claimMeld(
-      p[caller],
-      [...meldTiles, lastDiscard.tile],
-      action,
-      discarder,
-      lastDiscard.tile.id,
-    );
-    setPlayers(p);
-    playersRef.current = p;
+  p[caller] = claimMeld(
+    p[caller],
+    [...meldTiles, lastDiscard.tile],
+    action,
+    discarder,
+    lastDiscard.tile.id,
+  );
+  setPlayers(p);
+  playersRef.current = p;
+  setLog(prev => [
+    ...prev,
+    {
+      type: 'meld',
+      player: caller,
+      tiles: [...meldTiles, lastDiscard.tile],
+      meldType: action,
+      from: discarder,
+    },
+  ]);
+  logRef.current = [
+    ...logRef.current,
+    {
+      type: 'meld',
+      player: caller,
+      tiles: [...meldTiles, lastDiscard.tile],
+      meldType: action,
+      from: discarder,
+    },
+  ];
 
     if (action === 'kan') {
       const doraResult = drawDoraIndicator(deadWallRef.current, 1);
@@ -404,10 +436,18 @@ const handleCallAction = (action: MeldType | 'pass') => {
   const performSelfKan = (caller: number, tiles: Tile[]) => {
     if (!canCallMeld(playersRef.current[caller])) return;
     let p = playersRef.current.map(pl => clearIppatsu(pl));
-    p = [...p];
-    p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
-    setPlayers(p);
-    playersRef.current = p;
+  p = [...p];
+  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
+  setPlayers(p);
+  playersRef.current = p;
+  setLog(prev => [
+    ...prev,
+    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller },
+  ]);
+  logRef.current = [
+    ...logRef.current,
+    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller },
+  ];
 
     const doraResult = drawDoraIndicator(deadWallRef.current, 1);
     setDora(prev => [...prev, ...doraResult.dora]);
@@ -435,6 +475,26 @@ const handleCallAction = (action: MeldType | 'pass') => {
     );
     setPlayers(p);
     playersRef.current = p;
+    setLog(prev => [
+      ...prev,
+      {
+        type: 'meld',
+        player: caller,
+        tiles: [...meldTiles, lastDiscard.tile],
+        meldType: action,
+        from: discarder,
+      },
+    ]);
+    logRef.current = [
+      ...logRef.current,
+      {
+        type: 'meld',
+        player: caller,
+        tiles: [...meldTiles, lastDiscard.tile],
+        meldType: action,
+        from: discarder,
+      },
+    ];
     setMessage(`${p[caller].name} が ${action}しました。`);
 
     if (action === 'kan') {
@@ -486,6 +546,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(newPlayers);
     playersRef.current = newPlayers;
+    setLog(prev => [...prev, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }]);
+    logRef.current = [...logRef.current, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }];
     setMessage(`${p[idx].name} の和了！`);
     setTsumoOption(false);
     setWinResult({
@@ -531,6 +593,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(updated);
     playersRef.current = updated;
+    setLog(prev => [...prev, { type: 'ron', player: winner, tile, from }]);
+    logRef.current = [...logRef.current, { type: 'ron', player: winner, tile, from }];
     setMessage(`${p[winner].name} のロン！`);
     setWinResult({
       players: updated,
@@ -551,6 +615,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     playersRef.current = p;
     setPendingRiichi(0);
     setMessage('リーチする牌を選んでください');
+    setLog(prev => [...prev, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }]);
+    logRef.current = [...logRef.current, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }];
   };
 
   const handleSelfKan = (tiles: Tile[]) => {
@@ -565,16 +631,24 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const caller = 0;
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];
-    p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
-    p[caller] = claimMeld(
-      p[caller],
-      [...tiles, lastDiscard.tile],
-      'chi',
-      discarder,
-      lastDiscard.tile.id,
-    );
-    setPlayers(p);
-    playersRef.current = p;
+  p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
+  p[caller] = claimMeld(
+    p[caller],
+    [...tiles, lastDiscard.tile],
+    'chi',
+    discarder,
+    lastDiscard.tile.id,
+  );
+  setPlayers(p);
+  playersRef.current = p;
+  setLog(prev => [
+    ...prev,
+    { type: 'meld', player: caller, tiles: [...tiles, lastDiscard.tile], meldType: 'chi', from: discarder },
+  ]);
+  logRef.current = [
+    ...logRef.current,
+    { type: 'meld', player: caller, tiles: [...tiles, lastDiscard.tile], meldType: 'chi', from: discarder },
+  ];
     setCallOptions(null);
     setLastDiscard(null);
     setChiTileOptions(null);
@@ -660,6 +734,17 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setPhase('init');
   };
 
+  const handleDownloadLog = () => {
+    const data = logToJSON(logRef.current);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'log.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
@@ -691,6 +776,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
         onToggleAI={togglePlayerAI}
       />
       <div className="mt-2">{message}</div>
+      <button className="px-2 py-1 bg-gray-200 rounded" onClick={handleDownloadLog}>
+        ログダウンロード
+      </button>
       {winResult && (
         <WinResultModal
           {...winResult}

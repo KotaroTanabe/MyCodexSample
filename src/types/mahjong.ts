@@ -38,3 +38,18 @@ export interface PlayerState {
   drawnTile: Tile | null;
   seat: number;
 }
+
+export type LogEntry =
+  | { type: 'startRound'; kyoku: number }
+  | { type: 'draw'; player: number; tile: Tile }
+  | { type: 'discard'; player: number; tile: Tile }
+  | {
+      type: 'meld';
+      player: number;
+      tiles: Tile[];
+      meldType: MeldType;
+      from: number;
+    }
+  | { type: 'riichi'; player: number; tile: Tile }
+  | { type: 'tsumo'; player: number; tile: Tile }
+  | { type: 'ron'; player: number; tile: Tile; from: number };
