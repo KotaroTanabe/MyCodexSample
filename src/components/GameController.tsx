@@ -313,7 +313,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
-    if (!canDiscardTile(p[idx], tileId)) {
+    if (pendingRiichi !== idx && !canDiscardTile(p[idx], tileId)) {
       setMessage('リーチ後はツモ牌しか切れません');
       return;
     }
