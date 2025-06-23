@@ -27,6 +27,7 @@ export function createInitialPlayerState(
     melds: [],
     score: 25000,
     isRiichi: false,
+    ippatsu: false,
     name,
     isAI,
     drawnTile: null,
@@ -117,7 +118,7 @@ export function claimMeld(
 
 export function declareRiichi(player: PlayerState): PlayerState {
   if (player.isRiichi) return player;
-  return { ...player, isRiichi: true };
+  return { ...player, isRiichi: true, ippatsu: true };
 }
 
 export function canDeclareRiichi(player: PlayerState): boolean {
@@ -140,4 +141,9 @@ export function isTenpaiAfterDiscard(player: PlayerState, tileId: string): boole
   const shanten = calcShanten(remaining, player.melds.length);
   const base = Math.min(shanten.standard, shanten.chiitoi, shanten.kokushi);
   return base === 0;
+}
+
+export function clearIppatsu(player: PlayerState): PlayerState {
+  if (!player.ippatsu) return player;
+  return { ...player, ippatsu: false };
 }

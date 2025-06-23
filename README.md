@@ -140,7 +140,6 @@ npm run lint
 
 - 本場 (Honba)
 - 裏ドラ (Ura Dora)
-- 一発 (Ippatsu)
 
 ---
 

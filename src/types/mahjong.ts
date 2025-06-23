@@ -29,6 +29,8 @@ export interface PlayerState {
   melds: Meld[];
   score: number;
   isRiichi: boolean;
+  /** true if ippatsu is still possible after declaring riichi */
+  ippatsu: boolean;
   name: string;
   isAI: boolean;
   drawnTile: Tile | null;
