@@ -35,9 +35,9 @@ describe('shanten calculations', () => {
       t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
     expect(calcChiitoiShanten(hand)).toBe(0);
-    expect(calcStandardShanten(hand)).toBe(1);
+    expect(calcStandardShanten(hand)).toBe(0);
     expect(calcKokushiShanten(hand)).toBe(9);
-    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 0, kokushi: 9 });
+    expect(calcShanten(hand)).toEqual({ standard: 0, chiitoi: 0, kokushi: 9 });
   });
 
   it('calculates chiitoitsu 2-shanten', () => {
@@ -61,10 +61,11 @@ describe('shanten calculations', () => {
       t('pin', 1, 'j'), t('pin', 1, 'k'),
       t('sou', 2, 'l'), t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
-    expect(calcStandardShanten(hand)).toBe(1);
+    // 123/456/789m 11p 223s -> one tile away from winning
+    expect(calcStandardShanten(hand)).toBe(0);
     expect(calcChiitoiShanten(hand)).toBe(4);
     expect(calcKokushiShanten(hand)).toBe(9);
-    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 4, kokushi: 9 });
+    expect(calcShanten(hand)).toEqual({ standard: 0, chiitoi: 4, kokushi: 9 });
   });
 
   it('calculates kokushi 2-shanten', () => {
@@ -88,5 +89,18 @@ describe('shanten calculations', () => {
     ];
     expect(calcStandardShanten(hand, 1)).toBe(-1);
     expect(calcShanten(hand, 1).standard).toBe(-1);
+  });
+
+  it('recognizes a tricky 1-shanten shape', () => {
+    const hand: Tile[] = [
+      t('man', 4, 'a'), t('man', 4, 'b'),
+      t('pin', 2, 'c'),
+      t('pin', 9, 'd'), t('pin', 9, 'e'),
+      t('sou', 1, 'f'), t('sou', 2, 'g'), t('sou', 3, 'h'),
+      t('sou', 4, 'i'), t('sou', 5, 'j'), t('sou', 6, 'k'),
+      t('wind', 3, 'l'), t('wind', 3, 'm'),
+    ];
+    // この手牌は44m 2p 99p 123456s 西西で、2pを引けば聴牌になる
+    expect(calcStandardShanten(hand)).toBe(1);
   });
 });
