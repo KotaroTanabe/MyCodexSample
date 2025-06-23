@@ -7,6 +7,7 @@ import {
   sortHand,
   claimMeld,
   declareRiichi,
+  clearIppatsu,
   canDeclareRiichi,
   isTenpaiAfterDiscard,
   canDiscardTile,
@@ -187,6 +188,10 @@ describe('initial hand distribution', () => {
 
     expect(players[0].hand).toHaveLength(14);
   });
+  it('initializes ippatsu to false', () => {
+    const p = createInitialPlayerState('foo', false);
+    expect(p.ippatsu).toBe(false);
+  });
 });
 
 describe('declareRiichi', () => {
@@ -194,6 +199,15 @@ describe('declareRiichi', () => {
     const player = createInitialPlayerState('RiichiMan', false);
     const updated = declareRiichi(player);
     expect(updated.isRiichi).toBe(true);
+    expect(updated.ippatsu).toBe(true);
+  });
+});
+
+describe('clearIppatsu', () => {
+  it('resets the ippatsu flag', () => {
+    const player = { ...createInitialPlayerState('test', false), ippatsu: true };
+    const updated = clearIppatsu(player);
+    expect(updated.ippatsu).toBe(false);
   });
 });
 

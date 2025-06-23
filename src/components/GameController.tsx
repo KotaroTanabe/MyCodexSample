@@ -7,6 +7,7 @@ import {
   discardTile,
   claimMeld,
   declareRiichi,
+  clearIppatsu,
   isTenpaiAfterDiscard,
   canDiscardTile,
   canCallMeld,
@@ -291,6 +292,9 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     }
     setSelfKanOptions(null);
     setChiTileOptions(null);
+    if (pendingRiichi !== idx && p[idx].ippatsu) {
+      p[idx] = clearIppatsu(p[idx]);
+    }
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
@@ -309,7 +313,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       }
     }
     if (pendingRiichi === idx) {
-      p[idx] = { ...p[idx], score: p[idx].score - 1000 };
+      p[idx] = { ...p[idx], score: p[idx].score - 1000, ippatsu: true };
       setRiichiPool(prev => prev + 1);
       setPendingRiichi(null);
       setPlayers(p);
@@ -354,6 +358,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
   const caller = 0;
   const discarder = lastDiscard.player;
   let p = [...playersRef.current];
+  p = p.map(pl => clearIppatsu(pl));
   if (action === 'chi') {
     const options = getChiOptions(p[caller], lastDiscard.tile);
     if (options.length > 1 && !chiTileOptions) {
@@ -398,7 +403,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   const performSelfKan = (caller: number, tiles: Tile[]) => {
     if (!canCallMeld(playersRef.current[caller])) return;
-    let p = [...playersRef.current];
+    let p = playersRef.current.map(pl => clearIppatsu(pl));
+    p = [...p];
     p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
     setPlayers(p);
     playersRef.current = p;
@@ -415,7 +421,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     if (!lastDiscard) return;
     if (!canCallMeld(playersRef.current[caller])) return;
     const discarder = lastDiscard.player;
-    let p = [...playersRef.current];
+    let p = playersRef.current.map(pl => clearIppatsu(pl));
+    p = [...p];
     const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
     if (!meldTiles) return;
     p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
@@ -455,6 +462,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const yaku = detectYaku(fullHand, p[idx].melds, {
       isTsumo: true,
       isRiichi: p[idx].isRiichi,
+      ippatsu: p[idx].ippatsu,
       seatWind,
       roundWind,
     });
@@ -465,7 +473,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
       dora,
       { seatWind, roundWind, winType: 'tsumo' },
     );
-    let newPlayers = payoutTsumo(p, idx, points, honbaRef.current);
+    let newPlayers = payoutTsumo(p, idx, points, honbaRef.current).map((pl, i) =>
+      i === idx ? { ...pl, ippatsu: false } : pl,
+    );
     if (riichiPoolRef.current > 0) {
       newPlayers = newPlayers.map((pl, i) =>
         i === idx ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
@@ -496,6 +506,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const yaku = detectYaku(fullHand, p[winner].melds, {
       isTsumo: false,
       isRiichi: p[winner].isRiichi,
+      ippatsu: p[winner].ippatsu,
       seatWind,
       roundWind,
     });
@@ -506,7 +517,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
       [],
       { seatWind, roundWind, winType: 'ron' },
     );
-    let updated = payoutRon(p, winner, from, points, honbaRef.current);
+    let updated = payoutRon(p, winner, from, points, honbaRef.current).map((pl, i) =>
+      i === winner ? { ...pl, ippatsu: false } : pl,
+    );
     if (riichiPoolRef.current > 0) {
       updated = updated.map((pl, i) =>
         i === winner ? { ...pl, score: pl.score + riichiPoolRef.current * 1000 } : pl,
