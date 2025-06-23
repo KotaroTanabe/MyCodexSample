@@ -192,6 +192,10 @@ describe('initial hand distribution', () => {
     const p = createInitialPlayerState('foo', false);
     expect(p.ippatsu).toBe(false);
   });
+  it('initializes doubleRiichi to false', () => {
+    const p = createInitialPlayerState('foo', false);
+    expect(p.doubleRiichi).toBe(false);
+  });
 });
 
 describe('declareRiichi', () => {
@@ -200,6 +204,13 @@ describe('declareRiichi', () => {
     const updated = declareRiichi(player);
     expect(updated.isRiichi).toBe(true);
     expect(updated.ippatsu).toBe(true);
+    expect(updated.doubleRiichi).toBe(false);
+  });
+
+  it('can mark double riichi when specified', () => {
+    const player = createInitialPlayerState('RiichiMan', false);
+    const updated = declareRiichi(player, true);
+    expect(updated.doubleRiichi).toBe(true);
   });
 });
 

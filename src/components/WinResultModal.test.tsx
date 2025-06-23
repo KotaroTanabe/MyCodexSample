@@ -6,8 +6,8 @@ import { WinResultModal } from './WinResultModal';
 import { PlayerState } from '../types/mahjong';
 
 const players: PlayerState[] = [
-  { hand: [], discard: [], melds: [], score: 32000, isRiichi: false, ippatsu: false, name: 'A', isAI: false, drawnTile: null, seat: 0 },
-  { hand: [], discard: [], melds: [], score: 28000, isRiichi: false, ippatsu: false, name: 'B', isAI: true, drawnTile: null, seat: 1 },
+  { hand: [], discard: [], melds: [], score: 32000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0 },
+  { hand: [], discard: [], melds: [], score: 28000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1 },
 ];
 
 describe('WinResultModal', () => {

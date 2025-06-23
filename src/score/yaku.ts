@@ -337,6 +337,7 @@ export function detectYaku(
   opts?: {
     isTsumo?: boolean;
     isRiichi?: boolean;
+    doubleRiichi?: boolean;
     seatWind?: number;
     roundWind?: number;
     ippatsu?: boolean;
@@ -391,6 +392,9 @@ export function detectYaku(
   }
   if (opts?.isRiichi && isClosed) {
     result.push({ name: 'Riichi', han: 1 });
+  }
+  if (opts?.doubleRiichi && isClosed) {
+    result.push({ name: 'Double Riichi', han: 2 });
   }
   if (opts?.ippatsu && opts?.isRiichi && isClosed) {
     result.push({ name: 'Ippatsu', han: 1 });

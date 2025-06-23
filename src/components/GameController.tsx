@@ -462,6 +462,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const yaku = detectYaku(fullHand, p[idx].melds, {
       isTsumo: true,
       isRiichi: p[idx].isRiichi,
+      doubleRiichi: p[idx].doubleRiichi,
       ippatsu: p[idx].ippatsu,
       seatWind,
       roundWind,
@@ -506,6 +507,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const yaku = detectYaku(fullHand, p[winner].melds, {
       isTsumo: false,
       isRiichi: p[winner].isRiichi,
+      doubleRiichi: p[winner].doubleRiichi,
       ippatsu: p[winner].ippatsu,
       seatWind,
       roundWind,
@@ -543,7 +545,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   const handleRiichi = () => {
     let p = [...playersRef.current];
-    p[0] = declareRiichi(p[0]);
+    const isDouble = playersRef.current.every(pl => pl.discard.length === 0);
+    p[0] = declareRiichi(p[0], isDouble);
     setPlayers(p);
     playersRef.current = p;
     setPendingRiichi(0);

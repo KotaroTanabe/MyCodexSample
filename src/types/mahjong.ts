@@ -31,6 +31,8 @@ export interface PlayerState {
   isRiichi: boolean;
   /** true if ippatsu is still possible after declaring riichi */
   ippatsu: boolean;
+  /** true if this riichi was declared on the very first turn */
+  doubleRiichi: boolean;
   name: string;
   isAI: boolean;
   drawnTile: Tile | null;

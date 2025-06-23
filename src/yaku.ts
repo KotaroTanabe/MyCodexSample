@@ -91,6 +91,12 @@ export const YAKU_LIST: Yaku[] = [
     hanOpen: 5,
   },
   {
+    name: 'Double Riichi',
+    description: '一巡目でリーチ',
+    hanClosed: 2,
+    hanOpen: 0,
+  },
+  {
     name: 'Ippatsu',
     description: 'リーチ後一巡以内に和了',
     hanClosed: 1,

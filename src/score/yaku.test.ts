@@ -242,6 +242,18 @@ describe('Yaku detection', () => {
     expect(yaku.some(y => y.name === 'Ippatsu')).toBe(true);
   });
 
+  it('detects Double Riichi', () => {
+    const hand: Tile[] = [
+      t('man',2,'dr2a'),t('man',3,'dr3a'),t('man',4,'dr4a'),
+      t('pin',2,'dr2b'),t('pin',3,'dr3b'),t('pin',4,'dr4b'),
+      t('sou',2,'dr2c'),t('sou',3,'dr3c'),t('sou',4,'dr4c'),
+      t('man',6,'dr6a'),t('man',7,'dr7a'),t('man',8,'dr8a'),
+      t('pin',5,'dr5a'),t('pin',5,'dr5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true, isRiichi: true, doubleRiichi: true });
+    expect(yaku.some(y => y.name === 'Double Riichi')).toBe(true);
+  });
+
   it('detects Rinshan Kaihou', () => {
     const hand: Tile[] = [
       t('man',2,'r2a'),t('man',3,'r3a'),t('man',4,'r4a'),
