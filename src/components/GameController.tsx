@@ -30,7 +30,8 @@ import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import { RoundResultModal, RoundResult } from './RoundResultModal';
 import { FinalResultModal } from './FinalResultModal';
 import { WinResultModal, WinResult } from './WinResultModal';
-import { logToJSON } from '../utils/paifuExport';
+import { exportLqRecord } from '../utils/paifuExport';
+import type { RecordHead } from '../types/jantama';
 
 const DEAD_WALL_SIZE = 14;
 
@@ -78,6 +79,12 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const riichiPoolRef = useRef(riichiPool);
   const honbaRef = useRef(honba);
   const logRef = useRef<LogEntry[]>(log);
+  const recordHeadRef = useRef<RecordHead>({
+    startTime: 0,
+    endTime: 0,
+    rule: { gameLength },
+    players: [],
+  });
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -188,6 +195,14 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       setRiichiPool(0);
       setHonba(0);
       honbaRef.current = 0;
+      recordHeadRef.current.startTime = Date.now();
+      recordHeadRef.current.endTime = 0;
+      recordHeadRef.current.rule = { gameLength };
+      recordHeadRef.current.players = playersRef.current.map(p => ({
+        name: p.name,
+        seat: p.seat,
+        isAI: p.isAI,
+      }));
     }
     setMessage(
       `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
@@ -202,6 +217,12 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     if (phase === 'init') {
       setKyoku(1);
       startRound(true, 1);
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === 'end') {
+      recordHeadRef.current.endTime = Date.now();
     }
   }, [phase]);
 
@@ -735,12 +756,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
   };
 
   const handleDownloadLog = () => {
-    const data = logToJSON(logRef.current);
+    const record = exportLqRecord(logRef.current, recordHeadRef.current);
+    const data = JSON.stringify(record, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'log.json';
+    a.download = 'log.lq.GameDetailRecords';
     a.click();
     URL.revokeObjectURL(url);
   };
