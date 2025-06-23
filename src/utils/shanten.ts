@@ -35,6 +35,9 @@ export function calcStandardShanten(hand: Tile[], openMelds = 0): number {
       pairs++;
     }
   }
+  const pairForShanten = Math.min(pairs, 1);
+  taatsu += pairs - pairForShanten;
+  pairs = pairForShanten;
   // incomplete sequences
   for (let i = 0; i < 27; i++) {
     while (counts[i] > 0 && i % 9 <= 7 && counts[i + 1] > 0) {
