@@ -17,7 +17,9 @@ export function calcStandardDetail(hand: Tile[], openMelds = 0) {
   for (const t of hand) counts[tileIndex(t)]++;
   let melds = 0;
   let pairs = 0; // pairs actually found in the hand
-  let effectivePairs = 0; // pair count used in shanten calculation (max 1)
+  // The pair count used in the shanten formula is capped at one.
+  // Extra pairs are still tracked in `pairs` for explanation output.
+  let pairForShanten = 0;
   let taatsu = 0;
 
   for (let i = 0; i < 34; i++) {
@@ -60,11 +62,11 @@ export function calcStandardDetail(hand: Tile[], openMelds = 0) {
       taatsu++;
     }
   }
-  effectivePairs = Math.min(pairs, 1);
+  pairForShanten = Math.min(pairs, 1);
   melds += openMelds;
   if (taatsu > 4 - melds) taatsu = 4 - melds;
-  const shanten = 8 - melds * 2 - taatsu - effectivePairs;
-  return { shanten, melds, pairs, effectivePairs, taatsu };
+  const shanten = 8 - melds * 2 - taatsu - pairForShanten;
+  return { shanten, melds, pairs, pairForShanten, taatsu };
 }
 
 export function calcChiitoiDetail(hand: Tile[]) {
@@ -140,7 +142,7 @@ export function explainShanten(hand: Tile[], openMelds = 0) {
     explanation =
       `標準形: 面子${standard.melds}組、` +
       `対子${standard.pairs}組、ターツ${standard.taatsu}組 -> ` +
-      `8 - ${standard.melds}*2 - ${standard.taatsu} - ${standard.effectivePairs} = ${standard.shanten}`;
+      `8 - ${standard.melds}*2 - ${standard.taatsu} - ${standard.pairForShanten} = ${standard.shanten}`;
   }
 
   if (shanten === 0) {
