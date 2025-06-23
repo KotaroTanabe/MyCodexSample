@@ -3,6 +3,8 @@
 1人用（AI 3人を含む）シングルページ麻雀アプリ  
 Codex/CopilotなどAI補助によるコーディング演習・検証用プロジェクト
 
+https://kotarotanabe.github.io/MyCodexSample/
+
 ---
 
 ## 特徴
