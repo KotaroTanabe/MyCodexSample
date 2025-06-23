@@ -134,15 +134,6 @@ npm run lint
 - リーチ (Reach)
 - ドラ (Dora)
 
-## Not Yet Implemented
-
-以下のルールはまだ実装されていません。
-
-- 本場 (Honba)
-- 裏ドラ (Ura Dora)
-
----
-
 ## 開発メモ
 
 - 基本的な役判定と符計算を含む点数計算を実装。より高度なAIは未実装（PR歓迎）

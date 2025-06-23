@@ -28,6 +28,7 @@ export function createInitialPlayerState(
     score: 25000,
     isRiichi: false,
     ippatsu: false,
+    doubleRiichi: false,
     name,
     isAI,
     drawnTile: null,
@@ -116,9 +117,12 @@ export function claimMeld(
   };
 }
 
-export function declareRiichi(player: PlayerState): PlayerState {
+export function declareRiichi(
+  player: PlayerState,
+  doubleRiichi = false,
+): PlayerState {
   if (player.isRiichi) return player;
-  return { ...player, isRiichi: true, ippatsu: true };
+  return { ...player, isRiichi: true, ippatsu: true, doubleRiichi };
 }
 
 export function canDeclareRiichi(player: PlayerState): boolean {
