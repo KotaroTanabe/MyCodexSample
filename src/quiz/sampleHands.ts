@@ -1,4 +1,5 @@
 import { Tile, Meld } from '../types/mahjong';
+import { random } from '../utils/random';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
@@ -47,7 +48,7 @@ export const SAMPLE_HANDS: SampleHand[] = [
 ];
 
 function rand(): string {
-  return Math.random().toString(36).slice(2, 8);
+  return random().toString(36).slice(2, 8);
 }
 
 function randomizeIds(hand: SampleHand): SampleHand {

@@ -1,4 +1,5 @@
 import { Tile, Suit } from '../types/mahjong';
+import { random } from '../utils/random';
 
 const suits: Suit[] = ['man', 'pin', 'sou'];
 const honors: { suit: Suit; rank: number }[] = [
@@ -53,7 +54,7 @@ export function drawDoraIndicator(
 function shuffle<T>(array: T[]): T[] {
   let arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
