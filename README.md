@@ -135,6 +135,9 @@ npm run lint
 
 - リーチ (Reach)
 - ドラ (Dora)
+- 本場 (Honba)
+- 裏ドラ (Ura Dora)
+- 一発 (Ippatsu)
 
 ## 牌譜エクスポート
 
