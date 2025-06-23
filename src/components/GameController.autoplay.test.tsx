@@ -56,7 +56,8 @@ describe('GameController auto play', () => {
     fireEvent.click(screen.getAllByText('ログダウンロード')[0]);
     const blob = createObjectURL.mock.calls[0][0] as Blob;
     const text = await blob.text();
-    const entries = JSON.parse(text);
-    expect(entries.some((e: any) => e.type === 'discard')).toBe(true);
+    const obj = JSON.parse(text);
+    expect(obj.name).toBe('.lq.GameDetailRecords');
+    expect(obj.data.some((d: any) => Array.isArray(d.actions))).toBe(true);
   });
 });
