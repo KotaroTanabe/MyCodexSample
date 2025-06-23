@@ -201,7 +201,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ? my.hand.filter(t => t.id !== my.drawnTile?.id)
             : my.hand;
           return (
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center overflow-x-auto">
               <span className="text-xs text-gray-600">手牌</span>
               {handTiles.map(tile => {
                 const kanji =

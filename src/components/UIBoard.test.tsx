@@ -201,6 +201,15 @@ describe('UIBoard aria labels', () => {
   });
 });
 
+describe('UIBoard responsiveness', () => {
+  it('hand container can scroll horizontally', () => {
+    renderBoard({ standard: 1, chiitoi: 1, kokushi: 13 });
+    const handLabel = screen.getByText('手牌');
+    const container = handLabel.parentElement as HTMLElement;
+    expect(container.className).toContain('overflow-x-auto');
+  });
+});
+
 describe('UIBoard discard orientation', () => {
 
 
