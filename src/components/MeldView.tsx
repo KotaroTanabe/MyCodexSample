@@ -15,6 +15,19 @@ const seatRotation = (seat: number) => {
   }
 };
 
+const seatMeldRotation = (seat: number): number => {
+  switch (seat % 4) {
+    case 1:
+      return 270;
+    case 2:
+      return 180;
+    case 3:
+      return 90;
+    default:
+      return 0;
+  }
+};
+
 const calledRotation = (seat: number, from: number) => {
   if (from === seat) return 0;
   const diff = (from - seat + 4) % 4;
@@ -32,13 +45,17 @@ const calledRotation = (seat: number, from: number) => {
 
 export const MeldView: React.FC<{ meld: Meld; seat?: number }> = ({ meld, seat = 0 }) => {
   return (
-    <div className="flex gap-1 border rounded px-1 bg-gray-50">
+    <div
+      className="flex gap-1 border rounded px-1 bg-gray-50"
+      style={{ transform: `rotate(${seatMeldRotation(seat)}deg)` }}
+    >
       {meld.tiles.map(tile => (
         <TileView
           key={tile.id}
           tile={tile}
           rotate={
-            seatRotation(seat) +
+            seatRotation(seat) -
+            seatMeldRotation(seat) +
             (tile.id === meld.calledTileId ? calledRotation(seat, meld.fromPlayer) : 0)
           }
         />

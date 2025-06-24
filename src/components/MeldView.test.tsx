@@ -34,14 +34,27 @@ describe('MeldView', () => {
       calledTileId: 'a',
     };
     const htmlRight = renderToStaticMarkup(<MeldView meld={base} seat={0} />);
-    const rotRight = /rotate\(([-0-9]+)deg\)/.exec(htmlRight)![1];
-
     const htmlLeft = renderToStaticMarkup(
       <MeldView meld={{ ...base, fromPlayer: 3 }} seat={0} />,
     );
-    const rotLeft = /rotate\(([-0-9]+)deg\)/.exec(htmlLeft)![1];
 
-    expect(rotRight).not.toBe(rotLeft);
+    expect(htmlRight).toContain('rotate(90deg)');
+    expect(htmlLeft).toContain('rotate(-90deg)');
+  });
+
+  it('rotates the whole meld for side seats', () => {
+    const meld: Meld = {
+      type: 'pon',
+      tiles: [
+        { suit: 'man', rank: 1, id: 'a' },
+        { suit: 'man', rank: 1, id: 'b' },
+        { suit: 'man', rank: 1, id: 'c' },
+      ],
+      fromPlayer: 0,
+      calledTileId: 'a',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} seat={1} />);
+    expect(html).toContain('rotate(270deg)');
   });
 
   // Style-specific rotations are tested elsewhere; focus on tile count here.
