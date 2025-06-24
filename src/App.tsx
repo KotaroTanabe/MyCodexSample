@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameController } from './components/GameController';
 import { FuQuiz } from './components/FuQuiz';
 import { ScoreQuiz } from './components/ScoreQuiz';
@@ -12,10 +12,15 @@ function App() {
     'east1',
   );
   const [helpOpen, setHelpOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', dark);
+  }, [dark]);
 
   return (
     <div
-      className="min-h-screen bg-green-100 flex items-center justify-center py-2"
+      className="min-h-screen bg-surface-100 dark:bg-surface-900 flex items-center justify-center py-2"
       style={{ ['--tile-font-size' as any]: `${tileFont}rem` } as React.CSSProperties}
     >
       <div className="w-full mx-auto px-4 space-y-4">
@@ -72,10 +77,17 @@ function App() {
         )}
         <button
           onClick={() => setHelpOpen(true)}
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-white shadow text-sm font-bold hover:bg-gray-100"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-0 dark:bg-surface-700 shadow text-sm font-bold hover:bg-surface-100 dark:hover:bg-surface-600"
           aria-label="ヘルプ"
         >
           ?
+        </button>
+        <button
+          onClick={() => setDark(d => !d)}
+          aria-label="Dark mode"
+          className="px-2 py-1 border rounded bg-surface-0 dark:bg-surface-700 hover:bg-surface-100 dark:hover:bg-surface-600"
+        >
+          {dark ? 'Light' : 'Dark'}
         </button>
       </div>
       {mode === 'game' ? (

@@ -14,3 +14,15 @@ describe('App mode selector', () => {
     expect(screen.getByPlaceholderText('符を入力')).toBeTruthy();
   });
 });
+
+describe('Dark mode toggle', () => {
+  it('adds and removes dark class on body', () => {
+    render(<App />);
+    const [toggle] = screen.getAllByLabelText('Dark mode');
+    expect(document.body.classList.contains('dark')).toBe(false);
+    fireEvent.click(toggle);
+    expect(document.body.classList.contains('dark')).toBe(true);
+    fireEvent.click(toggle);
+    expect(document.body.classList.contains('dark')).toBe(false);
+  });
+});
