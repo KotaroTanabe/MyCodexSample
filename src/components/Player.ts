@@ -96,16 +96,34 @@ export function claimMeld(
   // remove called tiles from hand
   const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
   let meldTiles = tiles;
-  if (type === 'chi') {
-    const idx = tiles.findIndex(t => t.id === calledTileId);
-    if (idx >= 0) {
-      const called = tiles[idx];
-      const others = tiles.filter((_, i) => i !== idx);
-      // when calling from the player on the left (standard chi),
-      // place the called tile at the leftmost position
-      if (fromPlayer === (player.seat + 3) % 4) {
+  const idx = tiles.findIndex(t => t.id === calledTileId);
+  if (idx >= 0) {
+    const called = tiles[idx];
+    const others = tiles.filter((_, i) => i !== idx);
+    const relative = (fromPlayer - player.seat + 4) % 4;
+    if (type === 'chi') {
+      // Chi is only possible from the player on the left
+      // Place the called tile at the leftmost position when from left
+      if (relative === 3) {
         meldTiles = [called, ...others];
       } else {
+        meldTiles = [...others, called];
+      }
+    } else if (type === 'pon') {
+      // Left -> rightmost, Right -> leftmost, Opposite -> middle
+      if (relative === 1) {
+        meldTiles = [called, ...others];
+      } else if (relative === 2) {
+        meldTiles = [others[0], called, others[1]];
+      } else if (relative === 3) {
+        meldTiles = [...others, called];
+      }
+    } else if (type === 'kan') {
+      if (relative === 1) {
+        meldTiles = [called, ...others];
+      } else if (relative === 2) {
+        meldTiles = [others[0], called, others[1], others[2]];
+      } else if (relative === 3) {
         meldTiles = [...others, called];
       }
     }
