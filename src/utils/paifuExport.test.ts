@@ -16,15 +16,20 @@ const log: LogEntry[] = [
   { type: 'startRound', kyoku: 1 },
   { type: 'draw', player: 0, tile },
   { type: 'discard', player: 0, tile },
+  { type: 'meld', player: 0, tiles: [tile, tile, tile, tile], meldType: 'kan', from: 1, kanType: 'daiminkan' },
 ];
 
 describe('exportLqRecord', () => {
   it('maps log entries to lq actions', () => {
     const result = exportLqRecord(log, sampleHead);
     expect(result.name).toBe('.lq.GameDetailRecords');
-    expect(result.data.length).toBe(3);
+    expect(result.data.length).toBe(4);
     expect(result.data[0].actions[0].name).toBe('.lq.RecordNewRound');
     expect(result.data[1].actions[0].name).toBe('.lq.RecordDrawTile');
     expect(result.data[2].actions[0].name).toBe('.lq.RecordDiscardTile');
+    expect(result.data[3].actions[0]).toMatchObject({
+      name: '.lq.RecordCall',
+      kanType: 'daiminkan',
+    });
   });
 });

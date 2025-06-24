@@ -164,7 +164,9 @@ export function calculateFuDetail(
         fu += val;
         steps.push(`${label} +${val} (${tilesToString(open.tiles)})`);
       } else if (open.type === 'kan') {
-        const closed = open.fromPlayer === seatIndex;
+        const closed = open.kanType
+          ? open.kanType === 'ankan'
+          : open.fromPlayer === seatIndex;
         const val = isTerminalOrHonor(open.tiles[0])
           ? closed
             ? 32

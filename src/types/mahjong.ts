@@ -20,6 +20,8 @@ export interface Meld {
   fromPlayer: number;
   /** id of the tile claimed from another player's discard */
   calledTileId: string;
+  /** type of kan if this meld is a kan */
+  kanType?: 'ankan' | 'kakan' | 'daiminkan';
 }
 
 // プレイヤー状態
@@ -49,6 +51,7 @@ export type LogEntry =
       tiles: Tile[];
       meldType: MeldType;
       from: number;
+      kanType?: 'ankan' | 'kakan' | 'daiminkan';
     }
   | { type: 'riichi'; player: number; tile: Tile }
   | { type: 'tsumo'; player: number; tile: Tile }

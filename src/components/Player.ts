@@ -92,6 +92,7 @@ export function claimMeld(
   type: MeldType,
   fromPlayer: number,
   calledTileId: string,
+  kanType?: 'ankan' | 'kakan' | 'daiminkan',
 ): PlayerState {
   // remove called tiles from hand
   const hand = player.hand.filter(h => !tiles.some(t => t.id === h.id));
@@ -132,7 +133,10 @@ export function claimMeld(
   return {
     ...player,
     hand: sortHand(hand),
-    melds: [...player.melds, { type, tiles: meldTiles, fromPlayer, calledTileId }],
+    melds: [
+      ...player.melds,
+      { type, tiles: meldTiles, fromPlayer, calledTileId, kanType },
+    ],
   };
 }
 

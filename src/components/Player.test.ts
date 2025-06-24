@@ -176,9 +176,9 @@ describe('claimMeld', () => {
     ];
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
     const tiles = hand.slice();
-    const fromRight = claimMeld(player, tiles, 'kan', 1, 'a');
-    const fromOpposite = claimMeld(player, tiles, 'kan', 2, 'a');
-    const fromLeft = claimMeld(player, tiles, 'kan', 3, 'a');
+    const fromRight = claimMeld(player, tiles, 'kan', 1, 'a', 'daiminkan');
+    const fromOpposite = claimMeld(player, tiles, 'kan', 2, 'a', 'daiminkan');
+    const fromLeft = claimMeld(player, tiles, 'kan', 3, 'a', 'daiminkan');
     expect(fromRight.melds[0].tiles[3].id).toBe('a');
     expect(fromOpposite.melds[0].tiles[1].id).toBe('a');
     expect(fromLeft.melds[0].tiles[0].id).toBe('a');

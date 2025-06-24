@@ -16,6 +16,7 @@ function convertAction(entry: LogEntry): RecordAction {
         tiles: entry.tiles.map(t => t.id),
         meldType: entry.meldType,
         from: entry.from,
+        kanType: entry.kanType,
       };
     case 'riichi':
       return { name: '.lq.RecordRiichi', seat: entry.player, tile: entry.tile.id };

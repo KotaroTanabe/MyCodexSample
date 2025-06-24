@@ -36,6 +36,7 @@ export interface RecordCall extends RecordActionBase {
   tiles: string[];
   meldType: string;
   from: number;
+  kanType?: 'ankan' | 'kakan' | 'daiminkan';
 }
 
 export interface RecordRiichi extends RecordActionBase {
