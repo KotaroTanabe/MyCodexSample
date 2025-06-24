@@ -616,7 +616,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       [...p[winner].hand, tile],
       p[winner].melds,
       yaku,
-      [],
+      dora,
       { seatWind, roundWind, winType: 'ron' },
     );
     let updated = payoutRon(p, winner, from, points, honbaRef.current).map((pl, i) =>
