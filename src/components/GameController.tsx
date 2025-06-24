@@ -79,6 +79,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const riichiPoolRef = useRef(riichiPool);
   const honbaRef = useRef(honba);
   const logRef = useRef<LogEntry[]>(log);
+  const kanDrawRef = useRef<number | null>(null);
+  const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
   const recordHeadRef = useRef<RecordHead>({
     startTime: 0,
     endTime: 0,
@@ -209,6 +211,8 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     );
     setLog([{ type: 'startRound', kyoku: roundNumber }]);
     logRef.current = [{ type: 'startRound', kyoku: roundNumber }];
+    kanDrawRef.current = null;
+    drawInfoRef.current = {};
     setPhase('playing');
   };
 
@@ -279,11 +283,14 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     playersRef.current = p;
     setWall(result.wall);
     wallRef.current = result.wall;
+    const rinshan = kanDrawRef.current === currentIndex;
+    if (rinshan) kanDrawRef.current = null;
+    const last = result.wall.length === 0;
+    drawInfoRef.current[currentIndex] = { rinshan, last };
     setLog(prev => [...prev, { type: 'draw', player: currentIndex, tile: result.player.drawnTile as Tile }]);
     logRef.current = [...logRef.current, { type: 'draw', player: currentIndex, tile: result.player.drawnTile as Tile }];
-    if (result.wall.length === 0) {
-      handleWallExhaustion();
-      return;
+    if (last) {
+      // postpone exhaustion until after possible win/discard
     }
     if (!playersRef.current[currentIndex].isAI) {
       const opts = getSelfKanOptions(playersRef.current[currentIndex]);
@@ -303,6 +310,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         setTsumoOption(true);
         return;
       }
+    }
+    if (last) {
+      handleWallExhaustion();
+      return;
     }
 
   };
@@ -351,6 +362,12 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
       setPendingRiichi(null);
       setPlayers(p);
       playersRef.current = p;
+    }
+    const info = drawInfoRef.current[idx];
+    drawInfoRef.current[idx] = { rinshan: false, last: false };
+    if (info?.last) {
+      handleWallExhaustion();
+      return;
     }
     if (idx !== 0 && !playersRef.current[0].isAI) {
       let options = getValidCallOptions(p[0], tile);
@@ -438,11 +455,15 @@ const handleCallAction = (action: MeldType | 'pass') => {
     },
   ];
 
-    if (action === 'kan') {
-      const doraResult = drawDoraIndicator(deadWallRef.current, 1);
-      setDora(prev => [...prev, ...doraResult.dora]);
-      setDeadWall(doraResult.wall);
-      deadWallRef.current = doraResult.wall;
+  if (action === 'kan') {
+    kanDrawRef.current = caller;
+  }
+
+  if (action === 'kan') {
+    const doraResult = drawDoraIndicator(deadWallRef.current, 1);
+    setDora(prev => [...prev, ...doraResult.dora]);
+    setDeadWall(doraResult.wall);
+    deadWallRef.current = doraResult.wall;
       turnRef.current = caller;
       drawForCurrentPlayer();
     }
@@ -470,7 +491,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller },
   ];
 
-    const doraResult = drawDoraIndicator(deadWallRef.current, 1);
+  kanDrawRef.current = caller;
+
+  const doraResult = drawDoraIndicator(deadWallRef.current, 1);
     setDora(prev => [...prev, ...doraResult.dora]);
     setDeadWall(doraResult.wall);
     deadWallRef.current = doraResult.wall;
@@ -545,6 +568,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       deadWallRef.current = uraRes.wall;
     }
     const fullHand = [...p[idx].hand, ...p[idx].melds.flatMap(m => m.tiles)];
+    const info = drawInfoRef.current[idx];
+    drawInfoRef.current[idx] = { rinshan: false, last: false };
     const seatWind = p[idx].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
     const yaku = detectYaku(fullHand, p[idx].melds, {
@@ -552,6 +577,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       isRiichi: p[idx].isRiichi,
       doubleRiichi: p[idx].doubleRiichi,
       ippatsu: p[idx].ippatsu,
+      rinshan: info?.rinshan,
+      haitei: info?.last,
       seatWind,
       roundWind,
       uraDoraIndicators: ura,
@@ -601,6 +628,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
       deadWallRef.current = uraRes.wall;
     }
     const fullHand = [...p[winner].hand, ...p[winner].melds.flatMap(m => m.tiles), tile];
+    const fromInfo = drawInfoRef.current[from];
+    drawInfoRef.current[from] = { rinshan: false, last: false };
+    const prev = logRef.current[logRef.current.length - 1];
+    const chankan = prev && prev.type === 'meld' && prev.meldType === 'kan' && prev.player === from && prev.tiles.some(t => t.id === tile.id);
     const seatWind = p[winner].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
     const yaku = detectYaku(fullHand, p[winner].melds, {
@@ -608,6 +639,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       isRiichi: p[winner].isRiichi,
       doubleRiichi: p[winner].doubleRiichi,
       ippatsu: p[winner].ippatsu,
+      chankan,
+      houtei: fromInfo?.last,
       seatWind,
       roundWind,
       uraDoraIndicators: ura,
