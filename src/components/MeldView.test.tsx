@@ -57,5 +57,40 @@ describe('MeldView', () => {
     expect(html).toContain('rotate(270deg)');
   });
 
+  it('shows facedown tiles for ankan', () => {
+    const meld: Meld = {
+      type: 'kan',
+      tiles: [
+        { suit: 'man', rank: 5, id: 'a' },
+        { suit: 'man', rank: 5, id: 'b' },
+        { suit: 'man', rank: 5, id: 'c' },
+        { suit: 'man', rank: 5, id: 'd' },
+      ],
+      fromPlayer: 0,
+      calledTileId: 'a',
+      kanType: 'ankan',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} seat={0} />);
+    const backCount = (html.match(/🀫/g) || []).length;
+    expect(backCount).toBe(2);
+  });
+
+  it('styles kakan differently from daiminkan', () => {
+    const meld: Meld = {
+      type: 'kan',
+      tiles: [
+        { suit: 'man', rank: 2, id: 'a' },
+        { suit: 'man', rank: 2, id: 'b' },
+        { suit: 'man', rank: 2, id: 'c' },
+        { suit: 'man', rank: 2, id: 'd' },
+      ],
+      fromPlayer: 1,
+      calledTileId: 'a',
+      kanType: 'kakan',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} seat={0} />);
+    expect(html).toContain('-ml-3');
+  });
+
   // Style-specific rotations are tested elsewhere; focus on tile count here.
 });

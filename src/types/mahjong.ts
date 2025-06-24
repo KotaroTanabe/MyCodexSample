@@ -13,6 +13,8 @@ export interface Tile {
 
 export type MeldType = 'pon' | 'chi' | 'kan';
 
+export type KanType = 'ankan' | 'minkan' | 'kakan';
+
 export interface Meld {
   type: MeldType;
   tiles: Tile[];
@@ -20,6 +22,8 @@ export interface Meld {
   fromPlayer: number;
   /** id of the tile claimed from another player's discard */
   calledTileId: string;
+  /** type of kan meld when type is 'kan' */
+  kanType?: KanType;
 }
 
 // プレイヤー状態

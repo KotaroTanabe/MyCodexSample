@@ -112,17 +112,17 @@ const boardPresets: Record<string, BoardData> = (() => {
     const p0 = createInitialPlayerState('自分', false, 0);
     const ankan = [t('man', 5), t('man', 5), t('man', 5), t('man', 5)];
     p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
-    p0.melds = [{ type: 'kan', tiles: ankan, fromPlayer: 0, calledTileId: ankan[0].id }];
+    p0.melds = [{ type: 'kan', tiles: ankan, fromPlayer: 0, calledTileId: ankan[0].id, kanType: 'ankan' }];
 
     const p1 = createInitialPlayerState('下家', true, 1);
     const minkan = [t('pin', 7), t('pin', 7), t('pin', 7), t('pin', 7)];
     p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3)];
-    p1.melds = [{ type: 'kan', tiles: minkan, fromPlayer: 2, calledTileId: minkan[1].id }];
+    p1.melds = [{ type: 'kan', tiles: minkan, fromPlayer: 2, calledTileId: minkan[1].id, kanType: 'minkan' }];
 
     const p2 = createInitialPlayerState('対面', true, 2);
     const kakan = [t('sou', 3), t('sou', 3), t('sou', 3), t('sou', 3)];
     p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-    p2.melds = [{ type: 'kan', tiles: kakan, fromPlayer: 1, calledTileId: kakan[0].id }];
+    p2.melds = [{ type: 'kan', tiles: kakan, fromPlayer: 1, calledTileId: kakan[0].id, kanType: 'kakan' }];
 
     const p3 = createInitialPlayerState('上家', true, 3);
     p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
@@ -552,6 +552,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     action,
     discarder,
     lastDiscard.tile.id,
+    action === 'kan' ? 'minkan' : undefined,
   );
   setPlayers(p);
   playersRef.current = p;
@@ -600,7 +601,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     if (!canCallMeld(playersRef.current[caller])) return;
     let p = playersRef.current.map(pl => clearIppatsu(pl));
   p = [...p];
-  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
+  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id, 'ankan');
   setPlayers(p);
   playersRef.current = p;
   setLog(prev => [
@@ -637,6 +638,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       action,
       discarder,
       lastDiscard.tile.id,
+      action === 'kan' ? 'minkan' : undefined,
     );
     setPlayers(p);
     playersRef.current = p;
