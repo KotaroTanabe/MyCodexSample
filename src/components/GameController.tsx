@@ -856,7 +856,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   // リセット
   const handleRestart = () => {
-    setPhase('init');
+    // Start a completely new game with fresh scores
+    setKyoku(1);
+    startRound(true, 1);
   };
 
   const handleDownloadLog = () => {
