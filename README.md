@@ -134,6 +134,7 @@ npm run lint
 現在実装されているルールは以下の通りです。
 
 - リーチ (Reach)
+- ダブルリーチ (Double Riichi)
 - ドラ (Dora)
 - 本場 (Honba)
 - 裏ドラ (Ura Dora)
