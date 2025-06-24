@@ -144,6 +144,45 @@ describe('claimMeld', () => {
       },
     ]);
   });
+
+  it('orders pon tiles based on caller position', () => {
+    const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({
+      suit,
+      rank,
+      id,
+    });
+    const hand: Tile[] = [t('man', 1, 'a'), t('man', 1, 'b'), t('man', 1, 'c')];
+    const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
+    const tiles = hand.slice();
+    const fromRight = claimMeld(player, tiles, 'pon', 1, 'a');
+    const fromOpposite = claimMeld(player, tiles, 'pon', 2, 'a');
+    const fromLeft = claimMeld(player, tiles, 'pon', 3, 'a');
+    expect(fromRight.melds[0].tiles[0].id).toBe('a');
+    expect(fromOpposite.melds[0].tiles[1].id).toBe('a');
+    expect(fromLeft.melds[0].tiles[2].id).toBe('a');
+  });
+
+  it('orders kan tiles based on caller position', () => {
+    const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({
+      suit,
+      rank,
+      id,
+    });
+    const hand: Tile[] = [
+      t('man', 1, 'a'),
+      t('man', 1, 'b'),
+      t('man', 1, 'c'),
+      t('man', 1, 'd'),
+    ];
+    const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
+    const tiles = hand.slice();
+    const fromRight = claimMeld(player, tiles, 'kan', 1, 'a');
+    const fromOpposite = claimMeld(player, tiles, 'kan', 2, 'a');
+    const fromLeft = claimMeld(player, tiles, 'kan', 3, 'a');
+    expect(fromRight.melds[0].tiles[0].id).toBe('a');
+    expect(fromOpposite.melds[0].tiles[1].id).toBe('a');
+    expect(fromLeft.melds[0].tiles[3].id).toBe('a');
+  });
 });
 
 describe('incrementDiscardCount', () => {
