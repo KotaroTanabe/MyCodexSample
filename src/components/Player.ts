@@ -110,21 +110,22 @@ export function claimMeld(
         meldTiles = [...others, called];
       }
     } else if (type === 'pon') {
-      // Left -> rightmost, Right -> leftmost, Opposite -> middle
+      // Right -> rightmost, Left -> leftmost, Opposite -> middle
       if (relative === 1) {
-        meldTiles = [called, ...others];
+        meldTiles = [...others, called];
       } else if (relative === 2) {
         meldTiles = [others[0], called, others[1]];
       } else if (relative === 3) {
-        meldTiles = [...others, called];
+        meldTiles = [called, ...others];
       }
     } else if (type === 'kan') {
+      // Right -> rightmost, Left -> leftmost, Opposite -> second from left
       if (relative === 1) {
-        meldTiles = [called, ...others];
+        meldTiles = [...others, called];
       } else if (relative === 2) {
         meldTiles = [others[0], called, others[1], others[2]];
       } else if (relative === 3) {
-        meldTiles = [...others, called];
+        meldTiles = [called, ...others];
       }
     }
   }
