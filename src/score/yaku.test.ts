@@ -390,10 +390,27 @@ describe('Scoring', () => {
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
     const yaku = detectYaku(hand, [], { isTsumo: true });
-    const doraIndicator = t('pin',4,'di');
-    const { han } = calculateScore(hand, [], yaku, [doraIndicator]);
-    expect(han).toBe(7);
-  });
+  const doraIndicator = t('pin',4,'di');
+  const { han } = calculateScore(hand, [], yaku, [doraIndicator]);
+  expect(han).toBe(7);
+});
+
+ it('includes dora in ron score', () => {
+   const hand: Tile[] = [
+     t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+     t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+     t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+     t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+     t('pin',5,'p5a'),t('pin',5,'p5b'),
+   ];
+   const yaku = detectYaku(hand, [], { isTsumo: true });
+   const doraIndicator = t('pin',4,'di');
+   const { points } = calculateScore(hand, [], yaku, [doraIndicator]);
+   // ドラ表示牌4ピンは5ピンがドラになる。5ピンを2枚持っているのでドラ2、
+   // 素点5翻にドラ2で7翻、20符は跳満扱いで基本点3000、
+   // 子ロンなら4倍して12000点になるはず
+   expect(points).toBe(12000);
+ });
 
   it('adds fu for a kan meld', () => {
     // use 3 tiles for simplicity; scoring treats kan as pon plus bonus
