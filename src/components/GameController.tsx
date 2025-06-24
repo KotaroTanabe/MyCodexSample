@@ -52,41 +52,108 @@ interface BoardData {
   honba: number;
 }
 
-const sampleBoard: BoardData = (() => {
-  let id = 1;
-  const t = (suit: Tile['suit'], rank: number): Tile => ({
-    suit,
-    rank,
-    id: `s${id++}`,
-  });
-  const p0 = createInitialPlayerState('自分', false, 0);
-  const chi = [t('man', 1), t('man', 2), t('man', 3)];
-  p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
-  p0.melds = [{ type: 'chi', tiles: chi, fromPlayer: 1, calledTileId: chi[0].id }];
-
-  const p1 = createInitialPlayerState('下家', true, 1);
-  const pon = [t('pin', 7), t('pin', 7), t('pin', 7)];
-  p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3), t('man', 5), t('pin', 9), t('pin', 9)];
-  p1.melds = [{ type: 'pon', tiles: pon, fromPlayer: 2, calledTileId: pon[1].id }];
-
-  const p2 = createInitialPlayerState('対面', true, 2);
-  const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
-  p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-  p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
-
-  const p3 = createInitialPlayerState('上家', true, 3);
-  p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
-
-  return {
-    players: [p0, p1, p2, p3],
-    wall: [],
-    deadWall: [],
-    dora: [],
-    turn: 0,
-    kyoku: 1,
-    riichiPool: 0,
-    honba: 0,
+const boardPresets: Record<string, BoardData> = (() => {
+  // eslint-disable-next-line no-unused-vars
+  type TileFactory = (suit: Tile['suit'], rank: number) => Tile;
+  // eslint-disable-next-line no-unused-vars
+  const make = (build: (t: TileFactory) => BoardData): BoardData => {
+    let id = 1;
+    const t = (suit: Tile['suit'], rank: number): Tile => ({ suit, rank, id: `p${id++}` });
+    return build(t);
   };
+
+  const basic = make(t => {
+    const p0 = createInitialPlayerState('自分', false, 0);
+    const chi = [t('man', 1), t('man', 2), t('man', 3)];
+    p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
+    p0.melds = [{ type: 'chi', tiles: chi, fromPlayer: 1, calledTileId: chi[0].id }];
+
+    const p1 = createInitialPlayerState('下家', true, 1);
+    const pon = [t('pin', 7), t('pin', 7), t('pin', 7)];
+    p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3), t('man', 5), t('pin', 9), t('pin', 9)];
+    p1.melds = [{ type: 'pon', tiles: pon, fromPlayer: 2, calledTileId: pon[1].id }];
+
+    const p2 = createInitialPlayerState('対面', true, 2);
+    const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
+    p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
+    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+
+    const p3 = createInitialPlayerState('上家', true, 3);
+    p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
+
+    return { players: [p0, p1, p2, p3], wall: [], deadWall: [], dora: [], turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
+  });
+
+  const multiCalls = make(t => {
+    const p0 = createInitialPlayerState('自分', false, 0);
+    p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
+
+    const p1 = createInitialPlayerState('下家', true, 1);
+    const pon = [t('pin', 7), t('pin', 7), t('pin', 7)];
+    const chi = [t('man', 1), t('man', 2), t('man', 3)];
+    p1.hand = [t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3), t('man', 5), t('pin', 9), t('pin', 9)];
+    p1.melds = [
+      { type: 'pon', tiles: pon, fromPlayer: 2, calledTileId: pon[1].id },
+      { type: 'chi', tiles: chi, fromPlayer: 0, calledTileId: chi[0].id },
+    ];
+
+    const p2 = createInitialPlayerState('対面', true, 2);
+    const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
+    p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
+    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+
+    const p3 = createInitialPlayerState('上家', true, 3);
+    p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
+
+    return { players: [p0, p1, p2, p3], wall: [], deadWall: [], dora: [], turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
+  });
+
+  const kanVariants = make(t => {
+    const p0 = createInitialPlayerState('自分', false, 0);
+    const ankan = [t('man', 5), t('man', 5), t('man', 5), t('man', 5)];
+    p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
+    p0.melds = [{ type: 'kan', tiles: ankan, fromPlayer: 0, calledTileId: ankan[0].id }];
+
+    const p1 = createInitialPlayerState('下家', true, 1);
+    const minkan = [t('pin', 7), t('pin', 7), t('pin', 7), t('pin', 7)];
+    p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3)];
+    p1.melds = [{ type: 'kan', tiles: minkan, fromPlayer: 2, calledTileId: minkan[1].id }];
+
+    const p2 = createInitialPlayerState('対面', true, 2);
+    const kakan = [t('sou', 3), t('sou', 3), t('sou', 3), t('sou', 3)];
+    p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
+    p2.melds = [{ type: 'kan', tiles: kakan, fromPlayer: 1, calledTileId: kakan[0].id }];
+
+    const p3 = createInitialPlayerState('上家', true, 3);
+    p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
+
+    return { players: [p0, p1, p2, p3], wall: [], deadWall: [], dora: [], turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
+  });
+
+  const longRiver = make(t => {
+    const p0 = createInitialPlayerState('自分', false, 0);
+    const chi = [t('man', 1), t('man', 2), t('man', 3)];
+    p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
+    p0.melds = [{ type: 'chi', tiles: chi, fromPlayer: 1, calledTileId: chi[0].id }];
+
+    const p1 = createInitialPlayerState('下家', true, 1);
+    const pon = [t('pin', 7), t('pin', 7), t('pin', 7)];
+    p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3), t('man', 5), t('pin', 9), t('pin', 9)];
+    p1.melds = [{ type: 'pon', tiles: pon, fromPlayer: 2, calledTileId: pon[1].id }];
+
+    const p2 = createInitialPlayerState('対面', true, 2);
+    const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
+    p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
+    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+
+    const p3 = createInitialPlayerState('上家', true, 3);
+    p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
+    p3.discard = Array.from({ length: 20 }).map((_, i) => t('man', (i % 9) + 1));
+
+    return { players: [p0, p1, p2, p3], wall: [], deadWall: [], dora: [], turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
+  });
+
+  return { basic, multiCalls, kanVariants, longRiver };
 })();
 
 interface Props {
@@ -136,10 +203,11 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     rule: { gameLength },
     players: [],
   });
+  const [preset, setPreset] = useState<keyof typeof boardPresets>('basic');
 
   useEffect(() => {
-    setBoardInput(JSON.stringify(sampleBoard, null, 2));
-  }, []);
+    setBoardInput(JSON.stringify(boardPresets[preset], null, 2));
+  }, [preset]);
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -941,6 +1009,21 @@ const handleCallAction = (action: MeldType | 'pass') => {
       <button className="px-2 py-1 bg-gray-200 rounded" onClick={handleDownloadLog}>
         ログダウンロード
       </button>
+      <div className="my-2 flex items-center gap-2">
+        <label htmlFor="preset" className="whitespace-nowrap">プリセット</label>
+        <select
+          id="preset"
+          aria-label="プリセット"
+          className="border px-2 py-1"
+          value={preset}
+          onChange={e => setPreset(e.target.value as keyof typeof boardPresets)}
+        >
+          <option value="basic">基本形</option>
+          <option value="multiCalls">複数鳴き</option>
+          <option value="kanVariants">カン各種</option>
+          <option value="longRiver">捨て牌19枚</option>
+        </select>
+      </div>
       <textarea
         aria-label="盤面入力"
         className="w-full h-40 p-1 border font-mono"
