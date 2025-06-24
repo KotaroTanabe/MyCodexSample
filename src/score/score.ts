@@ -1,5 +1,5 @@
 import { Tile, Meld } from '../types/mahjong';
-import { ScoreYaku } from './yaku';
+import { ScoreYaku, detectYaku } from './yaku';
 
 function tileKey(t: Tile): string {
   return `${t.suit}-${t.rank}`;
@@ -100,6 +100,14 @@ export function calculateFu(
   opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
 ): number {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const yaku = detectYaku(allTiles, melds, {
+    seatWind: opts?.seatWind,
+    roundWind: opts?.roundWind,
+  });
+  if (yaku.some(y => y.name === 'Chiitoitsu')) {
+    return 25; // 七対子は固定25符
+  }
+
   const parsed = decomposeHand(allTiles);
   if (!parsed) return 0;
 
@@ -121,17 +129,43 @@ export function calculateFu(
   }
   fu += pairFu;
 
-  for (const meld of parsed.melds) {
-    if (meld.type === 'pon') {
-      fu += isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
-    }
-  }
+  const remainingOpen = [...melds];
+  const seatIndex = opts?.seatWind ? opts.seatWind - 1 : -1;
 
-  for (const meld of melds) {
-    if (meld.type === 'kan') {
-      const base = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
-      const kanFu = isTerminalOrHonor(meld.tiles[0]) ? 32 : 16;
-      fu += kanFu - base;
+  const takeOpen = (m: ParsedMeld): Meld | undefined => {
+    const idx = remainingOpen.findIndex(o => {
+      if (o.type === 'chi' && m.type === 'chi') {
+        const a = o.tiles.map(tileKey).sort().join(',');
+        const b = m.tiles.map(tileKey).sort().join(',');
+        return a === b;
+      }
+      if (m.type === 'pon' && (o.type === 'pon' || o.type === 'kan')) {
+        const key = tileKey(m.tiles[0]);
+        return o.tiles.every(t => tileKey(t) === key);
+      }
+      return false;
+    });
+    if (idx >= 0) {
+      return remainingOpen.splice(idx, 1)[0];
+    }
+    return undefined;
+  };
+
+  for (const meld of parsed.melds) {
+    const open = takeOpen(meld);
+    if (open) {
+      if (open.type === 'pon') {
+        fu += isTerminalOrHonor(open.tiles[0]) ? 4 : 2;
+      } else if (open.type === 'kan') {
+        const closed = open.fromPlayer === seatIndex;
+        if (closed) {
+          fu += isTerminalOrHonor(open.tiles[0]) ? 32 : 16;
+        } else {
+          fu += isTerminalOrHonor(open.tiles[0]) ? 16 : 8;
+        }
+      }
+    } else if (meld.type === 'pon') {
+      fu += isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
     }
   }
 

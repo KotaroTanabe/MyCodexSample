@@ -120,6 +120,22 @@ describe('Yaku detection', () => {
     expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
   });
 
+  it('scores Chiitoitsu as 25 fu', () => {
+    const hand: Tile[] = [
+      t('man',1,'m1a'),t('man',1,'m1b'),
+      t('man',2,'m2a'),t('man',2,'m2b'),
+      t('pin',3,'p3a'),t('pin',3,'p3b'),
+      t('pin',4,'p4a'),t('pin',4,'p4b'),
+      t('sou',5,'s5a'),t('sou',5,'s5b'),
+      t('sou',6,'s6a'),t('sou',6,'s6b'),
+      t('dragon',1,'d1a'),t('dragon',1,'d1b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    const { fu } = calculateScore(hand, [], yaku, []);
+    // 七対子は常に25符になるはず
+    expect(fu).toBe(25);
+  });
+
   it('detects Kokushi Musou', () => {
     const hand: Tile[] = [
       t('man',1,'m1a'),t('man',9,'m9a'),
@@ -431,8 +447,8 @@ describe('Scoring', () => {
     const fullHand = [...concealed, ...kanTiles];
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
     const { fu } = calculateScore(concealed, melds, yaku);
-    // 基本符20 + カン(役牌)32 = 52、切り上げで60符になるはず
-    expect(fu).toBe(60);
+    // 基本符20 + 明カン(役牌)16 = 36、切り上げで40符になるはず
+    expect(fu).toBe(40);
   });
 
   it('adds riichi han when declared', () => {
