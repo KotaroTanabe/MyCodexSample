@@ -1,5 +1,6 @@
 import { Tile, Meld } from '../types/mahjong';
 import { tileToKanji } from '../utils/tileString';
+import { detectYaku } from './yaku';
 
 function tileKey(t: Tile): string {
   return `${t.suit}-${t.rank}`;
@@ -104,6 +105,11 @@ export function calculateFuDetail(
   const parsed = decomposeHand(allTiles);
   if (!parsed) return { fu: 0, steps: ['invalid hand'] };
 
+  const yaku = detectYaku(allTiles, melds, { seatWind, roundWind });
+  if (yaku.some(y => y.name === 'Chiitoitsu')) {
+    return { fu: 25, steps: ['七対子25符'] };
+  }
+
   let fu = 20;
   const steps = ['基本符20'];
 
@@ -127,24 +133,57 @@ export function calculateFuDetail(
     steps.push(`役牌の雀頭 +${pairFu}`);
   }
 
-  for (const meld of parsed.melds) {
-    if (meld.type === 'pon') {
-      if (isTerminalOrHonor(meld.tiles[0])) {
-        fu += 8;
-        steps.push(`么九刻子 +8 (${tilesToString(meld.tiles)})`);
-      } else {
-        fu += 4;
-        steps.push(`刻子 +4 (${tilesToString(meld.tiles)})`);
-      }
-    }
-  }
+  const remainingOpen = [...melds];
+  const seatIndex = seatWind - 1;
 
-  for (const meld of melds) {
-    if (meld.type === 'kan') {
-      const base = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
-      const kanFu = isTerminalOrHonor(meld.tiles[0]) ? 32 : 16;
-      fu += kanFu - base;
-      steps.push(`カンボーナス +${kanFu - base} (${tilesToString(meld.tiles)})`);
+  const takeOpen = (m: ParsedMeld): Meld | undefined => {
+    const idx = remainingOpen.findIndex(o => {
+      if (o.type === 'chi' && m.type === 'chi') {
+        const a = o.tiles.map(tileKey).sort().join(',');
+        const b = m.tiles.map(tileKey).sort().join(',');
+        return a === b;
+      }
+      if (m.type === 'pon' && (o.type === 'pon' || o.type === 'kan')) {
+        const key = tileKey(m.tiles[0]);
+        return o.tiles.every(t => tileKey(t) === key);
+      }
+      return false;
+    });
+    if (idx >= 0) {
+      return remainingOpen.splice(idx, 1)[0];
+    }
+    return undefined;
+  };
+
+  for (const meld of parsed.melds) {
+    const open = takeOpen(meld);
+    if (open) {
+      if (open.type === 'pon') {
+        const val = isTerminalOrHonor(open.tiles[0]) ? 4 : 2;
+        const label = isTerminalOrHonor(open.tiles[0]) ? '明么九刻子' : '明刻子';
+        fu += val;
+        steps.push(`${label} +${val} (${tilesToString(open.tiles)})`);
+      } else if (open.type === 'kan') {
+        const closed = open.fromPlayer === seatIndex;
+        const val = isTerminalOrHonor(open.tiles[0])
+          ? closed
+            ? 32
+            : 16
+          : closed
+          ? 16
+          : 8;
+        const labelBase = closed ? '暗' : '明';
+        const label = isTerminalOrHonor(open.tiles[0])
+          ? `${labelBase}么九カン`
+          : `${labelBase}カン`;
+        fu += val;
+        steps.push(`${label} +${val} (${tilesToString(open.tiles)})`);
+      }
+    } else if (meld.type === 'pon') {
+      const val = isTerminalOrHonor(meld.tiles[0]) ? 8 : 4;
+      const label = isTerminalOrHonor(meld.tiles[0]) ? '暗么九刻子' : '暗刻子';
+      fu += val;
+      steps.push(`${label} +${val} (${tilesToString(meld.tiles)})`);
     }
   }
 
