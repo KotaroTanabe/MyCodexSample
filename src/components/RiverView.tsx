@@ -1,32 +1,10 @@
 import React from 'react';
 import { Tile } from '../types/mahjong';
 import { TileView } from './TileView';
+import { rotationForSeat } from '../utils/rotation';
 
-const seatRotation = (seat: number): number => {
-  switch (seat % 4) {
-    case 1:
-      return 270;
-    case 3:
-      return 90;
-    case 2:
-      return 180;
-    default:
-      return 0;
-  }
-};
-
-const seatRiverRotation = (seat: number): number => {
-  switch (seat % 4) {
-    case 1:
-      return 270;
-    case 2:
-      return 180;
-    case 3:
-      return 90;
-    default:
-      return 0;
-  }
-};
+const seatRotation = rotationForSeat;
+const seatRiverRotation = rotationForSeat;
 
 
 const calledOffset = (seat: number): string => {
