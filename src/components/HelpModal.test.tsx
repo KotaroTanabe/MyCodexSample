@@ -39,4 +39,10 @@ describe('HelpModal', () => {
     const link = screen.getByRole('link', { name: 'README' });
     expect(link.getAttribute('href')).toContain('#rules-supported');
   });
+
+  it('renders modal window with white background', () => {
+    const { container } = render(<HelpModal isOpen onClose={() => {}} />);
+    const modal = container.querySelector('div.bg-white');
+    expect(modal).not.toBeNull();
+  });
 });
