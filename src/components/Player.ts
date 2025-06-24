@@ -1,4 +1,4 @@
-import { PlayerState, Tile, MeldType } from '../types/mahjong';
+import { PlayerState, Tile, MeldType, KanType } from '../types/mahjong';
 import { calcShanten } from '../utils/shanten';
 
 export function sortHand(hand: Tile[]): Tile[] {
