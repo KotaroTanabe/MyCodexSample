@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MeldView } from './MeldView';
-import { Meld } from '../types/mahjong';
+import { Meld, Tile } from '../types/mahjong';
 
 describe('MeldView', () => {
   it('renders all tiles in the meld', () => {
@@ -55,6 +55,44 @@ describe('MeldView', () => {
     };
     const html = renderToStaticMarkup(<MeldView meld={meld} seat={1} />);
     expect(html).toContain('rotate(270deg)');
+  });
+
+  it('shows face-down tiles for ankan', () => {
+    const tiles: Tile[] = [
+      { suit: 'man', rank: 9, id: 'a' },
+      { suit: 'man', rank: 9, id: 'b' },
+      { suit: 'man', rank: 9, id: 'c' },
+      { suit: 'man', rank: 9, id: 'd' },
+    ];
+    const meld: Meld = {
+      type: 'kan',
+      tiles,
+      fromPlayer: 0,
+      calledTileId: 'a',
+      kanType: 'ankan',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} />);
+    const count = (html.match(/🂠/g) || []).length;
+    expect(count).toBe(2);
+  });
+
+  it('renders kakan tile vertically', () => {
+    const tiles: Tile[] = [
+      { suit: 'sou', rank: 3, id: 'a' },
+      { suit: 'sou', rank: 3, id: 'b' },
+      { suit: 'sou', rank: 3, id: 'c' },
+      { suit: 'sou', rank: 3, id: 'd' },
+    ];
+    const meld: Meld = {
+      type: 'kan',
+      tiles,
+      fromPlayer: 0,
+      calledTileId: 'd',
+      kanType: 'kakan',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={meld} />);
+    const count = (html.match(/rotate\(90deg\)/g) || []).length;
+    expect(count).toBe(1);
   });
 
   // Style-specific rotations are tested elsewhere; focus on tile count here.

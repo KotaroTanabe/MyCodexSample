@@ -4,10 +4,12 @@ import { Tile, Suit } from '../types/mahjong';
 export const TileView: React.FC<{
   tile: Tile;
   isShonpai?: boolean;
+  /** render the tile face-down */
+  faceDown?: boolean;
   className?: string;
   rotate?: number;
   extraTransform?: string;
-}> = ({ tile, isShonpai, className, rotate = 0, extraTransform = '' }) => {
+}> = ({ tile, isShonpai, faceDown = false, className, rotate = 0, extraTransform = '' }) => {
   const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
   const honorMap: Record<string, Record<number, string>> = {
     wind: { 1: '東', 2: '南', 3: '西', 4: '北' },
@@ -69,7 +71,9 @@ export const TileView: React.FC<{
       aria-label={kanji}
       style={{ transform: `rotate(${rotate}deg) ${extraTransform}` }}
     >
-      <span className="font-emoji">{emojiMap[tile.suit]?.[tile.rank] ?? kanji}</span>
+      <span className="font-emoji">
+        {faceDown ? '🂠' : emojiMap[tile.suit]?.[tile.rank] ?? kanji}
+      </span>
       {isShonpai && (
         <span className="absolute -top-1 -right-1 text-xs text-yellow-500">
           ★
