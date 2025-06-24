@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tile, PlayerState, LogEntry, MeldType } from '../types/mahjong';
+import { isChankan } from './isChankan';
 import { generateTileWall, drawDoraIndicator } from '../components/TileWall';
 import {
   createInitialPlayerState,
@@ -74,7 +75,9 @@ const boardPresets: Record<string, BoardData> = (() => {
     const p2 = createInitialPlayerState('対面', true, 2);
     const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
     p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+    p2.melds = [
+      { type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id, kanType: 'daiminkan' },
+    ];
 
     const p3 = createInitialPlayerState('上家', true, 3);
     p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
@@ -98,7 +101,9 @@ const boardPresets: Record<string, BoardData> = (() => {
     const p2 = createInitialPlayerState('対面', true, 2);
     const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
     p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+    p2.melds = [
+      { type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id, kanType: 'daiminkan' },
+    ];
 
     const p3 = createInitialPlayerState('上家', true, 3);
     p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
@@ -110,17 +115,23 @@ const boardPresets: Record<string, BoardData> = (() => {
     const p0 = createInitialPlayerState('自分', false, 0);
     const ankan = [t('man', 5), t('man', 5), t('man', 5), t('man', 5)];
     p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
-    p0.melds = [{ type: 'kan', tiles: ankan, fromPlayer: 0, calledTileId: ankan[0].id }];
+    p0.melds = [
+      { type: 'kan', tiles: ankan, fromPlayer: 0, calledTileId: ankan[0].id, kanType: 'ankan' },
+    ];
 
     const p1 = createInitialPlayerState('下家', true, 1);
     const minkan = [t('pin', 7), t('pin', 7), t('pin', 7), t('pin', 7)];
     p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3)];
-    p1.melds = [{ type: 'kan', tiles: minkan, fromPlayer: 2, calledTileId: minkan[1].id }];
+    p1.melds = [
+      { type: 'kan', tiles: minkan, fromPlayer: 2, calledTileId: minkan[1].id, kanType: 'daiminkan' },
+    ];
 
     const p2 = createInitialPlayerState('対面', true, 2);
     const kakan = [t('sou', 3), t('sou', 3), t('sou', 3), t('sou', 3)];
     p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-    p2.melds = [{ type: 'kan', tiles: kakan, fromPlayer: 1, calledTileId: kakan[0].id }];
+    p2.melds = [
+      { type: 'kan', tiles: kakan, fromPlayer: 1, calledTileId: kakan[0].id, kanType: 'kakan' },
+    ];
 
     const p3 = createInitialPlayerState('上家', true, 3);
     p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
@@ -142,7 +153,9 @@ const boardPresets: Record<string, BoardData> = (() => {
     const p2 = createInitialPlayerState('対面', true, 2);
     const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
     p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
-    p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+    p2.melds = [
+      { type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id, kanType: 'daiminkan' },
+    ];
 
     const p3 = createInitialPlayerState('上家', true, 3);
     p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
@@ -546,6 +559,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     action,
     discarder,
     lastDiscard.tile.id,
+    action === 'kan' ? 'daiminkan' : undefined,
   );
   setPlayers(p);
   playersRef.current = p;
@@ -557,6 +571,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       tiles: [...meldTiles, lastDiscard.tile],
       meldType: action,
       from: discarder,
+      kanType: action === 'kan' ? 'daiminkan' : undefined,
     },
   ]);
   logRef.current = [
@@ -594,16 +609,16 @@ const handleCallAction = (action: MeldType | 'pass') => {
     if (!canCallMeld(playersRef.current[caller])) return;
     let p = playersRef.current.map(pl => clearIppatsu(pl));
   p = [...p];
-  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id);
+  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id, 'ankan');
   setPlayers(p);
   playersRef.current = p;
   setLog(prev => [
     ...prev,
-    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller },
+    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller, kanType: 'ankan' },
   ]);
   logRef.current = [
     ...logRef.current,
-    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller },
+    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller, kanType: 'ankan' },
   ];
 
   kanDrawRef.current = caller;
@@ -631,6 +646,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       action,
       discarder,
       lastDiscard.tile.id,
+      action === 'kan' ? 'daiminkan' : undefined,
     );
     setPlayers(p);
     playersRef.current = p;
@@ -642,6 +658,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
         tiles: [...meldTiles, lastDiscard.tile],
         meldType: action,
         from: discarder,
+        kanType: action === 'kan' ? 'daiminkan' : undefined,
       },
     ]);
     logRef.current = [
@@ -652,6 +669,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
         tiles: [...meldTiles, lastDiscard.tile],
         meldType: action,
         from: discarder,
+        kanType: action === 'kan' ? 'daiminkan' : undefined,
       },
     ];
     setMessage(`${p[caller].name} が ${action}しました。`);
@@ -746,7 +764,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const fromInfo = drawInfoRef.current[from];
     drawInfoRef.current[from] = { rinshan: false, last: false };
     const prev = logRef.current[logRef.current.length - 1];
-    const chankan = prev && prev.type === 'meld' && prev.meldType === 'kan' && prev.player === from && prev.tiles.some(t => t.id === tile.id);
+    const chankan = isChankan(prev, from, tile);
     const seatWind = p[winner].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
     const yaku = detectYaku(fullHand, p[winner].melds, {

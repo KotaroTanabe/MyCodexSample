@@ -41,7 +41,7 @@ export const SAMPLE_HANDS: SampleHand[] = [
       t('man',5,'m5a'),t('man',5,'m5b'),
     ],
     melds: [
-      { type: 'kan', tiles: [t('dragon',1,'k1a'),t('dragon',1,'k1b'),t('dragon',1,'k1c')], fromPlayer: 2, calledTileId: 'k1a' },
+      { type: 'kan', tiles: [t('dragon',1,'k1a'),t('dragon',1,'k1b'),t('dragon',1,'k1c')], fromPlayer: 2, calledTileId: 'k1a', kanType: 'daiminkan' },
     ],
     winningTile: t('man',5,'m5b'),
   },

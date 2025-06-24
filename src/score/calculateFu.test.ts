@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { SAMPLE_HANDS } from '../quiz/sampleHands';
 import { calculateFu } from './score';
-import { Tile } from '../types/mahjong';
+import { Tile, Meld } from '../types/mahjong';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({
   suit,
@@ -24,10 +24,30 @@ describe('calculateFu', () => {
     expect(fu).toBe(30);
   });
 
-  it('computes fu for a hand with a dragon kan', () => {
+  it('computes fu for a daiminkan', () => {
     const { hand, melds } = SAMPLE_HANDS[2];
     const fu = calculateFu(hand, melds);
     // 基本符20 + 明カン(役牌)16 = 36、切り上げで40符になるはず
+    expect(fu).toBe(40);
+  });
+
+  it('computes fu for an ankan', () => {
+    const { hand, melds } = SAMPLE_HANDS[2];
+    const closed: Meld[] = [
+      { ...melds[0], fromPlayer: 0, kanType: 'ankan' },
+    ];
+    const fu = calculateFu(hand, closed);
+    // 基本符20 + 暗カン(役牌)32 = 52、切り上げで60符になるはず
+    expect(fu).toBe(60);
+  });
+
+  it('treats kakan as open kan for fu', () => {
+    const { hand, melds } = SAMPLE_HANDS[2];
+    const added: Meld[] = [
+      { ...melds[0], fromPlayer: 0, kanType: 'kakan' },
+    ];
+    const fu = calculateFu(hand, added, { seatWind: 1 });
+    // 加カンは明カン扱いなので40符になるはず
     expect(fu).toBe(40);
   });
 

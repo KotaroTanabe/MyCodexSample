@@ -157,7 +157,9 @@ export function calculateFu(
       if (open.type === 'pon') {
         fu += isTerminalOrHonor(open.tiles[0]) ? 4 : 2;
       } else if (open.type === 'kan') {
-        const closed = open.fromPlayer === seatIndex;
+        const closed = open.kanType
+          ? open.kanType === 'ankan'
+          : open.fromPlayer === seatIndex;
         if (closed) {
           fu += isTerminalOrHonor(open.tiles[0]) ? 32 : 16;
         } else {

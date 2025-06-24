@@ -442,7 +442,7 @@ describe('Scoring', () => {
       t('man',5,'m5a'),t('man',5,'m5b'),
     ];
     const melds: Meld[] = [
-      { type: 'kan', tiles: kanTiles, fromPlayer: 2, calledTileId: 'k1a' },
+      { type: 'kan', tiles: kanTiles, fromPlayer: 2, calledTileId: 'k1a', kanType: 'daiminkan' },
     ];
     const fullHand = [...concealed, ...kanTiles];
     const yaku = detectYaku(fullHand, melds, { isTsumo: true });
