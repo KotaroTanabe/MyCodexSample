@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div
-      className="min-h-screen bg-surface-100 dark:bg-surface-900 flex items-center justify-center py-2"
+      className="min-h-screen bg-surface-100 dark:bg-surface-900 text-surface-900 dark:text-surface-100 flex items-center justify-center py-2"
       style={{ ['--tile-font-size' as any]: `${tileFont}rem` } as React.CSSProperties}
     >
       <div className="w-full mx-auto px-4 space-y-4">
