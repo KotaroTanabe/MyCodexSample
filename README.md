@@ -28,9 +28,13 @@ https://kotarotanabe.github.io/MyCodexSample/
 
 ### 1. クローン & セットアップ
 
+このプロジェクトは **Node.js 20.x** を想定してビルドしています。`nvm` を利用
+している場合はリポジトリ直下の `.nvmrc` に従い以下のように実行してください。
+
 ```sh
 git clone https://github.com/KotaroTanabe/MyCodexSample.git
 cd MyCodexSample
+nvm use
 npm install
 ```
 
@@ -56,7 +60,7 @@ npm run preview
 ```sh
 npm test
 ```
-- 実行前に **必ず** `npm install` を実行して依存パッケージをインストールする
+- 実行前に **必ず** `npm install` (または `npm ci`) を実行して依存パッケージをインストールする
 
 ### 5. Lint
 
