@@ -1,5 +1,6 @@
 import React from 'react';
-import { PlayerState } from '../types/mahjong';
+import { PlayerState, Tile } from '../types/mahjong';
+import { TileView } from './TileView';
 
 export interface WinResult {
   players: PlayerState[];
@@ -9,6 +10,8 @@ export interface WinResult {
   han: number;
   fu: number;
   points: number;
+  /** ura-dora indicators revealed after a riichi win */
+  uraDora?: Tile[];
 }
 
 interface Props extends WinResult {
@@ -24,6 +27,7 @@ export const WinResultModal: React.FC<Props> = ({
   han,
   fu,
   points,
+  uraDora,
   onNext,
   nextLabel = '次局へ',
 }) => {
@@ -36,6 +40,14 @@ export const WinResultModal: React.FC<Props> = ({
         <div className="mb-2 text-sm">
           {yaku.join('、')} {han}翻 {fu}符 {points}点
         </div>
+        {uraDora && uraDora.length > 0 && (
+          <div className="mb-2 text-sm flex items-center gap-1">
+            <span>裏ドラ:</span>
+            {uraDora.map(t => (
+              <TileView key={t.id} tile={t} />
+            ))}
+          </div>
+        )}
         <table className="border-collapse text-sm mb-2">
           <thead>
             <tr>

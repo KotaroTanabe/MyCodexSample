@@ -537,6 +537,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   const performTsumo = (idx: number) => {
     const p = [...playersRef.current];
+    let ura: Tile[] = [];
+    if (p[idx].isRiichi) {
+      const uraRes = drawDoraIndicator(deadWallRef.current, dora.length);
+      ura = uraRes.dora;
+      setDeadWall(uraRes.wall);
+      deadWallRef.current = uraRes.wall;
+    }
     const fullHand = [...p[idx].hand, ...p[idx].melds.flatMap(m => m.tiles)];
     const seatWind = p[idx].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
@@ -547,6 +554,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       ippatsu: p[idx].ippatsu,
       seatWind,
       roundWind,
+      uraDoraIndicators: ura,
     });
     const { han, fu, points } = calculateScore(
       p[idx].hand,
@@ -579,11 +587,19 @@ const handleCallAction = (action: MeldType | 'pass') => {
       han,
       fu,
       points,
+      uraDora: ura,
     });
   };
 
   const performRon = (winner: number, from: number, tile: Tile) => {
     const p = [...playersRef.current];
+    let ura: Tile[] = [];
+    if (p[winner].isRiichi) {
+      const uraRes = drawDoraIndicator(deadWallRef.current, dora.length);
+      ura = uraRes.dora;
+      setDeadWall(uraRes.wall);
+      deadWallRef.current = uraRes.wall;
+    }
     const fullHand = [...p[winner].hand, ...p[winner].melds.flatMap(m => m.tiles), tile];
     const seatWind = p[winner].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
@@ -594,6 +610,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       ippatsu: p[winner].ippatsu,
       seatWind,
       roundWind,
+      uraDoraIndicators: ura,
     });
     const { han, fu, points } = calculateScore(
       [...p[winner].hand, tile],
@@ -625,6 +642,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       han,
       fu,
       points,
+      uraDora: ura,
     });
   };
 

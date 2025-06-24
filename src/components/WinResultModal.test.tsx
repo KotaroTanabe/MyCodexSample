@@ -27,4 +27,21 @@ describe('WinResultModal', () => {
     );
     expect(screen.getByText('次へ')).toBeTruthy();
   });
+
+  it('displays ura-dora tiles when provided', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        uraDora={[{ suit: 'man', rank: 1, id: 'u1' }]}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByLabelText('1萬')).toBeTruthy();
+  });
 });
