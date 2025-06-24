@@ -1,32 +1,10 @@
 import React from 'react';
 import { Meld } from '../types/mahjong';
 import { TileView } from './TileView';
+import { rotationForSeat } from '../utils/rotation';
 
-const seatRotation = (seat: number) => {
-  switch (seat % 4) {
-    case 1:
-      return 270;
-    case 3:
-      return 90;
-    case 2:
-      return 180;
-    default:
-      return 0;
-  }
-};
-
-const seatMeldRotation = (seat: number): number => {
-  switch (seat % 4) {
-    case 1:
-      return 270;
-    case 2:
-      return 180;
-    case 3:
-      return 90;
-    default:
-      return 0;
-  }
-};
+const seatRotation = rotationForSeat;
+const seatMeldRotation = rotationForSeat;
 
 const calledRotation = (seat: number, from: number) => {
   if (from === seat) return 0;
