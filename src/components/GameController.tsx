@@ -41,6 +41,54 @@ export const maxKyokuForLength = (len: GameLength): number =>
 
 type GamePhase = 'init' | 'playing' | 'end';
 
+interface BoardData {
+  players: PlayerState[];
+  wall: Tile[];
+  deadWall: Tile[];
+  dora: Tile[];
+  turn: number;
+  kyoku: number;
+  riichiPool: number;
+  honba: number;
+}
+
+const sampleBoard: BoardData = (() => {
+  let id = 1;
+  const t = (suit: Tile['suit'], rank: number): Tile => ({
+    suit,
+    rank,
+    id: `s${id++}`,
+  });
+  const p0 = createInitialPlayerState('自分', false, 0);
+  const chi = [t('man', 1), t('man', 2), t('man', 3)];
+  p0.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('sou', 1), t('sou', 2), t('sou', 3), t('wind', 1), t('wind', 2), t('dragon', 1), t('dragon', 2), t('man', 7), t('man', 8), t('man', 9)];
+  p0.melds = [{ type: 'chi', tiles: chi, fromPlayer: 1, calledTileId: chi[0].id }];
+
+  const p1 = createInitialPlayerState('下家', true, 1);
+  const pon = [t('pin', 7), t('pin', 7), t('pin', 7)];
+  p1.hand = [t('man', 1), t('man', 2), t('man', 3), t('sou', 4), t('sou', 5), t('sou', 6), t('wind', 3), t('wind', 4), t('dragon', 3), t('man', 5), t('pin', 9), t('pin', 9)];
+  p1.melds = [{ type: 'pon', tiles: pon, fromPlayer: 2, calledTileId: pon[1].id }];
+
+  const p2 = createInitialPlayerState('対面', true, 2);
+  const kan = [t('sou', 1), t('sou', 1), t('sou', 1), t('sou', 1)];
+  p2.hand = [t('pin', 1), t('pin', 2), t('pin', 3), t('man', 4), t('man', 5), t('man', 6), t('wind', 1), t('wind', 2), t('dragon', 1)];
+  p2.melds = [{ type: 'kan', tiles: kan, fromPlayer: 3, calledTileId: kan[0].id }];
+
+  const p3 = createInitialPlayerState('上家', true, 3);
+  p3.hand = [t('man', 2), t('pin', 2), t('sou', 2), t('wind', 1), t('wind', 2), t('wind', 3), t('dragon', 1), t('dragon', 2), t('dragon', 3), t('man', 9), t('pin', 9), t('sou', 9), t('man', 1)];
+
+  return {
+    players: [p0, p1, p2, p3],
+    wall: [],
+    deadWall: [],
+    dora: [],
+    turn: 0,
+    kyoku: 1,
+    riichiPool: 0,
+    honba: 0,
+  };
+})();
+
 interface Props {
   gameLength: GameLength;
 }
@@ -70,6 +118,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
   const [tsumoOption, setTsumoOption] = useState(false);
   const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [boardInput, setBoardInput] = useState('');
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
@@ -87,6 +136,10 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
     rule: { gameLength },
     players: [],
   });
+
+  useEffect(() => {
+    setBoardInput(JSON.stringify(sampleBoard, null, 2));
+  }, []);
 
   const togglePlayerAI = () => {
     setPlayerIsAI(prev => {
@@ -818,6 +871,42 @@ const handleCallAction = (action: MeldType | 'pass') => {
     URL.revokeObjectURL(url);
   };
 
+  const handleLoadBoard = () => {
+    try {
+      const data: BoardData = JSON.parse(boardInput);
+      setPlayers(data.players);
+      playersRef.current = data.players;
+      setWall(data.wall);
+      wallRef.current = data.wall;
+      setDeadWall(data.deadWall);
+      deadWallRef.current = data.deadWall;
+      setDora(data.dora);
+      setTurn(data.turn);
+      turnRef.current = data.turn;
+      setKyoku(data.kyoku);
+      kyokuRef.current = data.kyoku;
+      setRiichiPool(data.riichiPool);
+      riichiPoolRef.current = data.riichiPool;
+      setHonba(data.honba);
+      honbaRef.current = data.honba;
+      setCallOptions(null);
+      setLastDiscard(null);
+      setSelfKanOptions(null);
+      setChiTileOptions(null);
+      setPendingRiichi(null);
+      setTsumoOption(false);
+      setRonCandidate(null);
+      setRoundResult(null);
+      setWinResult(null);
+      setLog([]);
+      logRef.current = [];
+      setPhase('playing');
+      setMessage('盤面を読み込みました');
+    } catch (e) {
+      setMessage('盤面の読み込みに失敗しました');
+    }
+  };
+
   // UI
   return (
     <div className="p-2 flex flex-col gap-4">
@@ -851,6 +940,15 @@ const handleCallAction = (action: MeldType | 'pass') => {
       <div className="mt-2">{message}</div>
       <button className="px-2 py-1 bg-gray-200 rounded" onClick={handleDownloadLog}>
         ログダウンロード
+      </button>
+      <textarea
+        aria-label="盤面入力"
+        className="w-full h-40 p-1 border font-mono"
+        value={boardInput}
+        onChange={e => setBoardInput(e.target.value)}
+      />
+      <button className="px-2 py-1 bg-gray-200 rounded" onClick={handleLoadBoard}>
+        盤面読み込み
       </button>
       {winResult && (
         <WinResultModal
