@@ -15,7 +15,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-4 max-w-md w-full shadow-lg">
+      <div className="bg-surface-0 dark:bg-surface-800 rounded-lg p-4 max-w-md w-full shadow-lg">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-bold">
             {view === 'yaku'
@@ -34,19 +34,19 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
         </div>
         <div className="flex gap-2 mb-2">
           <button
-            className={`px-2 py-1 rounded ${view === 'yaku' ? 'bg-blue-200' : 'bg-gray-200'}`}
+            className={`px-2 py-1 rounded ${view === 'yaku' ? 'bg-primary-200 dark:bg-primary-700' : 'bg-surface-200 dark:bg-surface-600'}`}
             onClick={() => setView('yaku')}
           >
             役一覧
           </button>
           <button
-            className={`px-2 py-1 rounded ${view === 'score' ? 'bg-blue-200' : 'bg-gray-200'}`}
+            className={`px-2 py-1 rounded ${view === 'score' ? 'bg-primary-200 dark:bg-primary-700' : 'bg-surface-200 dark:bg-surface-600'}`}
             onClick={() => setView('score')}
           >
             点数表
           </button>
           <button
-            className={`px-2 py-1 rounded ${view === 'rules' ? 'bg-blue-200' : 'bg-gray-200'}`}
+            className={`px-2 py-1 rounded ${view === 'rules' ? 'bg-primary-200 dark:bg-primary-700' : 'bg-surface-200 dark:bg-surface-600'}`}
             onClick={() => setView('rules')}
           >
             ルール対応状況

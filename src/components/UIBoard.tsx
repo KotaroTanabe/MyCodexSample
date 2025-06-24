@@ -211,7 +211,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 return (
                   <button
                     key={tile.id}
-                    className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                    className={`border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 hover:bg-primary-100 dark:hover:bg-primary-700 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
                     onClick={() => onDiscard(tile.id)}
                     disabled={!isMyTurn}
                     aria-label={kanji}
@@ -229,7 +229,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 return (
                   <button
                     key={t.id}
-                    className={`border rounded bg-white px-2 py-1 hover:bg-blue-100 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
+                    className={`border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 hover:bg-primary-100 dark:hover:bg-primary-700 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
                     onClick={() => onDiscard(t.id)}
                     disabled={!isMyTurn}
                     aria-label={kanji}
@@ -246,7 +246,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             {callOptions.map(act => (
               <button
                 key={act}
-                className="px-2 py-1 bg-yellow-200 rounded"
+                className="px-2 py-1 bg-warning-200 dark:bg-warning-700 rounded"
                 onClick={() => onCallAction?.(act)}
               >
                 {act === 'pon' ? 'ポン' : act === 'chi' ? 'チー' : act === 'kan' ? 'カン' : 'スルー'}
@@ -267,7 +267,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               return (
                 <button
                   key={idx}
-                  className="px-2 py-1 bg-yellow-200 rounded flex gap-1"
+                  className="px-2 py-1 bg-warning-200 dark:bg-warning-700 rounded flex gap-1"
                   onClick={() => onChi?.(tiles)}
                   aria-label={labels}
                 >
@@ -285,7 +285,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             {selfKanOptions.map((tiles, idx) => (
               <button
                 key={idx}
-                className="px-2 py-1 bg-green-200 rounded"
+                className="px-2 py-1 bg-secondary-200 dark:bg-secondary-700 rounded"
                 onClick={() => onSelfKan?.(tiles)}
               >
                 カン
@@ -295,19 +295,19 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         )}
         {tsumoOption && (
           <div className="flex gap-2 mt-2">
-            <button className="px-2 py-1 bg-blue-200 rounded" onClick={() => onTsumo?.()}>ツモ</button>
-            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => onTsumoPass?.()}>スルー</button>
+            <button className="px-2 py-1 bg-primary-200 dark:bg-primary-700 rounded" onClick={() => onTsumo?.()}>ツモ</button>
+            <button className="px-2 py-1 bg-surface-200 dark:bg-surface-600 rounded" onClick={() => onTsumoPass?.()}>スルー</button>
           </div>
         )}
         {ronOption && (
           <div className="flex gap-2 mt-2">
-            <button className="px-2 py-1 bg-red-200 rounded" onClick={() => onRon?.()}>ロン</button>
-            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => onRonPass?.()}>スルー</button>
+            <button className="px-2 py-1 bg-danger-200 dark:bg-danger-700 rounded" onClick={() => onRon?.()}>ロン</button>
+            <button className="px-2 py-1 bg-surface-200 dark:bg-surface-600 rounded" onClick={() => onRonPass?.()}>スルー</button>
           </div>
         )}
         {onRiichi && isMyTurn && canDeclareRiichi(me) && (
           <button
-            className="mt-2 px-2 py-1 bg-red-200 rounded"
+            className="mt-2 px-2 py-1 bg-danger-200 dark:bg-danger-700 rounded"
             onClick={() => onRiichi()}
           >
             リーチ
