@@ -210,6 +210,17 @@ describe('UIBoard responsiveness', () => {
   });
 });
 
+describe('UIBoard layout', () => {
+  it('uses grid areas for seats and center', () => {
+    renderBoard({ standard: 1, chiitoi: 1, kokushi: 13 });
+    const board = screen.getByTestId('ui-board');
+    expect(board.style.gridTemplateAreas).toContain('top');
+    expect(board.style.gridTemplateAreas).toContain('center');
+    const center = screen.getByTestId('center-area');
+    expect(center.style.gridArea).toBe('center');
+  });
+});
+
 describe('UIBoard discard orientation', () => {
 
 
