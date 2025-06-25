@@ -81,9 +81,21 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   const top = players[2];
   const left = players[3];
   return (
-    <div className="w-full grid grid-rows-3 grid-cols-3 gap-2 place-items-center">
+    <div
+      data-testid="ui-board"
+      className="w-full grid gap-2 place-items-center"
+      style={{
+        gridTemplateColumns: 'auto 1fr auto',
+        gridTemplateRows: 'auto 1fr auto',
+        gridTemplateAreas: `
+          '. top .'
+          'left center right'
+          '. me .'
+        `,
+      }}
+    >
       {/* 対面 */}
-      <div className="row-start-1 col-start-2 flex flex-col items-center">
+      <div className="flex flex-col items-center" style={{ gridArea: 'top' }}>
         <div className="text-sm mb-1">
           {top.name}: <span className="font-mono">{top.score}</span>
         </div>
@@ -104,7 +116,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 右側：下家 */}
-      <div className="row-start-2 col-start-3 flex items-start gap-2">
+      <div className="flex items-start gap-2" style={{ gridArea: 'right' }}>
         <div className="flex flex-col items-center">
           {right.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
@@ -127,7 +139,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 左側：上家 */}
-      <div className="row-start-2 col-start-1 flex items-start gap-2">
+      <div className="flex items-start gap-2" style={{ gridArea: 'left' }}>
         <div className="text-sm">
           {left.name}: <span className="font-mono">{left.score}</span>
         </div>
@@ -150,7 +162,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* ドラ表示と局情報 */}
-      <div className="row-start-2 col-start-2 flex items-center gap-4">
+      <div
+        className="flex items-center gap-4"
+        style={{ gridArea: 'center' }}
+        data-testid="center-area"
+      >
         <ScoreBoard kyoku={kyoku} wallCount={wallCount} kyotaku={kyotaku} honba={honba} />
         <div className="flex flex-col items-center gap-1">
           <div className="text-sm">ドラ表示</div>
@@ -163,7 +179,10 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 自分の手牌 */}
-      <div className="row-start-3 col-start-2 flex flex-col items-center mt-2">
+      <div
+        className="flex flex-col items-center mt-2"
+        style={{ gridArea: 'me' }}
+      >
         {me.melds.length > 0 && (
           <div className="flex gap-2 mb-2">
             {me.melds.map((m, idx) => (
