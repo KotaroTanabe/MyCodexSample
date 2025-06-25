@@ -6,6 +6,8 @@ import { rotationForSeat } from '../utils/rotation';
 const seatRotation = rotationForSeat;
 const seatRiverRotation = rotationForSeat;
 
+export const RIVER_GAP_PX = 4;
+
 
 const calledOffset = (seat: number): string => {
   switch (seat % 4) {
@@ -68,8 +70,8 @@ export const RiverView: React.FC<RiverViewProps> = ({
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
   return (
     <div
-      className="grid grid-cols-6 gap-1 grid-rows-3 sm:grid-rows-4"
-      style={{ transform: `rotate(${seatRiverRotation(seat)}deg)` }}
+      className="grid grid-cols-6 grid-rows-3 sm:grid-rows-4"
+      style={{ transform: `rotate(${seatRiverRotation(seat)}deg)`, gap: RIVER_GAP_PX }}
       data-testid={dataTestId}
     >
       {ordered.map(tile => (
