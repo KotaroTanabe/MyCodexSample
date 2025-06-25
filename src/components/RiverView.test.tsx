@@ -57,15 +57,15 @@ describe('RiverView', () => {
     expect(tileEls[1].getAttribute('style')).toContain('rotate(90deg)');
   });
 
-  it('offsets called tiles using the constant', () => {
-    const tiles = [{ ...t('pin', 5, 'c'), called: true }];
+  it('offsets called tiles using the constant and rotates based on caller', () => {
+    const tiles = [{ ...t('pin', 5, 'c'), called: true, calledFrom: 1 }];
     render(
       <RiverView tiles={tiles} seat={2} lastDiscard={null} dataTestId="rv-called" />,
     );
     const tile = screen.getByTestId('rv-called').querySelector('[style]');
-    expect(tile?.getAttribute('style')).toContain(
-      `translateX(-${CALLED_OFFSET_PX}px)`,
-    );
+    const style = tile?.getAttribute('style') || '';
+    expect(style).toContain(`translateX(-${CALLED_OFFSET_PX}px)`);
+    expect(style).toContain('rotate(90deg)');
   });
 
   it('uses consistent gap for all seats', () => {

@@ -7,6 +7,8 @@ export interface Tile {
   id: string;   // ユニーク識別子
   /** true if this discard was claimed for a meld */
   called?: boolean;
+  /** seat index of the player who called this tile */
+  calledFrom?: number;
   /** true if discarded after declaring riichi */
   riichiDiscard?: boolean;
 }
