@@ -2,7 +2,11 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
-import { RiverView, RESERVED_RIVER_SLOTS } from './RiverView';
+import {
+  RiverView,
+  RESERVED_RIVER_SLOTS,
+  RESERVED_RIVER_SLOTS_MOBILE,
+} from './RiverView';
 import { Tile } from '../types/mahjong';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -33,6 +37,14 @@ describe('RiverView', () => {
     render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv" />);
     const div = screen.getByTestId('rv');
     expect(div.children.length).toBe(RESERVED_RIVER_SLOTS);
+  });
+
+  it('uses fewer slots on small screens', () => {
+    Object.defineProperty(window, 'innerWidth', { value: 500, writable: true });
+    render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-m" />);
+    const div = screen.getByTestId('rv-m');
+    expect(div.children.length).toBe(RESERVED_RIVER_SLOTS_MOBILE);
+    Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true });
   });
 
   it('rotates riichi discards', () => {
