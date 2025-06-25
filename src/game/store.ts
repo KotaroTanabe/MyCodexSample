@@ -52,10 +52,8 @@ interface BoardData {
 }
 
 const boardPresets: Record<string, BoardData> = (() => {
-  // eslint-disable-next-line no-unused-vars
-  type TileFactory = (suit: Tile['suit'], rank: number) => Tile;
-  // eslint-disable-next-line no-unused-vars
-  const make = (build: (t: TileFactory) => BoardData): BoardData => {
+  type TileFactory = (_suit: Tile['suit'], _rank: number) => Tile;
+  const make = (build: (_t: TileFactory) => BoardData): BoardData => {
     let id = 1;
     const t = (suit: Tile['suit'], rank: number): Tile => ({ suit, rank, id: `p${id++}` });
     return build(t);

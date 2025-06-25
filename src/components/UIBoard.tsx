@@ -19,22 +19,17 @@ interface UIBoardProps {
   wallCount: number;
   kyotaku: number;
   honba: number;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  onDiscard: (tileId: string) => void;
+  onDiscard: (_tileId: string) => void;
   isMyTurn: boolean;
   shanten: { standard: number; chiitoi: number; kokushi: number };
   lastDiscard: { tile: Tile; player: number; isShonpai: boolean } | null;
   callOptions?: (MeldType | 'pass')[];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  onCallAction?: (action: MeldType | 'pass') => void;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  onCallAction?: (_action: MeldType | 'pass') => void;
   onRiichi?: () => void;
   selfKanOptions?: Tile[][];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  onSelfKan?: (tiles: Tile[]) => void;
+  onSelfKan?: (_tiles: Tile[]) => void;
   chiOptions?: Tile[][];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  onChi?: (tiles: Tile[]) => void;
+  onChi?: (_tiles: Tile[]) => void;
   tsumoOption?: boolean;
   onTsumo?: () => void;
   onTsumoPass?: () => void;
