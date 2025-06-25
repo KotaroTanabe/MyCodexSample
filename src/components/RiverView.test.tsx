@@ -7,7 +7,7 @@ import {
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
   RIVER_GAP_PX,
-  CALLED_OFFSET_PX,
+  CALLED_OFFSET,
   GRID_CLASS,
 } from './RiverView';
 import { Tile } from '../types/mahjong';
@@ -72,7 +72,7 @@ describe('RiverView', () => {
     );
     const tile = screen.getByTestId('rv-called').querySelector('[style]');
     const style = tile?.getAttribute('style') || '';
-    expect(style).toContain(`translateX(-${CALLED_OFFSET_PX}px)`);
+    expect(style).toContain(`translateX(-${CALLED_OFFSET})`);
     expect(style).toContain('rotate(90deg)');
   });
 

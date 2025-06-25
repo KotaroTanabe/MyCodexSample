@@ -8,7 +8,13 @@ export const RIVER_COLS = 6;
 export const RIVER_ROWS_MOBILE = 3;
 export const RIVER_ROWS_DESKTOP = 6;
 export const RIVER_GAP_PX = 4;
-export const CALLED_OFFSET_PX = 6;
+/**
+ * Offset for called tiles relative to the tile size.
+ *
+ * Using a CSS calculation keeps the spacing consistent when users
+ * change the `--tile-font-size` variable to scale tiles.
+ */
+export const CALLED_OFFSET = 'calc(var(--tile-font-size) / 5)';
 
 export const GRID_CLASS = `grid grid-cols-${RIVER_COLS} grid-rows-${RIVER_ROWS_MOBILE} sm:grid-rows-${RIVER_ROWS_DESKTOP}`;
 
@@ -23,13 +29,13 @@ export const GRID_CLASS = `grid grid-cols-${RIVER_COLS} grid-rows-${RIVER_ROWS_M
 const calledOffset = (seat: number): string => {
   switch (seat % 4) {
     case 1:
-      return `translateY(-${CALLED_OFFSET_PX}px)`;
+      return `translateY(-${CALLED_OFFSET})`;
     case 2:
-      return `translateX(-${CALLED_OFFSET_PX}px)`;
+      return `translateX(-${CALLED_OFFSET})`;
     case 3:
-      return `translateY(${CALLED_OFFSET_PX}px)`;
+      return `translateY(${CALLED_OFFSET})`;
     default:
-      return `translateX(${CALLED_OFFSET_PX}px)`;
+      return `translateX(${CALLED_OFFSET})`;
   }
 };
 
