@@ -2,12 +2,13 @@ import React from 'react';
 import { Tile } from '../types/mahjong';
 import { TileView } from './TileView';
 import { rotationForSeat } from '../utils/rotation';
+import { calledRotation } from '../utils/calledRotation';
 
 const seatRotation = rotationForSeat;
 
 export const RIVER_COLS = 6;
 export const RIVER_ROWS_MOBILE = 3;
-export const RIVER_ROWS_DESKTOP = 4;
+export const RIVER_ROWS_DESKTOP = 6;
 export const RIVER_GAP_PX = 4;
 export const CALLED_OFFSET_PX = 6;
 
@@ -79,15 +80,25 @@ export const RiverView: React.FC<RiverViewProps> = ({
       style={{ gap: RIVER_GAP_PX }}
       data-testid={dataTestId}
     >
-      {ordered.map(tile => (
-        <TileView
-          key={tile.id}
-          tile={tile}
-          rotate={seatRotation(seat) + (tile.called || tile.riichiDiscard ? 90 : 0)}
-          extraTransform={tile.called ? calledOffset(seat) : ''}
-          isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-        />
-      ))}
+      {ordered.map(tile => {
+        const extraRotation =
+          tile.calledFrom !== undefined
+            ? calledRotation(seat, tile.calledFrom)
+            : tile.called || tile.riichiDiscard
+              ? 90
+              : 0;
+        return (
+          <TileView
+            key={tile.id}
+            tile={tile}
+            rotate={seatRotation(seat) + extraRotation}
+            extraTransform={
+              tile.called || tile.calledFrom !== undefined ? calledOffset(seat) : ''
+            }
+            isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+          />
+        );
+      })}
       {Array.from({ length: placeholdersCount }).map((_, idx) => (
         <span
           key={`placeholder-${idx}`}
