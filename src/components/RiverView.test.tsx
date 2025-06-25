@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import {
@@ -14,7 +14,16 @@ import { Tile } from '../types/mahjong';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
-afterEach(() => cleanup());
+let originalWidth: number;
+
+beforeEach(() => {
+  originalWidth = window.innerWidth;
+});
+
+afterEach(() => {
+  Object.defineProperty(window, 'innerWidth', { value: originalWidth, writable: true });
+  cleanup();
+});
 
 describe('RiverView', () => {
 
@@ -47,7 +56,6 @@ describe('RiverView', () => {
     render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-m" />);
     const div = screen.getByTestId('rv-m');
     expect(div.children.length).toBe(RESERVED_RIVER_SLOTS_MOBILE);
-    Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true });
   });
 
   it('rotates riichi discards', () => {
