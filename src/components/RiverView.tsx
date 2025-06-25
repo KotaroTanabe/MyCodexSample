@@ -20,8 +20,35 @@ const calledOffset = (seat: number): string => {
   }
 };
 
-/** minimum cells to reserve for a player's discard area */
-export const RESERVED_RIVER_SLOTS = 20;
+/**
+ * Minimum cells to reserve for a player's discard area on large screens.
+ * Mobile layouts typically only show three rows of discards, so fewer
+ * placeholders are required.
+ */
+export const RESERVED_RIVER_SLOTS = 24;
+export const RESERVED_RIVER_SLOTS_MOBILE = 18;
+
+const smallScreen = ():
+  boolean => typeof window !== 'undefined' && window.innerWidth < 640;
+
+/**
+ * Returns a slot count that updates when the window is resized.
+ */
+export const useResponsiveRiverSlots = (): number => {
+  const [slots, setSlots] = React.useState(
+    smallScreen() ? RESERVED_RIVER_SLOTS_MOBILE : RESERVED_RIVER_SLOTS,
+  );
+  React.useEffect(() => {
+    const handler = () => {
+      setSlots(
+        smallScreen() ? RESERVED_RIVER_SLOTS_MOBILE : RESERVED_RIVER_SLOTS,
+      );
+    };
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return slots;
+};
 
 interface RiverViewProps {
   tiles: Tile[];
@@ -37,10 +64,11 @@ export const RiverView: React.FC<RiverViewProps> = ({
   dataTestId,
 }) => {
   const ordered = tiles;
-  const placeholdersCount = Math.max(0, RESERVED_RIVER_SLOTS - ordered.length);
+  const reservedSlots = useResponsiveRiverSlots();
+  const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
   return (
     <div
-      className="grid grid-cols-6 gap-1"
+      className="grid grid-cols-6 gap-1 grid-rows-3 sm:grid-rows-4"
       style={{ transform: `rotate(${seatRiverRotation(seat)}deg)` }}
       data-testid={dataTestId}
     >
