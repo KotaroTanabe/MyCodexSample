@@ -13,6 +13,13 @@ export const CALLED_OFFSET_PX = 6;
 export const GRID_CLASS = `grid grid-cols-${RIVER_COLS} grid-rows-${RIVER_ROWS_MOBILE} sm:grid-rows-${RIVER_ROWS_DESKTOP}`;
 
 
+/**
+ * Positional adjustment for a tile claimed from another player's river.
+ *
+ * Each seat uses a different translation so that called tiles visually shift
+ * toward the caller. The offset pairs with {@link calledRotation} and
+ * {@link rotationForSeat} to display the tile at the correct angle.
+ */
 const calledOffset = (seat: number): string => {
   switch (seat % 4) {
     case 1:
