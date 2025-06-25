@@ -4,8 +4,6 @@ import { TileView } from './TileView';
 import { rotationForSeat } from '../utils/rotation';
 import { calledRotation } from '../utils/calledRotation';
 
-const seatRotation = rotationForSeat;
-
 export const RIVER_COLS = 6;
 export const RIVER_ROWS_MOBILE = 3;
 export const RIVER_ROWS_DESKTOP = 6;
@@ -91,7 +89,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
           <TileView
             key={tile.id}
             tile={tile}
-            rotate={seatRotation(seat) + extraRotation}
+            rotate={rotationForSeat(seat) + extraRotation}
             extraTransform={
               tile.called || tile.calledFrom !== undefined ? calledOffset(seat) : ''
             }
@@ -103,7 +101,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
         <span
           key={`placeholder-${idx}`}
           className="inline-block border px-1 py-0.5 bg-white tile-font-size opacity-0"
-          style={{ transform: `rotate(${seatRotation(seat)}deg)` }}
+          style={{ transform: `rotate(${rotationForSeat(seat)}deg)` }}
         />
       ))}
     </div>
