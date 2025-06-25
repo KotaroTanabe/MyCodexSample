@@ -9,11 +9,10 @@ import {
   claimMeld,
   declareRiichi,
   clearIppatsu,
-  isTenpaiAfterDiscard,
-  canDiscardTile,
   canCallMeld,
   removeDiscardTile,
 } from '../components/Player';
+import { validateDiscard, appendDiscardLog } from './helpers';
 import {
   selectMeldTiles,
   getValidCallOptions,
@@ -450,12 +449,9 @@ export const useGame = (gameLength: GameLength) => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
-    if (pendingRiichi !== idx && !canDiscardTile(p[idx], tileId)) {
-      setMessage('リーチ後はツモ牌しか切れません');
-      return;
-    }
-    if (pendingRiichi === idx && !isTenpaiAfterDiscard(p[idx], tileId)) {
-      setMessage('その牌ではリーチできません');
+    const err = validateDiscard(p[idx], tileId, pendingRiichi === idx);
+    if (err) {
+      setMessage(err);
       return;
     }
     setSelfKanOptions(null);
@@ -470,8 +466,8 @@ export const useGame = (gameLength: GameLength) => {
     p[idx] = discardTile(p[idx], tileId, isRiichi);
     setPlayers(p);
     playersRef.current = p;
-    setLog(prev => [...prev, { type: 'discard', player: idx, tile }]);
-    logRef.current = [...logRef.current, { type: 'discard', player: idx, tile }];
+    setLog(prev => appendDiscardLog(prev, idx, tile));
+    logRef.current = appendDiscardLog(logRef.current, idx, tile);
     const winIdx = findRonWinner(p, idx, tile);
     if (winIdx !== null) {
       if (p[winIdx].isAI || winIdx !== 0) {
@@ -922,6 +918,23 @@ const handleCallAction = (action: MeldType | 'pass') => {
   };
 
   // ターン進行
+  const handleAITurn = (ai: number) => {
+    if (lastDiscard && lastDiscard.player !== ai) {
+      const action = chooseAICallOption(playersRef.current[ai], lastDiscard.tile);
+      if (action !== 'pass') {
+        performAICall(ai, action);
+        return;
+      }
+      setLastDiscard(null);
+    }
+    drawForCurrentPlayer();
+    if (wallRef.current.length === 0) return;
+    setTimeout(() => {
+      const tile = playersRef.current[ai].hand[0];
+      handleDiscard(tile.id);
+    }, 500);
+  };
+
   const nextTurn = () => {
     setTsumoOption(false);
     setRonCandidate(null);
@@ -929,25 +942,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setTurn(next);
     setTimeout(() => {
       if (playersRef.current[next].isAI) {
-        // Check if the AI wants to call on the previous discard
-        if (lastDiscard && lastDiscard.player !== next) {
-          const action = chooseAICallOption(
-            playersRef.current[next],
-            lastDiscard.tile,
-          );
-          if (action !== 'pass') {
-            performAICall(next, action);
-            return;
-          }
-          setLastDiscard(null);
-        }
-        drawForCurrentPlayer();
-        if (wallRef.current.length === 0) return;
-        // AIの打牌ロジック（現時点はランダム）
-        setTimeout(() => {
-          const tile = playersRef.current[next].hand[0];
-          handleDiscard(tile.id);
-        }, 500);
+        handleAITurn(next);
       } else {
         drawForCurrentPlayer();
       }
