@@ -6,6 +6,7 @@ import {
   RiverView,
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
+  RIVER_GAP_PX,
 } from './RiverView';
 import { Tile } from '../types/mahjong';
 
@@ -52,6 +53,17 @@ describe('RiverView', () => {
     render(<RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv" />);
     const tileEls = screen.getByTestId('rv').querySelectorAll('[style]');
     expect(tileEls[1].getAttribute('style')).toContain('rotate(90deg)');
+  });
+
+  it('uses consistent gap for all seats', () => {
+    [0, 1, 2, 3].forEach(seat => {
+      render(
+        <RiverView tiles={[]} seat={seat} lastDiscard={null} dataTestId={`gap-${seat}`} />,
+      );
+      const div = screen.getByTestId(`gap-${seat}`);
+      expect(div.style.gap).toBe(`${RIVER_GAP_PX}px`);
+      cleanup();
+    });
   });
 
 });
