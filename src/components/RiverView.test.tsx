@@ -6,6 +6,9 @@ import {
   RiverView,
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
+  RIVER_COLS,
+  RIVER_ROWS_MOBILE,
+  RIVER_ROWS_DESKTOP,
   RIVER_GAP_PX,
   CALLED_OFFSET_PX,
 } from './RiverView';
@@ -74,6 +77,27 @@ describe('RiverView', () => {
       );
       const div = screen.getByTestId(`gap-${seat}`);
       expect(div.style.gap).toBe(`${RIVER_GAP_PX}px`);
+      cleanup();
+    });
+  });
+
+  it('applies matching grid size for all seats', () => {
+    [0, 1, 2, 3].forEach(seat => {
+      render(
+        <RiverView tiles={[]} seat={seat} lastDiscard={null} dataTestId={`grid-${seat}`} />,
+      );
+      const div = screen.getByTestId(`grid-${seat}`);
+      const className = div.getAttribute('class') || '';
+      const expectCols = seat % 2 === 1 ? RIVER_ROWS_MOBILE : RIVER_COLS;
+      const expectRows = seat % 2 === 1 ? RIVER_COLS : RIVER_ROWS_MOBILE;
+      expect(className).toContain(`grid-cols-${expectCols}`);
+      expect(className).toContain(`grid-rows-${expectRows}`);
+      if (seat % 2 === 1) {
+        expect(className).toContain(`sm:grid-cols-${RIVER_ROWS_DESKTOP}`);
+        expect(className).toContain(`sm:grid-rows-${RIVER_COLS}`);
+      } else {
+        expect(className).toContain(`sm:grid-rows-${RIVER_ROWS_DESKTOP}`);
+      }
       cleanup();
     });
   });

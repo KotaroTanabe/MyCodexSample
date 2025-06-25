@@ -6,6 +6,9 @@ import { rotationForSeat } from '../utils/rotation';
 const seatRotation = rotationForSeat;
 const seatRiverRotation = rotationForSeat;
 
+export const RIVER_COLS = 6;
+export const RIVER_ROWS_MOBILE = 3;
+export const RIVER_ROWS_DESKTOP = 4;
 export const RIVER_GAP_PX = 4;
 export const CALLED_OFFSET_PX = 6;
 
@@ -28,8 +31,8 @@ const calledOffset = (seat: number): string => {
  * Mobile layouts typically only show three rows of discards, so fewer
  * placeholders are required.
  */
-export const RESERVED_RIVER_SLOTS = 24;
-export const RESERVED_RIVER_SLOTS_MOBILE = 18;
+export const RESERVED_RIVER_SLOTS = RIVER_COLS * RIVER_ROWS_DESKTOP;
+export const RESERVED_RIVER_SLOTS_MOBILE = RIVER_COLS * RIVER_ROWS_MOBILE;
 
 const smallScreen = ():
   boolean => typeof window !== 'undefined' && window.innerWidth < 640;
@@ -69,9 +72,12 @@ export const RiverView: React.FC<RiverViewProps> = ({
   const ordered = tiles;
   const reservedSlots = useResponsiveRiverSlots();
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
+  const GRID_CLASS_EVEN = 'grid grid-cols-6 grid-rows-3 sm:grid-rows-4';
+  const GRID_CLASS_ODD = 'grid grid-cols-3 grid-rows-6 sm:grid-cols-4 sm:grid-rows-6';
+  const gridClass = seat % 2 === 1 ? GRID_CLASS_ODD : GRID_CLASS_EVEN;
   return (
     <div
-      className="grid grid-cols-6 grid-rows-3 sm:grid-rows-4"
+      className={gridClass}
       style={{ transform: `rotate(${seatRiverRotation(seat)}deg)`, gap: RIVER_GAP_PX }}
       data-testid={dataTestId}
     >
