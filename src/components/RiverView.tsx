@@ -4,13 +4,14 @@ import { TileView } from './TileView';
 import { rotationForSeat } from '../utils/rotation';
 
 const seatRotation = rotationForSeat;
-const seatRiverRotation = rotationForSeat;
 
 export const RIVER_COLS = 6;
 export const RIVER_ROWS_MOBILE = 3;
 export const RIVER_ROWS_DESKTOP = 4;
 export const RIVER_GAP_PX = 4;
 export const CALLED_OFFSET_PX = 6;
+
+export const GRID_CLASS = `grid grid-cols-${RIVER_COLS} grid-rows-${RIVER_ROWS_MOBILE} sm:grid-rows-${RIVER_ROWS_DESKTOP}`;
 
 
 const calledOffset = (seat: number): string => {
@@ -72,24 +73,17 @@ export const RiverView: React.FC<RiverViewProps> = ({
   const ordered = tiles;
   const reservedSlots = useResponsiveRiverSlots();
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
-  const GRID_CLASS_EVEN = 'grid grid-cols-6 grid-rows-3 sm:grid-rows-4';
-  const GRID_CLASS_ODD = 'grid grid-cols-3 grid-rows-6 sm:grid-cols-4 sm:grid-rows-6';
-  const gridClass = seat % 2 === 1 ? GRID_CLASS_ODD : GRID_CLASS_EVEN;
   return (
     <div
-      className={gridClass}
-      style={{ transform: `rotate(${seatRiverRotation(seat)}deg)`, gap: RIVER_GAP_PX }}
+      className={GRID_CLASS}
+      style={{ gap: RIVER_GAP_PX }}
       data-testid={dataTestId}
     >
       {ordered.map(tile => (
         <TileView
           key={tile.id}
           tile={tile}
-          rotate={
-            seatRotation(seat) -
-            seatRiverRotation(seat) +
-            (tile.called || tile.riichiDiscard ? 90 : 0)
-          }
+          rotate={seatRotation(seat) + (tile.called || tile.riichiDiscard ? 90 : 0)}
           extraTransform={tile.called ? calledOffset(seat) : ''}
           isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
         />
@@ -98,7 +92,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
         <span
           key={`placeholder-${idx}`}
           className="inline-block border px-1 py-0.5 bg-white tile-font-size opacity-0"
-          style={{ transform: `rotate(${seatRotation(seat) - seatRiverRotation(seat)}deg)` }}
+          style={{ transform: `rotate(${seatRotation(seat)}deg)` }}
         />
       ))}
     </div>
