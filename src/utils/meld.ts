@@ -55,7 +55,20 @@ export function getSelfKanOptions(player: PlayerState): Tile[][] {
     const key = `${t.suit}-${t.rank}`;
     (groups[key] = groups[key] || []).push(t);
   }
-  return Object.values(groups)
+  const options = Object.values(groups)
     .filter(arr => arr.length >= 4)
     .map(arr => arr.slice(0, 4));
+
+  for (const meld of player.melds) {
+    if (meld.type === 'pon') {
+      const match = player.hand.find(
+        t => t.suit === meld.tiles[0].suit && t.rank === meld.tiles[0].rank,
+      );
+      if (match) {
+        options.push([...meld.tiles, match]);
+      }
+    }
+  }
+
+  return options;
 }

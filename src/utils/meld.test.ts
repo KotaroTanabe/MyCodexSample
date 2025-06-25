@@ -122,4 +122,21 @@ describe('getSelfKanOptions', () => {
     };
     expect(getSelfKanOptions(player)).toHaveLength(0);
   });
+
+  it('detects kakan from an existing pon', () => {
+    const ponTiles: Tile[] = [
+      { suit: 'man', rank: 3, id: 'a' },
+      { suit: 'man', rank: 3, id: 'b' },
+      { suit: 'man', rank: 3, id: 'c' },
+    ];
+    const hand: Tile[] = [{ suit: 'man', rank: 3, id: 'd' }];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+      melds: [{ type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'b' }],
+    };
+    const opts = getSelfKanOptions(player);
+    expect(opts).toHaveLength(1);
+    expect(opts[0].map(t => t.id)).toEqual(['a', 'b', 'c', 'd']);
+  });
 });

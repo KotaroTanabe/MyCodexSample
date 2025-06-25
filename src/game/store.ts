@@ -608,22 +608,44 @@ const handleCallAction = (action: MeldType | 'pass') => {
   const performSelfKan = (caller: number, tiles: Tile[]) => {
     if (!canCallMeld(playersRef.current[caller])) return;
     let p = playersRef.current.map(pl => clearIppatsu(pl));
-  p = [...p];
-  p[caller] = claimMeld(p[caller], tiles, 'kan', caller, tiles[0].id, 'ankan');
-  setPlayers(p);
-  playersRef.current = p;
-  setLog(prev => [
-    ...prev,
-    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller, kanType: 'ankan' },
-  ]);
-  logRef.current = [
-    ...logRef.current,
-    { type: 'meld', player: caller, tiles, meldType: 'kan', from: caller, kanType: 'ankan' },
-  ];
+    p = [...p];
 
-  kanDrawRef.current = caller;
+    let from = caller;
+    let calledId = tiles[0].id;
+    let kanType: 'ankan' | 'kakan' = 'ankan';
 
-  const doraResult = drawDoraIndicator(deadWallRef.current, 1);
+    const suit = tiles[0].suit;
+    const rank = tiles[0].rank;
+    const ponIndex = p[caller].melds.findIndex(
+      m =>
+        m.type === 'pon' &&
+        m.tiles.every(t => t.suit === suit && t.rank === rank),
+    );
+
+    if (ponIndex >= 0) {
+      const pon = p[caller].melds[ponIndex];
+      from = pon.fromPlayer;
+      calledId = pon.calledTileId;
+      p[caller] = { ...p[caller], melds: p[caller].melds.filter((_, i) => i !== ponIndex) };
+      kanType = 'kakan';
+    }
+
+    p[caller] = claimMeld(p[caller], tiles, 'kan', from, calledId, kanType);
+
+    setPlayers(p);
+    playersRef.current = p;
+    setLog(prev => [
+      ...prev,
+      { type: 'meld', player: caller, tiles, meldType: 'kan', from, kanType },
+    ]);
+    logRef.current = [
+      ...logRef.current,
+      { type: 'meld', player: caller, tiles, meldType: 'kan', from, kanType },
+    ];
+
+    kanDrawRef.current = caller;
+
+    const doraResult = drawDoraIndicator(deadWallRef.current, 1);
     setDora(prev => [...prev, ...doraResult.dora]);
     setDeadWall(doraResult.wall);
     deadWallRef.current = doraResult.wall;
