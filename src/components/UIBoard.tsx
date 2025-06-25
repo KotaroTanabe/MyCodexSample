@@ -83,11 +83,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   return (
     <div
       data-testid="ui-board"
-      className="w-full grid gap-2 place-items-center"
+      className="w-full grid gap-2 place-items-center mx-auto max-w-screen-md"
       style={{
-        gridTemplateColumns: 'auto 1fr auto',
-        gridTemplateRows: 'auto 1fr auto',
+        gridTemplateColumns: 'auto auto auto',
+        gridTemplateRows: 'auto auto 1fr auto',
         gridTemplateAreas: `
+          'info info info'
           '. top .'
           'left center right'
           '. me .'
@@ -163,9 +164,9 @@ export const UIBoard: React.FC<UIBoardProps> = ({
 
       {/* ドラ表示と局情報 */}
       <div
-        className="flex items-center gap-4"
-        style={{ gridArea: 'center' }}
-        data-testid="center-area"
+        className="flex items-center gap-4 justify-center"
+        style={{ gridArea: 'info' }}
+        data-testid="info-area"
       >
         <ScoreBoard kyoku={kyoku} wallCount={wallCount} kyotaku={kyotaku} honba={honba} />
         <div className="flex flex-col items-center gap-1">
