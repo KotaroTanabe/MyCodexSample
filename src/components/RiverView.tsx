@@ -7,18 +7,19 @@ const seatRotation = rotationForSeat;
 const seatRiverRotation = rotationForSeat;
 
 export const RIVER_GAP_PX = 4;
+export const CALLED_OFFSET_PX = 6;
 
 
 const calledOffset = (seat: number): string => {
   switch (seat % 4) {
     case 1:
-      return 'translateY(-6px)';
+      return `translateY(-${CALLED_OFFSET_PX}px)`;
     case 2:
-      return 'translateX(-6px)';
+      return `translateX(-${CALLED_OFFSET_PX}px)`;
     case 3:
-      return 'translateY(6px)';
+      return `translateY(${CALLED_OFFSET_PX}px)`;
     default:
-      return 'translateX(6px)';
+      return `translateX(${CALLED_OFFSET_PX}px)`;
   }
 };
 

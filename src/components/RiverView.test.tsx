@@ -7,6 +7,7 @@ import {
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
   RIVER_GAP_PX,
+  CALLED_OFFSET_PX,
 } from './RiverView';
 import { Tile } from '../types/mahjong';
 
@@ -53,6 +54,17 @@ describe('RiverView', () => {
     render(<RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv" />);
     const tileEls = screen.getByTestId('rv').querySelectorAll('[style]');
     expect(tileEls[1].getAttribute('style')).toContain('rotate(90deg)');
+  });
+
+  it('offsets called tiles using the constant', () => {
+    const tiles = [{ ...t('pin', 5, 'c'), called: true }];
+    render(
+      <RiverView tiles={tiles} seat={2} lastDiscard={null} dataTestId="rv-called" />,
+    );
+    const tile = screen.getByTestId('rv-called').querySelector('[style]');
+    expect(tile?.getAttribute('style')).toContain(
+      `translateX(-${CALLED_OFFSET_PX}px)`,
+    );
   });
 
   it('uses consistent gap for all seats', () => {
