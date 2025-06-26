@@ -1,4 +1,5 @@
 import React from 'react';
+import { RiichiStick } from './RiichiStick';
 interface ScoreBoardProps {
   kyoku: number;
   wallCount: number;
@@ -18,7 +19,14 @@ export const ScoreBoard: React.FC<ScoreBoardProps> = ({
       <span className="font-bold">{kyokuStr}</span>
       <span className="text-sm">残り{wallCount}</span>
       <span className="text-sm">{honba}本場</span>
-      <span className="text-sm">供託{kyotaku}</span>
+      <span className="text-sm flex items-center">
+        供託
+        <span data-testid="kyotaku" className="flex gap-0.5 ml-1">
+          {Array.from({ length: kyotaku }).map((_, i) => (
+            <RiichiStick key={i} />
+          ))}
+        </span>
+      </span>
     </div>
   );
 };

@@ -8,7 +8,12 @@ import { Component, Input } from '@angular/core';
       <span class="font-bold">{{ kyokuLabel }}</span>
       <span class="text-sm">残り{{ wallCount }}</span>
       <span class="text-sm">{{ honba }}本場</span>
-      <span class="text-sm">供託{{ kyotaku }}</span>
+      <span class="text-sm flex items-center">
+        供託
+        <span data-testid="kyotaku" class="flex gap-0.5 ml-1">
+          <span class="riichi-stick" *ngFor="let _ of [].constructor(kyotaku); let i = index" aria-label="riichi stick"></span>
+        </span>
+      </span>
     </div>
   `,
 })

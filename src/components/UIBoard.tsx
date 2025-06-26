@@ -5,6 +5,7 @@ import { canDeclareRiichi } from './Player';
 import { MeldView } from './MeldView';
 import { RiverView } from './RiverView';
 import { ScoreBoard } from './ScoreBoard';
+import { RiichiStick } from './RiichiStick';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
 const honorMap: Record<string, Record<number, string>> = {
@@ -102,7 +103,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        {top.isRiichi && <div className="text-xs">1000点棒</div>}
+        {top.isRiichi && (
+          <div className="text-xs" data-testid="riichi-indicator">
+            <RiichiStick />
+          </div>
+        )}
         <RiverView
           tiles={top.discard}
           seat={top.seat}
@@ -121,7 +126,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               ))}
             </div>
           )}
-          {right.isRiichi && <div className="text-xs">1000点棒</div>}
+          {right.isRiichi && (
+            <div className="text-xs" data-testid="riichi-indicator">
+              <RiichiStick />
+            </div>
+          )}
           <RiverView
             tiles={right.discard}
             seat={right.seat}
@@ -147,7 +156,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               ))}
             </div>
           )}
-          {left.isRiichi && <div className="text-xs">1000点棒</div>}
+          {left.isRiichi && (
+            <div className="text-xs" data-testid="riichi-indicator">
+              <RiichiStick />
+            </div>
+          )}
           <RiverView
             tiles={left.discard}
             seat={left.seat}
@@ -186,7 +199,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             ))}
           </div>
         )}
-        {me.isRiichi && <div className="text-xs">1000点棒</div>}
+        {me.isRiichi && (
+          <div className="text-xs" data-testid="riichi-indicator">
+            <RiichiStick />
+          </div>
+        )}
         <RiverView
           tiles={me.discard}
           seat={me.seat}
