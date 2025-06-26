@@ -270,7 +270,7 @@ describe('UIBoard discard orientation', () => {
 });
 
 describe('UIBoard riichi indicators', () => {
-  it('shows 1000点棒 in front of rivers', () => {
+  it('shows riichi stick in front of rivers', () => {
     const me = { ...createInitialPlayerState('me', false, 0), isRiichi: true };
     me.discard = [t('man', 1, 'a')];
     const ai = { ...createInitialPlayerState('ai', true, 1), isRiichi: true };
@@ -289,7 +289,7 @@ describe('UIBoard riichi indicators', () => {
         lastDiscard={null}
       />,
     );
-    expect(screen.getAllByText('1000点棒').length).toBe(2);
+    expect(screen.getAllByTestId('riichi-indicator').length).toBe(2);
   });
 });
 
