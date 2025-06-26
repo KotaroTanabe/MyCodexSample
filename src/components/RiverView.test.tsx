@@ -4,6 +4,7 @@ import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import {
   RiverView,
+  RIVER_COLS,
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
   RIVER_GAP_PX,
@@ -127,6 +128,21 @@ describe('RiverView', () => {
       expect(div.style.transform).toBe(`rotate(${rotationForSeat(seat)}deg)`);
       cleanup();
     });
+  });
+
+  it('scrolls when discards exceed reserved slots', () => {
+    const tiles = Array.from({ length: RESERVED_RIVER_SLOTS + 2 }, (_, i) =>
+      t('man', ((i % 9) + 1) as number, `t${i}`),
+    );
+    render(
+      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-long" />,
+    );
+    const div = screen.getByTestId('rv-long');
+    const rowCount = RESERVED_RIVER_SLOTS / RIVER_COLS;
+    const gapPx = RIVER_GAP_PX * (rowCount - 1);
+    const expected = `calc((var(--tile-font-size) + 4px) * ${rowCount} + ${gapPx}px)`;
+    expect(div.style.overflowY).toBe('auto');
+    expect(div.style.maxHeight).toBe(expected);
   });
 
 });
