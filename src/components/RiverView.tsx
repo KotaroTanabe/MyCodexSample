@@ -84,6 +84,9 @@ export const RiverView: React.FC<RiverViewProps> = ({
 }) => {
   const ordered = tiles;
   const reservedSlots = useResponsiveRiverSlots();
+  const rowCount = reservedSlots / RIVER_COLS;
+  const gapPx = RIVER_GAP_PX * (rowCount - 1);
+  const maxHeight = `calc((var(--tile-font-size) + 4px) * ${rowCount} + ${gapPx}px)`;
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
   return (
     <div
@@ -91,6 +94,8 @@ export const RiverView: React.FC<RiverViewProps> = ({
       style={{
         gap: RIVER_GAP_PX,
         transform: `rotate(${rotationForSeat(seat)}deg)`,
+        overflowY: 'auto',
+        maxHeight,
       }}
       data-testid={dataTestId}
     >
