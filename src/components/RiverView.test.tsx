@@ -88,6 +88,13 @@ describe('RiverView', () => {
     });
   });
 
+  it('uses content-width columns for the river grid', () => {
+    render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="grid" />);
+    const div = screen.getByTestId('grid');
+    const className = div.getAttribute('class') || '';
+    expect(className).toContain('grid-cols-[repeat(6,_max-content)]');
+  });
+
   it('applies the same grid size for all seats', () => {
     [0, 1, 2, 3].forEach(seat => {
       render(
