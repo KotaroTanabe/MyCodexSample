@@ -11,6 +11,7 @@ import {
   GRID_CLASS,
 } from './RiverView';
 import { Tile } from '../types/mahjong';
+import { rotationForSeat } from '../utils/rotation';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
@@ -73,7 +74,7 @@ describe('RiverView', () => {
     const tile = screen.getByTestId('rv-called').querySelector('[style]');
     const style = tile?.getAttribute('style') || '';
     expect(style).toContain(`translateX(-${CALLED_OFFSET})`);
-    expect(style).toContain('rotate(90deg)');
+    expect(style).toContain('rotate(-90deg)');
   });
 
   it('uses consistent gap for all seats', () => {
@@ -95,6 +96,17 @@ describe('RiverView', () => {
       const div = screen.getByTestId(`grid-${seat}`);
       const className = div.getAttribute('class') || '';
       expect(className).toBe(GRID_CLASS);
+      cleanup();
+    });
+  });
+
+  it('rotates the container for each seat', () => {
+    [0, 1, 2, 3].forEach(seat => {
+      render(
+        <RiverView tiles={[]} seat={seat} lastDiscard={null} dataTestId={`rot-${seat}`} />,
+      );
+      const div = screen.getByTestId(`rot-${seat}`);
+      expect(div.style.transform).toBe(`rotate(${rotationForSeat(seat)}deg)`);
       cleanup();
     });
   });
