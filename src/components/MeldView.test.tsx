@@ -42,6 +42,22 @@ describe('MeldView', () => {
     expect(htmlLeft).toContain('rotate(-90deg)');
   });
 
+  it('rotates called tile horizontally when from opposite seat', () => {
+    const base: Meld = {
+      type: 'pon',
+      tiles: [
+        { suit: 'man', rank: 1, id: 'x' },
+        { suit: 'man', rank: 1, id: 'y' },
+        { suit: 'man', rank: 1, id: 'z' },
+      ],
+      fromPlayer: 2,
+      calledTileId: 'y',
+    };
+    const html = renderToStaticMarkup(<MeldView meld={base} seat={0} />);
+    expect(html).toContain('rotate(90deg)');
+    expect(html).not.toContain('rotate(180deg)');
+  });
+
   it('rotates the whole meld for side seats', () => {
     const meld: Meld = {
       type: 'pon',
