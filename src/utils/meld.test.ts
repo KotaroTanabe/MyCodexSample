@@ -57,6 +57,20 @@ describe('getValidCallOptions', () => {
     };
     expect(getValidCallOptions(player, discard)).toEqual([]);
   });
+
+  it('returns empty array when player has declared riichi', () => {
+    const discard: Tile = { suit: 'man', rank: 5, id: 'd5' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 5, id: 'a' },
+      { suit: 'man', rank: 5, id: 'b' },
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('you', false),
+      hand,
+      isRiichi: true,
+    };
+    expect(getValidCallOptions(player, discard)).toEqual([]);
+  });
 });
 
 describe('selectMeldTiles', () => {
