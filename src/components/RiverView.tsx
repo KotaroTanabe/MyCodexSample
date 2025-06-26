@@ -88,7 +88,10 @@ export const RiverView: React.FC<RiverViewProps> = ({
   return (
     <div
       className={GRID_CLASS}
-      style={{ gap: RIVER_GAP_PX }}
+      style={{
+        gap: RIVER_GAP_PX,
+        transform: `rotate(${rotationForSeat(seat)}deg)`,
+      }}
       data-testid={dataTestId}
     >
       {ordered.map(tile => {
@@ -102,7 +105,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
           <TileView
             key={tile.id}
             tile={tile}
-            rotate={rotationForSeat(seat) + extraRotation}
+            rotate={extraRotation}
             extraTransform={
               tile.called || tile.calledFrom !== undefined ? calledOffset(seat) : ''
             }
@@ -114,7 +117,6 @@ export const RiverView: React.FC<RiverViewProps> = ({
         <span
           key={`placeholder-${idx}`}
           className="inline-block border px-1 py-0.5 bg-white tile-font-size opacity-0"
-          style={{ transform: `rotate(${rotationForSeat(seat)}deg)` }}
         />
       ))}
     </div>
