@@ -41,6 +41,7 @@ export function getValidCallOptions(
   player: PlayerState,
   tile: Tile,
 ): (MeldType | 'pass')[] {
+  if (player.isRiichi) return [];
   const actions: (MeldType | 'pass')[] = [];
   (['pon', 'chi', 'kan'] as MeldType[]).forEach(t => {
     if (selectMeldTiles(player, tile, t)) actions.push(t);
