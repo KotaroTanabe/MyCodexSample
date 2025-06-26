@@ -16,11 +16,8 @@ export const RIVER_GAP_PX = 4;
  */
 export const CALLED_OFFSET = 'calc(var(--tile-font-size) / 5)';
 
-// Explicit class string ensures Tailwind can statically analyze and include the
-// required grid utilities. Dynamic template strings were not detected at build
-// time, resulting in a single-row layout.
-export const GRID_CLASS = 'grid grid-cols-6 grid-rows-3 sm:grid-rows-6';
-
+export const GRID_CLASS =
+  'grid grid-cols-[repeat(6,_max-content)] grid-rows-3 sm:grid-rows-6';
 
 /**
  * Positional adjustment for a tile claimed from another player's river.
