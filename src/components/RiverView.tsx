@@ -16,13 +16,8 @@ export const RIVER_GAP_PX = 4;
  */
 export const CALLED_OFFSET = 'calc(var(--tile-font-size) / 5)';
 
-// Explicit class string ensures Tailwind includes the grid utilities while
-// keeping columns sized to their contents rather than stretching to fill the
-// container. The bracket notation is statically analyzable, so the necessary
-// classes are generated during build.
 export const GRID_CLASS =
   'grid grid-cols-[repeat(6,_max-content)] grid-rows-3 sm:grid-rows-6';
-
 
 /**
  * Positional adjustment for a tile claimed from another player's river.

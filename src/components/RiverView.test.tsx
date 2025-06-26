@@ -77,6 +77,17 @@ describe('RiverView', () => {
     expect(style).toContain('rotate(-90deg)');
   });
 
+  it('rotates called tile horizontally when from opposite seat', () => {
+    const tiles = [{ ...t('pin', 5, 'd'), called: true, calledFrom: 2 }];
+    render(
+      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-opp" />,
+    );
+    const tile = screen.getByTestId('rv-opp').querySelector('[style]');
+    const style = tile?.getAttribute('style') || '';
+    expect(style).toContain('rotate(90deg)');
+    expect(style).not.toContain('rotate(180deg)');
+  });
+
   it('uses consistent gap for all seats', () => {
     [0, 1, 2, 3].forEach(seat => {
       render(
