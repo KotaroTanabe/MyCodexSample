@@ -12,7 +12,7 @@ export const calledRotation = (seat: number, from: number): number => {
     case 1:
       return 90; // from right
     case 2:
-      return 180; // from opposite
+      return 90; // from opposite
     case 3:
       return -90; // from left
     default:
