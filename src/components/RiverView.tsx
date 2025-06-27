@@ -96,6 +96,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
         transform: `rotate(${rotationForSeat(seat)}deg)`,
         overflowY: 'auto',
         maxHeight,
+        height: maxHeight,
       }}
       data-testid={dataTestId}
     >
