@@ -357,12 +357,20 @@ export const useGame = (gameLength: GameLength) => {
 
   const maxKyoku = maxKyokuForLength(gameLength);
   const nextKyoku = (dealerContinues = false) => {
+    // If we've reached the final round, always end the game regardless of dealer
+    // continuation rules.
+    if (kyokuRef.current >= maxKyoku) {
+      setPhase('end');
+      return;
+    }
+
     if (dealerContinues) {
       setHonba(h => h + 1);
       honbaRef.current += 1;
       startRound(false, kyokuRef.current);
       return;
     }
+
     setHonba(0);
     honbaRef.current = 0;
     const next = kyokuRef.current + 1;
