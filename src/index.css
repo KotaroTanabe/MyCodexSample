@@ -31,3 +31,10 @@
 .riichi-stick {
   @apply inline-block w-6 h-2 bg-red-500 border border-red-700 rounded-sm;
 }
+
+/* Called tile position for kakan melds */
+.kakan-called-tile {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--tile-font-size) * -1);
+}
