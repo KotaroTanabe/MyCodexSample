@@ -127,22 +127,46 @@ describe('claimMeld', () => {
     const hand: Tile[] = [
       { suit: 'man', rank: 1, id: 'm1' },
       { suit: 'man', rank: 2, id: 'm2' },
-      { suit: 'man', rank: 3, id: 'm3' },
       { suit: 'pin', rank: 5, id: 'p1' },
     ];
+    const discard: Tile = { suit: 'man', rank: 3, id: 'm3' };
     const player: PlayerState = { ...createInitialPlayerState('Bob', false), hand };
-    const tiles = hand.slice(0, 3);
-    const updated = claimMeld(player, tiles, 'chi' as MeldType, 1, 'm2');
+    const tiles = [...hand.slice(0, 2), discard];
+    const updated = claimMeld(player, tiles, 'chi' as MeldType, 1, discard.id);
     expect(updated.hand).toHaveLength(1);
     expect(updated.hand[0].id).toBe('p1');
-    expect(updated.melds).toEqual([
-      {
-        type: 'chi',
-        tiles: [tiles[0], tiles[2], tiles[1]],
-        fromPlayer: 1,
-        calledTileId: 'm2',
-      },
-    ]);
+    expect(updated.melds[0].tiles.map(t => t.id)).toEqual(['m1', 'm2', 'm3']);
+  });
+
+  it('orders chi tiles based on discarder seat', () => {
+    const t = (rank: number, id: string): Tile => ({ suit: 'man', rank, id });
+
+    const left = claimMeld(
+      { ...createInitialPlayerState('Bob', false), hand: [t(2, 'b'), t(3, 'c')] },
+      [t(2, 'b'), t(3, 'c'), t(1, 'a')],
+      'chi' as MeldType,
+      3,
+      'a',
+    );
+    expect(left.melds[0].tiles.map(t => t.id)).toEqual(['a', 'b', 'c']);
+
+    const opposite = claimMeld(
+      { ...createInitialPlayerState('Bob', false), hand: [t(1, 'a'), t(3, 'c')] },
+      [t(1, 'a'), t(3, 'c'), t(2, 'b')],
+      'chi' as MeldType,
+      2,
+      'b',
+    );
+    expect(opposite.melds[0].tiles.map(t => t.id)).toEqual(['a', 'b', 'c']);
+
+    const right = claimMeld(
+      { ...createInitialPlayerState('Bob', false), hand: [t(1, 'a'), t(2, 'b')] },
+      [t(1, 'a'), t(2, 'b'), t(3, 'c')],
+      'chi' as MeldType,
+      1,
+      'c',
+    );
+    expect(right.melds[0].tiles.map(t => t.id)).toEqual(['a', 'b', 'c']);
   });
 
   it('orders pon tiles based on caller position', () => {

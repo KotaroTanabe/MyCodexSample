@@ -86,6 +86,22 @@ export function removeDiscardTile(
   };
 }
 
+function arrangeChiTiles(
+  tiles: Tile[],
+  calledTileId: string,
+  callerSeat: number,
+  fromSeat: number,
+): Tile[] {
+  const sorted = [...tiles].sort((a, b) => a.rank - b.rank);
+  const idx = sorted.findIndex(t => t.id === calledTileId);
+  if (idx === -1) return sorted;
+  const [called] = sorted.splice(idx, 1);
+  const diff = (fromSeat - callerSeat + 4) % 4;
+  const pos = diff === 3 ? 0 : diff === 2 ? 1 : 2;
+  sorted.splice(pos, 0, called);
+  return sorted;
+}
+
 export function claimMeld(
   player: PlayerState,
   tiles: Tile[],
@@ -101,9 +117,13 @@ export function claimMeld(
   if (idx >= 0) {
     const called = tiles[idx];
     const others = tiles.filter((_, i) => i !== idx);
-    // Standard layout places the claimed tile on the right end regardless of
-    // which seat discarded it.
-    meldTiles = [...others, called];
+    if (type === 'chi') {
+      meldTiles = arrangeChiTiles([...others, called], calledTileId, player.seat, fromPlayer);
+    } else {
+      // Standard layout places the claimed tile on the right end regardless of
+      // which seat discarded it.
+      meldTiles = [...others, called];
+    }
   }
   return {
     ...player,
