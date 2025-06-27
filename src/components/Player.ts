@@ -101,34 +101,9 @@ export function claimMeld(
   if (idx >= 0) {
     const called = tiles[idx];
     const others = tiles.filter((_, i) => i !== idx);
-    const relative = (fromPlayer - player.seat + 4) % 4;
-    if (type === 'chi') {
-      // Chi is only possible from the player on the left
-      // Place the called tile at the leftmost position when from left
-      if (relative === 3) {
-        meldTiles = [called, ...others];
-      } else {
-        meldTiles = [...others, called];
-      }
-    } else if (type === 'pon') {
-      // Right -> rightmost, Left -> leftmost, Opposite -> middle
-      if (relative === 1) {
-        meldTiles = [...others, called];
-      } else if (relative === 2) {
-        meldTiles = [others[0], called, others[1]];
-      } else if (relative === 3) {
-        meldTiles = [called, ...others];
-      }
-    } else if (type === 'kan') {
-      // Right -> rightmost, Left -> leftmost, Opposite -> second from left
-      if (relative === 1) {
-        meldTiles = [...others, called];
-      } else if (relative === 2) {
-        meldTiles = [others[0], called, others[1], others[2]];
-      } else if (relative === 3) {
-        meldTiles = [called, ...others];
-      }
-    }
+    // Standard layout places the claimed tile on the right end regardless of
+    // which seat discarded it.
+    meldTiles = [...others, called];
   }
   return {
     ...player,

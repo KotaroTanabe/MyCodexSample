@@ -158,8 +158,8 @@ describe('claimMeld', () => {
     const fromOpposite = claimMeld(player, tiles, 'pon', 2, 'a');
     const fromLeft = claimMeld(player, tiles, 'pon', 3, 'a');
     expect(fromRight.melds[0].tiles[2].id).toBe('a');
-    expect(fromOpposite.melds[0].tiles[1].id).toBe('a');
-    expect(fromLeft.melds[0].tiles[0].id).toBe('a');
+    expect(fromOpposite.melds[0].tiles[2].id).toBe('a');
+    expect(fromLeft.melds[0].tiles[2].id).toBe('a');
   });
 
   it('orders kan tiles based on caller position', () => {
@@ -180,8 +180,8 @@ describe('claimMeld', () => {
     const fromOpposite = claimMeld(player, tiles, 'kan', 2, 'a', 'daiminkan');
     const fromLeft = claimMeld(player, tiles, 'kan', 3, 'a', 'daiminkan');
     expect(fromRight.melds[0].tiles[3].id).toBe('a');
-    expect(fromOpposite.melds[0].tiles[1].id).toBe('a');
-    expect(fromLeft.melds[0].tiles[0].id).toBe('a');
+    expect(fromOpposite.melds[0].tiles[3].id).toBe('a');
+    expect(fromLeft.melds[0].tiles[3].id).toBe('a');
   });
 });
 
