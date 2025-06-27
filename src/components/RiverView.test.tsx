@@ -143,6 +143,22 @@ describe('RiverView', () => {
     const expected = `calc((var(--tile-font-size) + 4px) * ${rowCount} + ${gapPx}px)`;
     expect(div.style.overflowY).toBe('auto');
     expect(div.style.maxHeight).toBe(expected);
+    expect(div.style.height).toBe(expected);
+  });
+
+  it('uses the same container height with and without tiles', () => {
+    render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-empty" />);
+    const emptyDiv = screen.getByTestId('rv-empty');
+    const rowCount = RESERVED_RIVER_SLOTS / RIVER_COLS;
+    const gapPx = RIVER_GAP_PX * (rowCount - 1);
+    const expected = `calc((var(--tile-font-size) + 4px) * ${rowCount} + ${gapPx}px)`;
+    expect(emptyDiv.style.height).toBe(expected);
+    cleanup();
+
+    const tiles = Array.from({ length: 5 }, (_, i) => t('man', i + 1 as number, `m${i}`));
+    render(<RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-filled" />);
+    const filledDiv = screen.getByTestId('rv-filled');
+    expect(filledDiv.style.height).toBe(expected);
   });
 
 });
