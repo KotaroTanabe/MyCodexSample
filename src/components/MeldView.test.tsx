@@ -107,6 +107,7 @@ describe('MeldView', () => {
       kanType: 'kakan',
     };
     const html = renderToStaticMarkup(<MeldView meld={meld} />);
+    expect(html).toContain('kakan-called-tile');
     const count = (html.match(/rotate\(90deg\)/g) || []).length;
     expect(count).toBe(1);
   });
