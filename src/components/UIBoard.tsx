@@ -7,6 +7,7 @@ import { RiverView } from './RiverView';
 import { ScoreBoard } from './ScoreBoard';
 import { RiichiStick } from './RiichiStick';
 import { HandView } from './HandView';
+import { isWinningHand, detectYaku } from '../score/yaku';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
 const honorMap: Record<string, Record<number, string>> = {
@@ -222,6 +223,15 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               label = `七対子${base}向聴`;
             } else if (shanten.kokushi === base && base < shanten.standard) {
               label = `国士無双${base}向聴`;
+            }
+            if (base < 0) {
+              const full = [...me.hand, ...me.melds.flatMap(m => m.tiles)];
+              const winning = isWinningHand(full);
+              if (!winning || !tsumoOption) {
+                console.warn('negative shanten but not tsumo/win', { hand: full, shanten, tsumoOption });
+              }
+              const hasYaku = winning && detectYaku(full, me.melds, { isTsumo: true }).length > 0;
+              return hasYaku ? <>和了可能</> : <>役なし</>;
             }
             return base === 0
               ? <>聴牌{label && ` (${label})`}</>
