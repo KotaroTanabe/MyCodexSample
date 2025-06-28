@@ -8,61 +8,69 @@ function tileIndex(tile: Tile): number {
 export function calcStandardShanten(hand: Tile[], openMelds = 0): number {
   const counts = new Array(34).fill(0);
   for (const t of hand) counts[tileIndex(t)]++;
-  let melds = 0;
-  let pairs = 0;
-  let taatsu = 0;
 
-  // complete triples
-  for (let i = 0; i < 34; i++) {
-    while (counts[i] >= 3) {
-      counts[i] -= 3;
-      melds++;
+  let minShanten = 8;
+  const memo = new Set<string>();
+
+  function dfs(idx: number, melds: number, pairs: number, taatsu: number) {
+    while (idx < 34 && counts[idx] === 0) idx++;
+    if (idx >= 34) {
+      let t = taatsu;
+      if (t > 4 - melds) t = 4 - melds;
+      const shanten = 8 - melds * 2 - t - Math.min(pairs, 1);
+      if (shanten < minShanten) minShanten = shanten;
+      return;
     }
-  }
-  // complete sequences
-  for (let i = 0; i < 27; i++) {
-    while (counts[i] > 0 && i % 9 <= 6 && counts[i + 1] > 0 && counts[i + 2] > 0) {
-      counts[i]--;
-      counts[i + 1]--;
-      counts[i + 2]--;
-      melds++;
+
+    const key = `${counts.join(',')}|${idx}|${melds}|${pairs}|${taatsu}`;
+    if (memo.has(key)) return;
+    memo.add(key);
+
+    if (counts[idx] >= 3) {
+      counts[idx] -= 3;
+      dfs(idx, melds + 1, pairs, taatsu);
+      counts[idx] += 3;
     }
-  }
-  // pairs for head
-  for (let i = 0; i < 34; i++) {
-    while (counts[i] >= 2) {
-      counts[i] -= 2;
-      pairs++;
+
+    if (idx < 27 && idx % 9 <= 6 && counts[idx + 1] > 0 && counts[idx + 2] > 0) {
+      counts[idx]--;
+      counts[idx + 1]--;
+      counts[idx + 2]--;
+      dfs(idx, melds + 1, pairs, taatsu);
+      counts[idx]++;
+      counts[idx + 1]++;
+      counts[idx + 2]++;
     }
-  }
-  const pairForShanten = Math.min(pairs, 1);
-  taatsu += pairs - pairForShanten;
-  pairs = pairForShanten;
-  // incomplete sequences
-  for (let i = 0; i < 27; i++) {
-    while (counts[i] > 0 && i % 9 <= 7 && counts[i + 1] > 0) {
-      counts[i]--;
-      counts[i + 1]--;
-      taatsu++;
+
+    if (counts[idx] >= 2) {
+      counts[idx] -= 2;
+      dfs(idx, melds, pairs + 1, taatsu);
+      counts[idx] += 2;
     }
-  }
-  for (let i = 0; i < 27; i++) {
-    while (counts[i] > 0 && i % 9 <= 6 && counts[i + 2] > 0) {
-      counts[i]--;
-      counts[i + 2]--;
-      taatsu++;
+
+    if (idx < 27 && idx % 9 <= 7 && counts[idx + 1] > 0) {
+      counts[idx]--;
+      counts[idx + 1]--;
+      dfs(idx, melds, pairs, taatsu + 1);
+      counts[idx]++;
+      counts[idx + 1]++;
     }
-  }
-  for (let i = 0; i < 34; i++) {
-    while (counts[i] >= 2) {
-      counts[i] -= 2;
-      taatsu++;
+
+    if (idx < 27 && idx % 9 <= 6 && counts[idx + 2] > 0) {
+      counts[idx]--;
+      counts[idx + 2]--;
+      dfs(idx, melds, pairs, taatsu + 1);
+      counts[idx]++;
+      counts[idx + 2]++;
     }
+
+    counts[idx]--;
+    dfs(idx, melds, pairs, taatsu);
+    counts[idx]++;
   }
-  if (pairs > 1) pairs = 1;
-  melds += openMelds;
-  if (taatsu > 4 - melds) taatsu = 4 - melds;
-  return 8 - melds * 2 - taatsu - pairs;
+
+  dfs(0, openMelds, 0, 0);
+  return minShanten;
 }
 
 export function calcChiitoiShanten(hand: Tile[]): number {
