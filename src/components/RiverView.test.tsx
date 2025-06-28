@@ -169,6 +169,7 @@ describe('RiverView', () => {
     expect(className).toContain('px-0.5');
     expect(className).toContain('py-px');
     expect(className).not.toContain('border');
+    expect(placeholder?.textContent).toBe('🀇');
   });
 
 });

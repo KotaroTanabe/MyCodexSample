@@ -122,8 +122,10 @@ export const RiverView: React.FC<RiverViewProps> = ({
       {Array.from({ length: placeholdersCount }).map((_, idx) => (
         <span
           key={`placeholder-${idx}`}
-          className="inline-block px-0.5 py-px leading-none bg-white tile-font-size opacity-0"
-        />
+          className="inline-block px-0.5 py-px leading-none bg-white tile-font-size opacity-0 font-emoji"
+        >
+          🀇
+        </span>
       ))}
     </div>
   );
