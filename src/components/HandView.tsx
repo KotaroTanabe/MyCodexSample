@@ -19,7 +19,7 @@ interface HandViewProps {
 
 export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard, isMyTurn }) => {
   const handTiles = drawnTile ? tiles.filter(t => t.id !== drawnTile.id) : tiles;
-  const placeholders = Math.max(0, RESERVED_HAND_SLOTS - (handTiles.length + (drawnTile ? 1 : 0)));
+  const placeholders = Math.max(0, RESERVED_HAND_SLOTS - handTiles.length - 1);
   const renderButton = (tile: Tile, extraClass: string) => {
     const kanji =
       tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
@@ -43,12 +43,23 @@ export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard,
     <div className="flex gap-2 items-center overflow-x-auto">
       <span className="text-xs text-gray-600">手牌</span>
       {handTiles.map(t => renderButton(t, ''))}
-      {drawnTile && renderButton(drawnTile, 'ml-4')}
+      {drawnTile ? (
+        renderButton(drawnTile, 'ml-4')
+      ) : (
+        <span
+          key="draw-slot"
+          className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0 ml-4 font-emoji"
+        >
+          🀇
+        </span>
+      )}
       {Array.from({ length: placeholders }).map((_, idx) => (
         <span
           key={`ph-${idx}`}
-          className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0"
-        />
+          className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0 font-emoji"
+        >
+          🀇
+        </span>
       ))}
     </div>
   );
