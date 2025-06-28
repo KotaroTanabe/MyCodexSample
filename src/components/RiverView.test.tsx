@@ -161,4 +161,14 @@ describe('RiverView', () => {
     expect(filledDiv.style.height).toBe(expected);
   });
 
+  it('renders tile-sized placeholders for empty slots', () => {
+    render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-pl" />);
+    const div = screen.getByTestId('rv-pl');
+    const placeholder = div.querySelector('span.opacity-0');
+    const className = placeholder?.getAttribute('class') || '';
+    expect(className).toContain('px-0.5');
+    expect(className).toContain('py-px');
+    expect(className).not.toContain('border');
+  });
+
 });

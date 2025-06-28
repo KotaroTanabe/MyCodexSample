@@ -118,7 +118,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 右側：下家 */}
-      <div className="flex items-start gap-2" style={{ gridArea: 'right' }}>
+      <div className="flex items-start gap-2 justify-self-start" style={{ gridArea: 'right' }}>
         <div className="flex flex-col items-center">
           {right.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
@@ -145,7 +145,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       </div>
 
       {/* 左側：上家 */}
-      <div className="flex items-start gap-2" style={{ gridArea: 'left' }}>
+      <div className="flex items-start gap-2 justify-self-end" style={{ gridArea: 'left' }}>
         <div className="text-sm">
           {left.name}: <span className="font-mono">{left.score}</span>
         </div>
