@@ -332,7 +332,7 @@ export function isWinningHand(tiles: Tile[]): boolean {
 }
 
 export function detectYaku(
-  hand: Tile[],
+  concealed: Tile[],
   melds: Meld[] = [],
   opts?: {
     isTsumo?: boolean;
@@ -348,7 +348,7 @@ export function detectYaku(
     uraDoraIndicators?: Tile[];
   },
 ): ScoreYaku[] {
-  const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const allTiles = [...concealed, ...melds.flatMap(m => m.tiles)];
   const result: ScoreYaku[] = [];
   const counts = countTiles(allTiles);
   const parsed = decomposeHand(allTiles);

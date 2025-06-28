@@ -81,6 +81,33 @@ describe('Yaku detection', () => {
     expect(yakuhaiCount).toBe(2); // ダブ東の刻子は2翻になるはず
   });
 
+  it('detects Yakuhai from an open meld', () => {
+    const ponTiles = [t('dragon', 1, 'od1a'), t('dragon', 1, 'od1b'), t('dragon', 1, 'od1c')];
+    const concealed: Tile[] = [
+      t('man', 2, 'o1'), t('man', 3, 'o2'), t('man', 4, 'o3'),
+      t('pin', 2, 'o4'), t('pin', 3, 'o5'), t('pin', 4, 'o6'),
+      t('sou', 2, 'o7'), t('sou', 3, 'o8'), t('sou', 4, 'o9'),
+      t('man', 5, 'o10'), t('man', 5, 'o11'),
+    ];
+    const melds: Meld[] = [{ type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'od1a' }];
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
+    expect(yaku.filter(y => y.name === 'Yakuhai').length).toBe(1);
+  });
+
+  it('detects open Ittsu as 1 han', () => {
+    const chiTiles = [t('man', 1, 'i1'), t('man', 2, 'i2'), t('man', 3, 'i3')];
+    const concealed: Tile[] = [
+      t('man', 4, 'i4'), t('man', 5, 'i5'), t('man', 6, 'i6'),
+      t('man', 7, 'i7'), t('man', 8, 'i8'), t('man', 9, 'i9'),
+      t('pin', 2, 'ip1'), t('pin', 2, 'ip2'), t('pin', 2, 'ip3'),
+      t('pin', 5, 'ip4'), t('pin', 5, 'ip5'),
+    ];
+    const melds: Meld[] = [{ type: 'chi', tiles: chiTiles, fromPlayer: 2, calledTileId: 'i1' }];
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
+    const ittsu = yaku.find(y => y.name === 'Ittsu');
+    expect(ittsu?.han).toBe(1);
+  });
+
   it('detects Pinfu', () => {
     const hand: Tile[] = [
       t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
@@ -389,8 +416,7 @@ describe('Scoring', () => {
     const melds: Meld[] = [
       { type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'd1a' },
     ];
-    const fullHand = [...concealed, ...ponTiles];
-    const yaku = detectYaku(fullHand, melds, { isTsumo: true });
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
     expect(yaku.some(y => y.name === 'Menzen Tsumo')).toBe(false);
     const { fu } = calculateScore(concealed, melds, yaku, []);
     // 基本符20 + 明刻(役牌)8 = 28、切り上げで30符になるはず
@@ -444,8 +470,7 @@ describe('Scoring', () => {
     const melds: Meld[] = [
       { type: 'kan', tiles: kanTiles, fromPlayer: 2, calledTileId: 'k1a', kanType: 'daiminkan' },
     ];
-    const fullHand = [...concealed, ...kanTiles];
-    const yaku = detectYaku(fullHand, melds, { isTsumo: true });
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
     const { fu } = calculateScore(concealed, melds, yaku);
     // 基本符20 + 明カン(役牌)16 = 36、切り上げで40符になるはず
     expect(fu).toBe(40);

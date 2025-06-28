@@ -105,7 +105,7 @@ export function calculateFuDetail(
   const parsed = decomposeHand(allTiles);
   if (!parsed) return { fu: 0, steps: ['invalid hand'] };
 
-  const yaku = detectYaku(allTiles, melds, { seatWind, roundWind });
+  const yaku = detectYaku(hand, melds, { seatWind, roundWind });
   if (yaku.some(y => y.name === 'Chiitoitsu')) {
     return { fu: 25, steps: ['七対子25符'] };
   }

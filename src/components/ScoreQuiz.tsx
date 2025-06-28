@@ -37,8 +37,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const allTiles = [...question.hand, ...question.melds.flatMap(m => m.tiles)];
-    const yaku = detectYaku(allTiles, question.melds, {
+    const yaku = detectYaku(question.hand, question.melds, {
       isTsumo: winType === 'tsumo',
       seatWind,
       roundWind,
