@@ -99,6 +99,82 @@ describe('UIBoard shanten display', () => {
   });
 });
 
+describe('UIBoard layout stability', () => {
+  const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({
+    suit,
+    rank,
+    id,
+  });
+  it('keeps seat areas fixed as tiles change', () => {
+    const { rerender } = render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('you', false, 0),
+          createInitialPlayerState('AI下家', true, 1),
+          createInitialPlayerState('AI対面', true, 2),
+          createInitialPlayerState('AI上家', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
+        lastDiscard={null}
+      />,
+    );
+    const board = screen.getByTestId('ui-board');
+    const initialGrid = board.style.gridTemplateAreas;
+    const aiShimo = screen
+      .getByText(content => content.startsWith('AI下家'))
+      .parentElement?.parentElement as HTMLElement;
+    const initialArea = aiShimo.style.gridArea;
+
+    const players = [
+      createInitialPlayerState('you', false, 0),
+      createInitialPlayerState('AI下家', true, 1),
+      createInitialPlayerState('AI対面', true, 2),
+      createInitialPlayerState('AI上家', true, 3),
+    ];
+    players[1].discard = [
+      t('man', 1, 'd1'),
+      t('man', 2, 'd2'),
+      t('man', 3, 'd3'),
+    ];
+    players[0].melds = [
+      {
+        tiles: [t('man', 4, 'm1'), t('man', 5, 'm2'), t('man', 6, 'm3')],
+        type: 'chi',
+        fromPlayer: 1,
+        calledTileId: 'm1',
+      },
+    ];
+    rerender(
+      <UIBoard
+        players={players}
+        dora={[]}
+        kyoku={1}
+        wallCount={67}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 13 }}
+        lastDiscard={null}
+      />,
+    );
+    const updatedBoard = screen.getByTestId('ui-board');
+    const updatedAiShimo = screen
+      .getByText(content => content.startsWith('AI下家'))
+      .parentElement?.parentElement as HTMLElement;
+    expect(updatedBoard.style.gridTemplateAreas).toBe(initialGrid);
+    expect(updatedAiShimo.style.gridArea).toBe(initialArea);
+    expect(updatedAiShimo).toBe(aiShimo);
+  });
+});
+
 describe('UIBoard riichi button', () => {
 
   function makePlayer(hand: Tile[]): PlayerState {
