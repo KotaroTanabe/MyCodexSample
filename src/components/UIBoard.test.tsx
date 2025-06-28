@@ -64,6 +64,39 @@ describe('UIBoard shanten display', () => {
     renderBoard({ standard: 3, chiitoi: 3, kokushi: 2 });
     expect(screen.getByText('向聴数: 2 (国士無双2向聴)')).toBeTruthy();
   });
+
+  it('shows agari state when shanten is negative and yaku exist', () => {
+    const player = { ...createInitialPlayerState('you', false) } as PlayerState;
+    player.hand = [
+      t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
+      t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
+      t('sou',2,'s2a'),t('sou',3,'s3a'),t('sou',4,'s4a'),
+      t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    player.drawnTile = player.hand[player.hand.length - 1];
+    render(
+      <UIBoard
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: -1, chiitoi: 13, kokushi: 13 }}
+        lastDiscard={null}
+        tsumoOption={true}
+      />,
+    );
+    expect(screen.getByText('和了可能')).toBeTruthy();
+  });
 });
 
 describe('UIBoard riichi button', () => {
