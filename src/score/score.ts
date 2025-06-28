@@ -100,7 +100,7 @@ export function calculateFu(
   opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
 ): number {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
-  const yaku = detectYaku(allTiles, melds, {
+  const yaku = detectYaku(hand, melds, {
     seatWind: opts?.seatWind,
     roundWind: opts?.roundWind,
   });

@@ -737,12 +737,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setDeadWall(uraRes.wall);
       deadWallRef.current = uraRes.wall;
     }
-    const fullHand = [...p[idx].hand, ...p[idx].melds.flatMap(m => m.tiles)];
     const info = drawInfoRef.current[idx];
     drawInfoRef.current[idx] = { rinshan: false, last: false };
     const seatWind = p[idx].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
-    const yaku = detectYaku(fullHand, p[idx].melds, {
+    const yaku = detectYaku(p[idx].hand, p[idx].melds, {
       isTsumo: true,
       isRiichi: p[idx].isRiichi,
       doubleRiichi: p[idx].doubleRiichi,
@@ -797,14 +796,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setDeadWall(uraRes.wall);
       deadWallRef.current = uraRes.wall;
     }
-    const fullHand = [...p[winner].hand, ...p[winner].melds.flatMap(m => m.tiles), tile];
     const fromInfo = drawInfoRef.current[from];
     drawInfoRef.current[from] = { rinshan: false, last: false };
     const prev = logRef.current[logRef.current.length - 1];
     const chankan = isChankan(prev, from, tile);
     const seatWind = p[winner].seat + 1;
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
-    const yaku = detectYaku(fullHand, p[winner].melds, {
+    const yaku = detectYaku([...p[winner].hand, tile], p[winner].melds, {
       isTsumo: false,
       isRiichi: p[winner].isRiichi,
       doubleRiichi: p[winner].doubleRiichi,
