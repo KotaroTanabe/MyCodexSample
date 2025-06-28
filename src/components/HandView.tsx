@@ -45,7 +45,10 @@ export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard,
       {handTiles.map(t => renderButton(t, ''))}
       {drawnTile && renderButton(drawnTile, 'ml-4')}
       {Array.from({ length: placeholders }).map((_, idx) => (
-        <span key={`ph-${idx}`} className="inline-block tile-font-size opacity-0" />
+        <span
+          key={`ph-${idx}`}
+          className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0"
+        />
       ))}
     </div>
   );

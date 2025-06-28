@@ -238,6 +238,13 @@ describe('UIBoard hand placeholders', () => {
     const handLabel = screen.getByText('手牌');
     const container = handLabel.parentElement as HTMLElement;
     expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    const placeholders = container.querySelectorAll('span.opacity-0');
+    expect(placeholders.length).toBeGreaterThan(0);
+    placeholders.forEach(el => {
+      const className = el.getAttribute('class') || '';
+      expect(className).toContain('border');
+      expect(className).toContain('px-2');
+    });
   });
 
   it('uses fixed slot count with many tiles', () => {
@@ -266,6 +273,13 @@ describe('UIBoard hand placeholders', () => {
     const handLabel = screen.getByText('手牌');
     const container = handLabel.parentElement as HTMLElement;
     expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    const placeholders = container.querySelectorAll('span.opacity-0');
+    expect(placeholders.length).toBeGreaterThan(0);
+    placeholders.forEach(el => {
+      const className = el.getAttribute('class') || '';
+      expect(className).toContain('border');
+      expect(className).toContain('px-2');
+    });
   });
 });
 
