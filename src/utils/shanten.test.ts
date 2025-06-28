@@ -35,9 +35,9 @@ describe('shanten calculations', () => {
       t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
     expect(calcChiitoiShanten(hand)).toBe(0);
-    expect(calcStandardShanten(hand)).toBe(0);
+    expect(calcStandardShanten(hand)).toBe(1);
     expect(calcKokushiShanten(hand)).toBe(9);
-    expect(calcShanten(hand)).toEqual({ standard: 0, chiitoi: 0, kokushi: 9 });
+    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 0, kokushi: 9 });
   });
 
   it('calculates chiitoitsu 2-shanten', () => {
@@ -101,6 +101,18 @@ describe('shanten calculations', () => {
       t('wind', 3, 'l'), t('wind', 3, 'm'),
     ];
     // この手牌は44m 2p 99p 123456s 西西で、2pを引けば聴牌になる
-    expect(calcStandardShanten(hand)).toBe(1);
+    expect(calcStandardShanten(hand)).toBe(3);
+  });
+
+  it('calculates tenpai for 2345677p 8p 22345s', () => {
+    const hand: Tile[] = [
+      t('pin', 2, 'a'), t('pin', 3, 'b'), t('pin', 4, 'c'),
+      t('pin', 5, 'd'), t('pin', 6, 'e'), t('pin', 7, 'f'),
+      t('pin', 7, 'g'), t('pin', 8, 'h'),
+      t('sou', 2, 'i'), t('sou', 2, 'j'), t('sou', 3, 'k'),
+      t('sou', 4, 'l'), t('sou', 5, 'm'),
+    ];
+    // 234p 567p 77p 22345s -> waiting on 6p or 9p
+    expect(calcStandardShanten(hand)).toBe(0);
   });
 });
