@@ -6,6 +6,7 @@ import { MeldView } from './MeldView';
 import { RiverView } from './RiverView';
 import { ScoreBoard } from './ScoreBoard';
 import { RiichiStick } from './RiichiStick';
+import { HandView } from './HandView';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
 const honorMap: Record<string, Record<number, string>> = {
@@ -227,52 +228,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               : <>向聴数: {base}{label && ` (${label})`}</>;
           })()}
         </div>
-        {(() => {
-          const my = me;
-          const handTiles = my.drawnTile
-            ? my.hand.filter(t => t.id !== my.drawnTile?.id)
-            : my.hand;
-          return (
-            <div className="flex gap-2 items-center overflow-x-auto">
-              <span className="text-xs text-gray-600">手牌</span>
-              {handTiles.map(tile => {
-                const kanji =
-                  tile.suit === 'man' || tile.suit === 'pin' || tile.suit === 'sou'
-                    ? `${tile.rank}${suitMap[tile.suit]}`
-                    : honorMap[tile.suit]?.[tile.rank] ?? '';
-                return (
-                  <button
-                    key={tile.id}
-                    className={`border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 hover:bg-primary-100 dark:hover:bg-primary-700 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-                    onClick={() => onDiscard(tile.id)}
-                    disabled={!isMyTurn}
-                    aria-label={kanji}
-                  >
-                    <TileView tile={tile} />
-                  </button>
-                );
-              })}
-              {my.drawnTile && (() => {
-                const t = my.drawnTile;
-                const kanji =
-                  t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou'
-                    ? `${t.rank}${suitMap[t.suit]}`
-                    : honorMap[t.suit]?.[t.rank] ?? '';
-                return (
-                  <button
-                    key={t.id}
-                    className={`border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 hover:bg-primary-100 dark:hover:bg-primary-700 ml-4 ${isMyTurn ? '' : 'opacity-50 pointer-events-none'}`}
-                    onClick={() => onDiscard(t.id)}
-                    disabled={!isMyTurn}
-                    aria-label={kanji}
-                  >
-                    <TileView tile={t} />
-                  </button>
-                );
-              })()}
-            </div>
-          );
-        })()}
+        <HandView
+          tiles={me.hand}
+          drawnTile={me.drawnTile}
+          onDiscard={onDiscard}
+          isMyTurn={isMyTurn}
+        />
         {callOptions && callOptions.length > 0 && (
           <div className="flex gap-2 mt-2">
             {callOptions.map(act => (
