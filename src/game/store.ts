@@ -199,6 +199,7 @@ export const useGame = (gameLength: GameLength) => {
   const riichiPoolRef = useRef(riichiPool);
   const honbaRef = useRef(honba);
   const logRef = useRef<LogEntry[]>(log);
+  const tsumoOptionRef = useRef(tsumoOption);
   const kanDrawRef = useRef<number | null>(null);
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
   const recordHeadRef = useRef<RecordHead>({
@@ -261,9 +262,21 @@ export const useGame = (gameLength: GameLength) => {
   }, [log]);
 
   useEffect(() => {
+    tsumoOptionRef.current = tsumoOption;
+  }, [tsumoOption]);
+
+  useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
-      setShanten(calcShanten(players[0].hand, players[0].melds.length));
+      const s = calcShanten(players[0].hand, players[0].melds.length);
+      setShanten(s);
+      if (s.standard < 0 && !tsumoOptionRef.current) {
+        console.debug('negative shanten without tsumo option', {
+          player: players[0],
+          hand: players[0].hand,
+          melds: players[0].melds,
+        });
+      }
     }
   }, [players]);
 
