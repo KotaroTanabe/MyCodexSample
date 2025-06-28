@@ -28,8 +28,10 @@ https://kotarotanabe.github.io/MyCodexSample/
 
 ### 1. クローン & セットアップ
 
-このプロジェクトは **Node.js 20.x** を想定してビルドしています。`nvm` を利用
-している場合はリポジトリ直下の `.nvmrc` に従い以下のように実行してください。
+このプロジェクトは `.nvmrc` で指定している **Node.js 20.x** を前提にビルドして
+います。`nvm` を利用している場合は以下のように実行してください。Node.js 21 以
+降では依存パッケージとの互換性問題でビルドやテストが失敗することがあります。
+動作が不安定な場合は必ず `nvm use` で `.nvmrc` のバージョンに合わせてください。
 
 ```sh
 git clone https://github.com/KotaroTanabe/MyCodexSample.git
