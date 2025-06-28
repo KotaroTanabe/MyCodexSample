@@ -97,6 +97,54 @@ describe('UIBoard shanten display', () => {
     );
     expect(screen.getByText('和了可能')).toBeTruthy();
   });
+
+  it('shows no-yaku notice when shanten is negative but hand has no yaku', () => {
+    const player = { ...createInitialPlayerState('you', false) } as PlayerState;
+    player.melds = [
+      {
+        type: 'chi',
+        tiles: [t('man', 1, 'c1'), t('man', 2, 'c2'), t('man', 3, 'c3')],
+        fromPlayer: 1,
+        calledTileId: 'c2',
+      },
+    ];
+    player.hand = [
+      t('man', 4, 'm4'),
+      t('man', 5, 'm5'),
+      t('man', 6, 'm6'),
+      t('pin', 1, 'p1'),
+      t('pin', 2, 'p2'),
+      t('pin', 3, 'p3'),
+      t('pin', 4, 'p4'),
+      t('pin', 5, 'p5'),
+      t('pin', 6, 'p6'),
+      t('sou', 9, 's9a'),
+      t('sou', 9, 's9b'),
+    ];
+    player.drawnTile = player.hand[player.hand.length - 1];
+    render(
+      <UIBoard
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: -1, chiitoi: 13, kokushi: 13 }}
+        lastDiscard={null}
+        tsumoOption={true}
+      />,
+    );
+    expect(screen.getByText('役なし')).toBeTruthy();
+    expect(screen.queryByText('向聴数: -1')).toBeNull();
+  });
 });
 
 describe('UIBoard layout stability', () => {
