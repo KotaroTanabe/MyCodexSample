@@ -4,6 +4,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { UIBoard } from './UIBoard';
 import { createInitialPlayerState, canDeclareRiichi } from './Player';
+import { RESERVED_HAND_SLOTS } from './HandView';
 import { Tile } from '../types/mahjong';
 import type { PlayerState } from "../types/mahjong";
 
@@ -207,6 +208,78 @@ describe('UIBoard responsiveness', () => {
     const handLabel = screen.getByText('手牌');
     const container = handLabel.parentElement as HTMLElement;
     expect(container.className).toContain('overflow-x-auto');
+  });
+});
+
+describe('UIBoard hand placeholders', () => {
+  it('uses fixed slot count with few tiles', () => {
+    const me = { ...createInitialPlayerState('me', false) } as PlayerState;
+    me.hand = [t('man', 1, 'a1')];
+    me.drawnTile = null;
+    render(
+      <UIBoard
+        players={[
+          me,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+    const handLabel = screen.getByText('手牌');
+    const container = handLabel.parentElement as HTMLElement;
+    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    const placeholders = container.querySelectorAll('span.opacity-0');
+    expect(placeholders.length).toBeGreaterThan(0);
+    placeholders.forEach(el => {
+      const className = el.getAttribute('class') || '';
+      expect(className).toContain('border');
+      expect(className).toContain('px-2');
+    });
+  });
+
+  it('uses fixed slot count with many tiles', () => {
+    const me = { ...createInitialPlayerState('me', false) } as PlayerState;
+    me.hand = Array.from({ length: 10 }, (_, i) => t('man', i + 1 as number, `m${i}`));
+    me.drawnTile = null;
+    render(
+      <UIBoard
+        players={[
+          me,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+    const handLabel = screen.getByText('手牌');
+    const container = handLabel.parentElement as HTMLElement;
+    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    const placeholders = container.querySelectorAll('span.opacity-0');
+    expect(placeholders.length).toBeGreaterThan(0);
+    placeholders.forEach(el => {
+      const className = el.getAttribute('class') || '';
+      expect(className).toContain('border');
+      expect(className).toContain('px-2');
+    });
   });
 });
 
