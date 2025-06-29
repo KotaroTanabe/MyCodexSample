@@ -8,6 +8,7 @@ import {
   discardTile,
   claimMeld,
   declareRiichi,
+  canDeclareRiichi,
   clearIppatsu,
   canCallMeld,
   markDiscardCalled,
@@ -983,6 +984,23 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     drawForCurrentPlayer();
     if (wallRef.current.length === 0) return;
+    if (canDeclareRiichi(playersRef.current[ai])) {
+      let p = [...playersRef.current];
+      const isDouble = playersRef.current.every(pl => pl.discard.length === 0);
+      p[ai] = declareRiichi(p[ai], isDouble);
+      setPlayers(p);
+      playersRef.current = p;
+      setPendingRiichi(ai);
+      setMessage(`${p[ai].name} がリーチしました。`);
+      setLog(prev => [
+        ...prev,
+        { type: 'riichi', player: ai, tile: p[ai].drawnTile as Tile },
+      ]);
+      logRef.current = [
+        ...logRef.current,
+        { type: 'riichi', player: ai, tile: p[ai].drawnTile as Tile },
+      ];
+    }
     setTimeout(() => {
       const tile = chooseAIDiscardTile(playersRef.current[ai]);
       handleDiscard(tile.id);

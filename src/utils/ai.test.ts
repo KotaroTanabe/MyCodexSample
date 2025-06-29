@@ -19,23 +19,64 @@ describe('chooseAICallOption', () => {
     expect(chooseAICallOption(makePlayer(hand), discard)).toBe('kan');
   });
 
-  it('chooses pon over chi', () => {
-    const discard: Tile = { suit: 'pin', rank: 5, id: 'd' };
+  it('calls pon when it improves shanten', () => {
+    const discard: Tile = { suit: 'sou', rank: 5, id: 'z' };
     const hand: Tile[] = [
-      { suit: 'pin', rank: 5, id: 'a' },
-      { suit: 'pin', rank: 5, id: 'b' },
-      { suit: 'pin', rank: 6, id: 'c' },
+      { suit: 'sou', rank: 5, id: 'a' },
+      { suit: 'sou', rank: 2, id: 'b' },
+      { suit: 'sou', rank: 5, id: 'c' },
+      { suit: 'man', rank: 7, id: 'd' },
+      { suit: 'pin', rank: 8, id: 'e' },
+      { suit: 'sou', rank: 4, id: 'f' },
+      { suit: 'pin', rank: 5, id: 'g' },
+      { suit: 'pin', rank: 3, id: 'h' },
+      { suit: 'man', rank: 4, id: 'i' },
+      { suit: 'pin', rank: 3, id: 'j' },
+      { suit: 'man', rank: 2, id: 'k' },
+      { suit: 'man', rank: 9, id: 'l' },
+      { suit: 'man', rank: 1, id: 'm' },
     ];
     expect(chooseAICallOption(makePlayer(hand), discard)).toBe('pon');
   });
 
-  it('chooses chi when sequence exists', () => {
-    const discard: Tile = { suit: 'sou', rank: 4, id: 'd' };
+  it('calls chi when it improves shanten', () => {
+    const discard: Tile = { suit: 'pin', rank: 2, id: 'x' };
     const hand: Tile[] = [
-      { suit: 'sou', rank: 3, id: 'a' },
-      { suit: 'sou', rank: 5, id: 'b' },
+      { suit: 'man', rank: 5, id: 'a' },
+      { suit: 'pin', rank: 4, id: 'b' },
+      { suit: 'man', rank: 7, id: 'c' },
+      { suit: 'sou', rank: 6, id: 'd' },
+      { suit: 'man', rank: 6, id: 'e' },
+      { suit: 'pin', rank: 1, id: 'f' },
+      { suit: 'man', rank: 1, id: 'g' },
+      { suit: 'sou', rank: 1, id: 'h' },
+      { suit: 'pin', rank: 3, id: 'i' },
+      { suit: 'pin', rank: 9, id: 'j' },
+      { suit: 'man', rank: 3, id: 'k' },
+      { suit: 'pin', rank: 9, id: 'l' },
+      { suit: 'pin', rank: 9, id: 'm' },
     ];
     expect(chooseAICallOption(makePlayer(hand), discard)).toBe('chi');
+  });
+
+  it('passes when call does not improve shanten', () => {
+    const discard: Tile = { suit: 'man', rank: 2, id: 'd' };
+    const hand: Tile[] = [
+      { suit: 'man', rank: 1, id: 'a' },
+      { suit: 'man', rank: 2, id: 'b' },
+      { suit: 'man', rank: 3, id: 'c' },
+      { suit: 'man', rank: 4, id: 'e' },
+      { suit: 'man', rank: 5, id: 'f' },
+      { suit: 'man', rank: 7, id: 'g' },
+      { suit: 'man', rank: 8, id: 'h' },
+      { suit: 'man', rank: 9, id: 'i' },
+      { suit: 'pin', rank: 1, id: 'j' },
+      { suit: 'pin', rank: 2, id: 'k' },
+      { suit: 'pin', rank: 3, id: 'l' },
+      { suit: 'sou', rank: 5, id: 'm' },
+      { suit: 'sou', rank: 7, id: 'n' },
+    ];
+    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('pass');
   });
 
   it('passes when no meld available', () => {
