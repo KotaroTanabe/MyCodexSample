@@ -207,6 +207,10 @@ export const useGame = (gameLength: GameLength) => {
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
   const pendingRiichiIndicatorRef = useRef<number[]>([]);
   const pendingRiichiRef = useRef<number | null>(null);
+  const updatePendingRiichi = (value: number | null) => {
+    setPendingRiichi(value);
+    pendingRiichiRef.current = value;
+  };
   const recordHeadRef = useRef<RecordHead>({
     startTime: 0,
     endTime: 0,
@@ -339,8 +343,7 @@ export const useGame = (gameLength: GameLength) => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
-    setPendingRiichi(null);
-    pendingRiichiRef.current = null;
+    updatePendingRiichi(null);
     setTsumoOption(false);
     setRonCandidate(null);
     setRoundResult(null);
@@ -523,8 +526,7 @@ export const useGame = (gameLength: GameLength) => {
     if (pendingRiichiRef.current === idx) {
       p[idx] = { ...p[idx], score: p[idx].score - 1000, ippatsu: true };
       setRiichiPool(prev => prev + 1);
-      setPendingRiichi(null);
-      pendingRiichiRef.current = null;
+      updatePendingRiichi(null);
       setPlayers(p);
       playersRef.current = p;
     }
@@ -889,8 +891,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     p[0] = declareRiichi(p[0], isDouble);
     setPlayers(p);
     playersRef.current = p;
-    setPendingRiichi(0);
-    pendingRiichiRef.current = 0;
+    updatePendingRiichi(0);
     setMessage('リーチする牌を選んでください');
     setLog(prev => [...prev, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }]);
     logRef.current = [...logRef.current, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }];
@@ -998,8 +999,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       p[ai] = declareRiichi(p[ai], isDouble);
       setPlayers(p);
       playersRef.current = p;
-      setPendingRiichi(ai);
-      pendingRiichiRef.current = ai;
+      updatePendingRiichi(ai);
       setMessage(`${p[ai].name} がリーチしました。`);
       setLog(prev => [
         ...prev,
@@ -1071,8 +1071,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setLastDiscard(null);
       setSelfKanOptions(null);
       setChiTileOptions(null);
-      setPendingRiichi(null);
-      pendingRiichiRef.current = null;
+      updatePendingRiichi(null);
       setTsumoOption(false);
       setRonCandidate(null);
       setRoundResult(null);
