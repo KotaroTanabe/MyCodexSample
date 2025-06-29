@@ -1,6 +1,7 @@
 import React from 'react';
 import { Meld } from '../types/mahjong';
 import { MeldView } from './MeldView';
+import { rotationForSeat } from '../utils/rotation';
 
 export const RESERVED_MELD_SLOTS = 4;
 
@@ -16,7 +17,10 @@ export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = tr
   return (
     <div
       className={`relative flex gap-1 mb-1 ${showBorder ? 'border rounded' : ''}`}
-      style={{ minHeight: `calc(var(--tile-font-size) + 4px)` }}
+      style={{
+        minHeight: `calc(var(--tile-font-size) + 4px)`,
+        transform: `rotate(${rotationForSeat(seat)}deg)`,
+      }}
       data-testid={dataTestId}
     >
       {showBorder && (
