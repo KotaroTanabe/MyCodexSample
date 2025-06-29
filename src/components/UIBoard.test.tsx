@@ -445,9 +445,10 @@ describe('UIBoard layout', () => {
     renderBoard({ standard: 1, chiitoi: 1, kokushi: 13 });
     const board = screen.getByTestId('ui-board');
     expect(board.style.gridTemplateAreas).toContain('top');
-    expect(board.style.gridTemplateAreas).toContain('info');
+    expect(board.style.gridTemplateAreas).toContain('center');
+    expect(board.className).toContain('gap-0');
     const info = screen.getByTestId('info-area');
-    expect(info.style.gridArea).toBe('info');
+    expect(info.style.gridArea).toBe('center');
   });
 });
 
