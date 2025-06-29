@@ -32,4 +32,13 @@ describe('game store', () => {
 
     expect(result.current.phase).toBe('end');
   });
+
+  it('declares riichi for the player', () => {
+    const { result } = renderHook(() => useGame('tonpu'));
+    act(() => {
+      result.current.handleRiichi();
+    });
+    expect(result.current.players[0].isRiichi).toBe(true);
+    expect(result.current.pendingRiichi).toBe(0);
+  });
 });

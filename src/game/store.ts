@@ -883,17 +883,21 @@ const handleCallAction = (action: MeldType | 'pass') => {
     });
   };
 
-  const handleRiichi = () => {
+  const performRiichi = (idx: number) => {
     let p = [...playersRef.current];
     const isDouble = playersRef.current.every(pl => pl.discard.length === 0);
-    p[0] = declareRiichi(p[0], isDouble);
+    p[idx] = declareRiichi(p[idx], isDouble);
     setPlayers(p);
     playersRef.current = p;
-    setPendingRiichi(0);
-    pendingRiichiRef.current = 0;
+    setPendingRiichi(idx);
+    pendingRiichiRef.current = idx;
+    setLog(prev => [...prev, { type: 'riichi', player: idx, tile: p[idx].drawnTile as Tile }]);
+    logRef.current = [...logRef.current, { type: 'riichi', player: idx, tile: p[idx].drawnTile as Tile }];
+  };
+
+  const handleRiichi = () => {
+    performRiichi(0);
     setMessage('リーチする牌を選んでください');
-    setLog(prev => [...prev, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }]);
-    logRef.current = [...logRef.current, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }];
   };
 
   const handleSelfKan = (tiles: Tile[]) => {
@@ -993,22 +997,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
     drawForCurrentPlayer();
     if (wallRef.current.length === 0) return;
     if (canDeclareRiichi(playersRef.current[ai])) {
-      let p = [...playersRef.current];
-      const isDouble = playersRef.current.every(pl => pl.discard.length === 0);
-      p[ai] = declareRiichi(p[ai], isDouble);
-      setPlayers(p);
-      playersRef.current = p;
-      setPendingRiichi(ai);
-      pendingRiichiRef.current = ai;
-      setMessage(`${p[ai].name} がリーチしました。`);
-      setLog(prev => [
-        ...prev,
-        { type: 'riichi', player: ai, tile: p[ai].drawnTile as Tile },
-      ]);
-      logRef.current = [
-        ...logRef.current,
-        { type: 'riichi', player: ai, tile: p[ai].drawnTile as Tile },
-      ];
+      performRiichi(ai);
+      setMessage(`${playersRef.current[ai].name} がリーチしました。`);
     }
     setTimeout(() => {
       const tile = chooseAIDiscardTile(playersRef.current[ai]);
