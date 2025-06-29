@@ -89,6 +89,20 @@ describe('RiverView', () => {
     expect(style).not.toContain('rotate(180deg)');
   });
 
+  it('moves called tiles to the end of the river', () => {
+    const tiles = [
+      t('man', 1, 'a'),
+      { ...t('pin', 5, 'b'), called: true, calledFrom: 1 },
+      t('sou', 2, 'c'),
+    ];
+    render(
+      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-order" />,
+    );
+    const tileEls = screen.getByTestId('rv-order').querySelectorAll('[aria-label]');
+    const labels = Array.from(tileEls).map(el => el.getAttribute('aria-label'));
+    expect(labels).toEqual(['1萬', '2索', '5筒']);
+  });
+
   it('uses consistent gap for all seats', () => {
     [0, 1, 2, 3].forEach(seat => {
       render(

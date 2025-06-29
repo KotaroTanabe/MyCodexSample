@@ -84,7 +84,12 @@ export const RiverView: React.FC<RiverViewProps> = ({
   dataTestId,
   showBorder = true,
 }) => {
-  const ordered = tiles;
+  // Called (melded) tiles should appear at the right edge of each player's
+  // discard area, mimicking a real mahjong table. We therefore reorder the
+  // tiles so that any claimed tile is rendered last.
+  const regularTiles = tiles.filter(t => !t.called);
+  const calledTiles = tiles.filter(t => t.called);
+  const ordered = [...regularTiles, ...calledTiles];
   const reservedSlots = useResponsiveRiverSlots();
   const rowCount = reservedSlots / RIVER_COLS;
   const gapPx = RIVER_GAP_PX * (rowCount - 1);
