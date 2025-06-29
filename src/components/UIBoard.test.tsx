@@ -648,5 +648,11 @@ describe('UIBoard hand count', () => {
     [hc1, hc2, hc3].forEach(el => {
       expect(el.querySelector('.tile-font-size')).not.toBeNull();
     });
+    const riverRight = screen.getByTestId('discard-seat-1');
+    const riverTop = screen.getByTestId('discard-seat-2');
+    const riverLeft = screen.getByTestId('discard-seat-3');
+    expect(riverRight.parentElement?.lastElementChild).toBe(hc1);
+    expect(riverTop.parentElement).toBe(hc2.parentElement);
+    expect(riverLeft.parentElement?.firstElementChild).toBe(hc3);
   });
 });
