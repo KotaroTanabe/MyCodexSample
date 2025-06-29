@@ -1,17 +1,13 @@
 import React from 'react';
 import { Meld } from '../types/mahjong';
 import { TileView } from './TileView';
-import { rotationForSeat } from '../utils/rotation';
 import { calledRotation } from '../utils/calledRotation';
 
 
 export const MeldView: React.FC<{ meld: Meld; seat?: number }> = ({ meld, seat = 0 }) => {
   const isKakan = meld.type === 'kan' && meld.kanType === 'kakan';
   return (
-    <div
-      className="relative flex gap-1 border rounded px-1 bg-gray-50"
-      style={{ transform: `rotate(${rotationForSeat(seat)}deg)` }}
-    >
+    <div className="relative flex gap-1 border rounded px-1 bg-gray-50">
       {meld.tiles.map(tile => {
         const isCalled = tile.id === meld.calledTileId;
         const rotate = isCalled
