@@ -451,6 +451,35 @@ describe('UIBoard layout', () => {
   });
 });
 
+describe('UIBoard borders option', () => {
+  it('hides borders when disabled', () => {
+    render(
+      <UIBoard
+        players={[
+          createInitialPlayerState('me', false),
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+        showBorders={false}
+      />,
+    );
+    const river = screen.getByTestId('discard-seat-0');
+    expect(river.className).not.toContain('border');
+    const handContainer = screen.getByText('手牌').parentElement as HTMLElement;
+    expect(handContainer.className).not.toContain('border');
+  });
+});
+
 describe('UIBoard discard orientation', () => {
 
 

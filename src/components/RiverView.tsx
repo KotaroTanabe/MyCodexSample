@@ -74,6 +74,7 @@ interface RiverViewProps {
   seat: number;
   lastDiscard: { tile: Tile; player: number; isShonpai: boolean } | null;
   dataTestId?: string;
+  showBorder?: boolean;
 }
 
 export const RiverView: React.FC<RiverViewProps> = ({
@@ -81,6 +82,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
   seat,
   lastDiscard,
   dataTestId,
+  showBorder = true,
 }) => {
   const ordered = tiles;
   const reservedSlots = useResponsiveRiverSlots();
@@ -90,7 +92,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
   return (
     <div
-      className={GRID_CLASS}
+      className={`${GRID_CLASS} ${showBorder ? 'border' : ''}`}
       style={{
         gap: RIVER_GAP_PX,
         transform: `rotate(${rotationForSeat(seat)}deg)`,

@@ -21,4 +21,31 @@ describe('HandView', () => {
     expect(drawSlot).toBeTruthy();
     expect(drawSlot?.textContent).toBe('🀇');
   });
+
+  it('shows border by default and can hide it', () => {
+    const tiles = Array.from({ length: 13 }, (_, i) => t('man', i + 1, `a${i}`));
+    render(
+      <HandView
+        tiles={tiles}
+        drawnTile={null}
+        onDiscard={() => {}}
+        isMyTurn
+        dataTestId="hv"
+      />,
+    );
+    const container = screen.getByTestId('hv');
+    expect(container.className).toContain('border');
+    cleanup();
+    render(
+      <HandView
+        tiles={tiles}
+        drawnTile={null}
+        onDiscard={() => {}}
+        isMyTurn
+        dataTestId="hv2"
+        showBorder={false}
+      />,
+    );
+    expect(screen.getByTestId('hv2').className).not.toContain('border');
+  });
 });

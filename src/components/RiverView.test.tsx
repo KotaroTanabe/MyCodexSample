@@ -114,7 +114,7 @@ describe('RiverView', () => {
       );
       const div = screen.getByTestId(`grid-${seat}`);
       const className = div.getAttribute('class') || '';
-      expect(className).toBe(GRID_CLASS);
+      expect(className.startsWith(GRID_CLASS)).toBe(true);
       cleanup();
     });
   });
@@ -170,6 +170,18 @@ describe('RiverView', () => {
     expect(className).toContain('py-px');
     expect(className).not.toContain('border');
     expect(placeholder?.textContent).toBe('🀇');
+  });
+
+  it('applies border by default and can be removed', () => {
+    render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-bd" />);
+    const div = screen.getByTestId('rv-bd');
+    expect(div.className).toContain('border');
+    cleanup();
+    render(
+      <RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-nb" showBorder={false} />,
+    );
+    const nb = screen.getByTestId('rv-nb');
+    expect(nb.className).not.toContain('border');
   });
 
 });
