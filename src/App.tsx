@@ -13,6 +13,7 @@ function App() {
   );
   const [helpOpen, setHelpOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const [showBorders, setShowBorders] = useState(true);
 
   useEffect(() => {
     document.body.classList.toggle('dark', dark);
@@ -89,9 +90,17 @@ function App() {
         >
           {dark ? 'Light' : 'Dark'}
         </button>
+        <label className="flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={showBorders}
+            onChange={() => setShowBorders(b => !b)}
+          />
+          枠表示
+        </label>
       </div>
       {mode === 'game' ? (
-        <GameController key={gameLength} gameLength={gameLength} />
+        <GameController key={gameLength} gameLength={gameLength} showBorders={showBorders} />
       ) : mode === 'fu-quiz' ? (
         <FuQuiz />
       ) : mode === 'score-quiz' ? (

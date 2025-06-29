@@ -107,12 +107,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <span className="font-emoji tile-font-size">🀫</span>
           {` x ${String(top.hand.length).padStart(2, '0')}`}
         </div>
-        <MeldArea melds={top.melds} seat={top.seat} showBorder={showBorders} />
-        {top.isRiichi && (
-          <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick />
-          </div>
-        )}
         <RiverView
           tiles={top.discard}
           seat={top.seat}
@@ -120,6 +114,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           dataTestId="discard-seat-2"
           showBorder={showBorders}
         />
+        <MeldArea melds={top.melds} seat={top.seat} showBorder={showBorders} />
+        {top.isRiichi && (
+          <div className="text-xs" data-testid="riichi-indicator">
+            <RiichiStick />
+          </div>
+        )}
       </div>
 
       {/* 右側：下家 */}
@@ -202,12 +202,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         className="flex flex-col items-center mt-2"
         style={{ gridArea: 'me' }}
       >
-        <MeldArea melds={me.melds} seat={me.seat} showBorder={showBorders} />
-        {me.isRiichi && (
-          <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick />
-          </div>
-        )}
         <RiverView
           tiles={me.discard}
           seat={me.seat}
@@ -215,6 +209,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           dataTestId="discard-seat-0"
           showBorder={showBorders}
         />
+        <MeldArea melds={me.melds} seat={me.seat} showBorder={showBorders} />
+        {me.isRiichi && (
+          <div className="text-xs" data-testid="riichi-indicator">
+            <RiichiStick />
+          </div>
+        )}
         <div className="text-sm mb-1">
           {me.name}: <span className="font-mono">{me.score}</span>
         </div>

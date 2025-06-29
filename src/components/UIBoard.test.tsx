@@ -362,7 +362,7 @@ describe('UIBoard aria labels', () => {
 describe('UIBoard responsiveness', () => {
   it('hand container can scroll horizontally', () => {
     renderBoard({ standard: 1, chiitoi: 1, kokushi: 13 });
-    const handLabel = screen.getByText('手牌');
+    const handLabel = screen.getAllByText('手牌')[0];
     const container = handLabel.parentElement as HTMLElement;
     expect(container.className).toContain('overflow-x-auto');
   });
@@ -392,9 +392,9 @@ describe('UIBoard hand placeholders', () => {
         lastDiscard={null}
       />,
     );
-    const handLabel = screen.getByText('手牌');
+    const handLabel = screen.getAllByText('手牌')[0];
     const container = handLabel.parentElement as HTMLElement;
-    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 2);
     const placeholders = container.querySelectorAll('span.opacity-0');
     expect(placeholders.length).toBeGreaterThan(0);
     placeholders.forEach(el => {
@@ -427,9 +427,9 @@ describe('UIBoard hand placeholders', () => {
         lastDiscard={null}
       />,
     );
-    const handLabel = screen.getByText('手牌');
+    const handLabel = screen.getAllByText('手牌')[0];
     const container = handLabel.parentElement as HTMLElement;
-    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 2);
     const placeholders = container.querySelectorAll('span.opacity-0');
     expect(placeholders.length).toBeGreaterThan(0);
     placeholders.forEach(el => {
@@ -475,7 +475,7 @@ describe('UIBoard borders option', () => {
     );
     const river = screen.getByTestId('discard-seat-0');
     expect(river.className).not.toContain('border');
-    const handContainer = screen.getByText('手牌').parentElement as HTMLElement;
+    const handContainer = screen.getAllByText('手牌')[0].parentElement as HTMLElement;
     expect(handContainer.className).not.toContain('border');
   });
 });

@@ -22,7 +22,7 @@ describe('MeldArea', () => {
   it('reserves slots for melds', () => {
     render(<MeldArea melds={[]} seat={0} showBorder dataTestId="ma" />);
     const div = screen.getByTestId('ma');
-    expect(div.children.length).toBe(RESERVED_MELD_SLOTS);
+    expect(div.children.length).toBe(RESERVED_MELD_SLOTS + 1);
   });
 
   it('shows border by default and can hide it', () => {
@@ -37,6 +37,13 @@ describe('MeldArea', () => {
     render(<MeldArea melds={[sampleMeld]} seat={0} dataTestId="ma3" />);
     const div = screen.getByTestId('ma3');
     // Should have RESERVED_MELD_SLOTS children including placeholders
-    expect(div.children.length).toBe(RESERVED_MELD_SLOTS);
+    expect(div.children.length).toBe(RESERVED_MELD_SLOTS + 1);
+  });
+
+  it('displays a background label', () => {
+    render(<MeldArea melds={[]} seat={0} dataTestId="ma-label" />);
+    const div = screen.getByTestId('ma-label');
+    const label = div.querySelector('span[aria-hidden="true"]');
+    expect(label?.textContent).toBe('鳴き牌');
   });
 });

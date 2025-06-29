@@ -50,14 +50,14 @@ describe('RiverView', () => {
   it('reserves space for empty river', () => {
     render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv" />);
     const div = screen.getByTestId('rv');
-    expect(div.children.length).toBe(RESERVED_RIVER_SLOTS);
+    expect(div.children.length).toBe(RESERVED_RIVER_SLOTS + 1);
   });
 
   it('uses fewer slots on small screens', () => {
     Object.defineProperty(window, 'innerWidth', { value: 500, writable: true });
     render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-m" />);
     const div = screen.getByTestId('rv-m');
-    expect(div.children.length).toBe(RESERVED_RIVER_SLOTS_MOBILE);
+    expect(div.children.length).toBe(RESERVED_RIVER_SLOTS_MOBILE + 1);
   });
 
   it('rotates riichi discards', () => {
@@ -114,7 +114,7 @@ describe('RiverView', () => {
       );
       const div = screen.getByTestId(`grid-${seat}`);
       const className = div.getAttribute('class') || '';
-      expect(className.startsWith(GRID_CLASS)).toBe(true);
+      expect(className.includes(GRID_CLASS)).toBe(true);
       cleanup();
     });
   });
@@ -182,6 +182,15 @@ describe('RiverView', () => {
     );
     const nb = screen.getByTestId('rv-nb');
     expect(nb.className).not.toContain('border');
+  });
+
+  it('displays a background label', () => {
+    render(
+      <RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-label" />,
+    );
+    const div = screen.getByTestId('rv-label');
+    const label = div.querySelector('span[aria-hidden="true"]');
+    expect(label?.textContent).toBe('河');
   });
 
 });

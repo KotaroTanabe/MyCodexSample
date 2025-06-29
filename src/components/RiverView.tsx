@@ -92,7 +92,7 @@ export const RiverView: React.FC<RiverViewProps> = ({
   const placeholdersCount = Math.max(0, reservedSlots - ordered.length);
   return (
     <div
-      className={`${GRID_CLASS} ${showBorder ? 'border' : ''}`}
+      className={`relative ${GRID_CLASS} ${showBorder ? 'border' : ''}`}
       style={{
         gap: RIVER_GAP_PX,
         transform: `rotate(${rotationForSeat(seat)}deg)`,
@@ -102,6 +102,12 @@ export const RiverView: React.FC<RiverViewProps> = ({
       }}
       data-testid={dataTestId}
     >
+      <span
+        className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
+        aria-hidden="true"
+      >
+        河
+      </span>
       {ordered.map(tile => {
         const extraRotation =
           tile.calledFrom !== undefined
