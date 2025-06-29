@@ -4,6 +4,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { MeldArea, RESERVED_MELD_SLOTS } from './MeldArea';
 import { Meld } from '../types/mahjong';
+import { rotationForSeat } from '../utils/rotation';
 
 const sampleMeld: Meld = {
   type: 'chi',
@@ -54,5 +55,16 @@ describe('MeldArea', () => {
     const div = screen.getByTestId('ma-label-off');
     const label = div.querySelector('span[aria-hidden="true"]');
     expect(label).toBeNull();
+  });
+
+  it('rotates the container for each seat', () => {
+    [0, 1, 2, 3].forEach(seat => {
+      render(
+        <MeldArea melds={[]} seat={seat} dataTestId={`rot-${seat}`} />,
+      );
+      const div = screen.getByTestId(`rot-${seat}`);
+      expect(div.style.transform).toBe(`rotate(${rotationForSeat(seat)}deg)`);
+      cleanup();
+    });
   });
 });
