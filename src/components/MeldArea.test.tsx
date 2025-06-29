@@ -67,4 +67,16 @@ describe('MeldArea', () => {
       cleanup();
     });
   });
+
+  it('stacks melds vertically', () => {
+    render(
+      <MeldArea
+        melds={[sampleMeld, sampleMeld]}
+        seat={0}
+        dataTestId="ma-vert"
+      />,
+    );
+    const div = screen.getByTestId('ma-vert');
+    expect(div.className).toContain('flex-col');
+  });
 });

@@ -17,11 +17,12 @@ export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = tr
     return null;
   }
   const placeholders = Math.max(0, RESERVED_MELD_SLOTS - melds.length);
+  const containerMinHeight = `calc((var(--tile-font-size) + 4px) * ${RESERVED_MELD_SLOTS})`;
   return (
     <div
-      className={`relative flex gap-1 mb-1 ${showBorder ? 'border rounded' : ''}`}
+      className={`relative flex flex-col gap-1 mb-1 ${showBorder ? 'border rounded' : ''}`}
       style={{
-        minHeight: `calc(var(--tile-font-size) + 4px)`,
+        minHeight: containerMinHeight,
         transform: `rotate(${rotationForSeat(seat)}deg)`,
       }}
       data-testid={dataTestId}
