@@ -585,7 +585,7 @@ describe('UIBoard hand count', () => {
       { ...createInitialPlayerState('ai2', true, 2), hand: makeTiles(7) },
       {
         ...createInitialPlayerState('ai3', true, 3),
-        hand: makeTiles(13),
+        hand: [...makeTiles(13), t('man', 2, 'draw')],
         drawnTile: t('man', 2, 'draw'),
       },
     ];
