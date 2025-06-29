@@ -41,6 +41,29 @@ jobs:
           name: dist
           path: dist
 
+  # Auto-merge PR using GitHub App
+  auto-merge:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+      - name: Approve PR
+        run: gh pr review "$PR_URL" --approve
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+      - name: Enable auto-merge
+        run: gh pr merge --merge --auto "$PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+
   # GitHub Pages公開用（mainブランチを公開する場合）
   deploy:
     needs: build-and-test
