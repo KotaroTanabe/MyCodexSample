@@ -102,12 +102,14 @@ export const RiverView: React.FC<RiverViewProps> = ({
       }}
       data-testid={dataTestId}
     >
-      <span
-        className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
-        aria-hidden="true"
-      >
-        河
-      </span>
+      {showBorder && (
+        <span
+          className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          河
+        </span>
+      )}
       {ordered.map(tile => {
         const extraRotation =
           tile.calledFrom !== undefined

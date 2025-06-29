@@ -46,12 +46,14 @@ export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard,
       className={`relative flex gap-2 items-center overflow-x-auto ${showBorder ? 'border' : ''}`}
       data-testid={dataTestId}
     >
-      <span
-        className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
-        aria-hidden="true"
-      >
-        手牌
-      </span>
+      {showBorder && (
+        <span
+          className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          手牌
+        </span>
+      )}
       <span className="text-xs text-gray-600">手牌</span>
       {handTiles.map(t => renderButton(t, ''))}
       {drawnTile ? (

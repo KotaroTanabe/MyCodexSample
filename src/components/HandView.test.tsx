@@ -49,12 +49,28 @@ describe('HandView', () => {
     expect(screen.getByTestId('hv2').className).not.toContain('border');
   });
 
-  it('displays a background label', () => {
+  it('displays a background label when border is shown', () => {
     render(
       <HandView tiles={[]} drawnTile={null} onDiscard={() => {}} isMyTurn />,
     );
     const container = screen.getAllByText('手牌')[0].parentElement as HTMLElement;
     const label = container.querySelector('span[aria-hidden="true"]');
     expect(label?.textContent).toBe('手牌');
+  });
+
+  it('hides the background label when border is off', () => {
+    render(
+      <HandView
+        tiles={[]}
+        drawnTile={null}
+        onDiscard={() => {}}
+        isMyTurn
+        showBorder={false}
+        dataTestId="hv-label-off"
+      />,
+    );
+    const container = screen.getByTestId('hv-label-off');
+    const label = container.querySelector('span[aria-hidden="true"]');
+    expect(label).toBeNull();
   });
 });

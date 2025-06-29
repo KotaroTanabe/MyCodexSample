@@ -19,12 +19,14 @@ export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = tr
       style={{ minHeight: `calc(var(--tile-font-size) + 4px)` }}
       data-testid={dataTestId}
     >
-      <span
-        className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
-        aria-hidden="true"
-      >
-        鳴き牌
-      </span>
+      {showBorder && (
+        <span
+          className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          鳴き牌
+        </span>
+      )}
       {melds.map((m, idx) => (
         <MeldView key={idx} meld={m} seat={seat} />
       ))}
