@@ -163,7 +163,102 @@ const boardPresets: Record<string, BoardData> = (() => {
     return { players: [p0, p1, p2, p3], wall: [], deadWall: [], dora: [], turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
   });
 
-  return { basic, multiCalls, kanVariants, longRiver };
+  const allFuro = make(t => {
+    const p0 = createInitialPlayerState('自分', false, 0);
+    const chi0 = [t('man', 1), t('man', 2), t('man', 3)];
+    p0.hand = [
+      t('pin', 1),
+      t('pin', 2),
+      t('pin', 3),
+      t('sou', 4),
+      t('sou', 5),
+      t('sou', 6),
+      t('wind', 1),
+      t('wind', 2),
+      t('dragon', 1),
+      t('dragon', 2),
+    ];
+    p0.melds = [{ type: 'chi', tiles: chi0, fromPlayer: 1, calledTileId: chi0[0].id }];
+
+    const p1 = createInitialPlayerState('下家', true, 1);
+    const pon1 = [t('pin', 7), t('pin', 7), t('pin', 7)];
+    const chi1 = [t('man', 2), t('man', 3), t('man', 4)];
+    p1.hand = [
+      t('sou', 1),
+      t('sou', 2),
+      t('sou', 3),
+      t('wind', 3),
+      t('dragon', 1),
+      t('dragon', 2),
+      t('man', 5),
+    ];
+    p1.melds = [
+      { type: 'pon', tiles: pon1, fromPlayer: 2, calledTileId: pon1[1].id },
+      { type: 'chi', tiles: chi1, fromPlayer: 0, calledTileId: chi1[0].id },
+    ];
+
+    const p2 = createInitialPlayerState('対面', true, 2);
+    const pon2 = [t('sou', 6), t('sou', 6), t('sou', 6)];
+    const chi2 = [t('pin', 3), t('pin', 4), t('pin', 5)];
+    const kan2 = [t('man', 9), t('man', 9), t('man', 9), t('man', 9)];
+    p2.hand = [t('wind', 1), t('dragon', 3), t('pin', 1)];
+    p2.melds = [
+      { type: 'pon', tiles: pon2, fromPlayer: 3, calledTileId: pon2[1].id },
+      { type: 'chi', tiles: chi2, fromPlayer: 1, calledTileId: chi2[0].id },
+      { type: 'kan', tiles: kan2, fromPlayer: 0, calledTileId: kan2[0].id, kanType: 'daiminkan' },
+    ];
+
+    const p3 = createInitialPlayerState('上家', true, 3);
+    const pon3a = [t('pin', 2), t('pin', 2), t('pin', 2)];
+    const pon3b = [t('sou', 8), t('sou', 8), t('sou', 8)];
+    const chi3a = [t('man', 4), t('man', 5), t('man', 6)];
+    const chi3b = [t('pin', 5), t('pin', 6), t('pin', 7)];
+    p3.hand = [t('dragon', 1)];
+    p3.melds = [
+      { type: 'pon', tiles: pon3a, fromPlayer: 0, calledTileId: pon3a[1].id },
+      { type: 'pon', tiles: pon3b, fromPlayer: 2, calledTileId: pon3b[1].id },
+      { type: 'chi', tiles: chi3a, fromPlayer: 1, calledTileId: chi3a[0].id },
+      { type: 'chi', tiles: chi3b, fromPlayer: 2, calledTileId: chi3b[0].id },
+    ];
+
+    const wall = [
+      t('man', 7),
+      t('man', 8),
+      t('man', 9),
+      t('pin', 7),
+      t('pin', 8),
+      t('pin', 9),
+      t('sou', 7),
+      t('sou', 8),
+      t('sou', 9),
+      t('wind', 1),
+      t('wind', 2),
+      t('wind', 3),
+    ];
+
+    const deadWall = [
+      t('dragon', 1),
+      t('dragon', 2),
+      t('dragon', 3),
+      t('pin', 1),
+      t('pin', 2),
+      t('pin', 3),
+      t('man', 1),
+      t('man', 2),
+      t('man', 3),
+      t('sou', 1),
+      t('sou', 2),
+      t('sou', 3),
+      t('wind', 4),
+      t('wind', 4),
+    ];
+
+    const dora = [t('man', 5)];
+
+    return { players: [p0, p1, p2, p3], wall, deadWall, dora, turn: 0, kyoku: 1, riichiPool: 0, honba: 0 };
+  });
+
+  return { basic, multiCalls, kanVariants, longRiver, allFuro };
 })();
 
 export const useGame = (gameLength: GameLength) => {
