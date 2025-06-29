@@ -27,10 +27,10 @@ describe('MeldArea', () => {
   });
 
   it('shows border by default and can hide it', () => {
-    render(<MeldArea melds={[]} seat={0} dataTestId="ma1" />);
+    render(<MeldArea melds={[sampleMeld]} seat={0} dataTestId="ma1" />);
     expect(screen.getByTestId('ma1').className).toContain('border');
     cleanup();
-    render(<MeldArea melds={[]} seat={0} showBorder={false} dataTestId="ma2" />);
+    render(<MeldArea melds={[sampleMeld]} seat={0} showBorder={false} dataTestId="ma2" />);
     expect(screen.getByTestId('ma2').className).not.toContain('border');
   });
 
@@ -50,7 +50,7 @@ describe('MeldArea', () => {
 
   it('hides the background label when border is off', () => {
     render(
-      <MeldArea melds={[]} seat={0} dataTestId="ma-label-off" showBorder={false} />,
+      <MeldArea melds={[sampleMeld]} seat={0} dataTestId="ma-label-off" showBorder={false} />,
     );
     const div = screen.getByTestId('ma-label-off');
     const label = div.querySelector('span[aria-hidden="true"]');
@@ -60,7 +60,7 @@ describe('MeldArea', () => {
   it('rotates the container for each seat', () => {
     [0, 1, 2, 3].forEach(seat => {
       render(
-        <MeldArea melds={[]} seat={seat} dataTestId={`rot-${seat}`} />,
+        <MeldArea melds={[sampleMeld]} seat={seat} dataTestId={`rot-${seat}`} />,
       );
       const div = screen.getByTestId(`rot-${seat}`);
       expect(div.style.transform).toBe(`rotate(${rotationForSeat(seat)}deg)`);

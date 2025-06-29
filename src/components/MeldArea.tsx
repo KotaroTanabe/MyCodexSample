@@ -13,6 +13,9 @@ interface MeldAreaProps {
 }
 
 export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = true, dataTestId }) => {
+  if (melds.length === 0 && !showBorder) {
+    return null;
+  }
   const placeholders = Math.max(0, RESERVED_MELD_SLOTS - melds.length);
   return (
     <div
@@ -34,14 +37,15 @@ export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = tr
       {melds.map((m, idx) => (
         <MeldView key={idx} meld={m} seat={seat} />
       ))}
-      {Array.from({ length: placeholders }).map((_, idx) => (
-        <span
-          key={`ph-${idx}`}
-          className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0 font-emoji"
-        >
-          🀇🀇
-        </span>
-      ))}
+      {showBorder &&
+        Array.from({ length: placeholders }).map((_, idx) => (
+          <span
+            key={`ph-${idx}`}
+            className="inline-block border rounded bg-surface-0 dark:bg-surface-700 px-2 py-1 tile-font-size opacity-0 font-emoji"
+          >
+            🀇🀇
+          </span>
+        ))}
     </div>
   );
 };
