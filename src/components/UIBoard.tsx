@@ -98,6 +98,12 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         <div className="text-sm mb-1">
           {top.name}: <span className="font-mono">{top.score}</span>
         </div>
+        <div
+          className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+          data-testid="hand-count-2"
+        >
+          {`🀫 x ${String(top.hand.length + (top.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+        </div>
         {top.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
             {top.melds.map((m, idx) => (
@@ -121,6 +127,15 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       {/* 右側：下家 */}
       <div className="flex items-start gap-2 justify-self-start" style={{ gridArea: 'right' }}>
         <div className="flex flex-col items-center">
+          <div className="text-sm mb-1">
+            {right.name}: <span className="font-mono">{right.score}</span>
+          </div>
+          <div
+            className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+            data-testid="hand-count-1"
+          >
+            {`🀫 x ${String(right.hand.length + (right.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+          </div>
           {right.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
               {right.melds.map((m, idx) => (
@@ -140,17 +155,20 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             dataTestId="discard-seat-1"
           />
         </div>
-        <div className="text-sm">
-          {right.name}: <span className="font-mono">{right.score}</span>
-        </div>
       </div>
 
       {/* 左側：上家 */}
       <div className="flex items-start gap-2 justify-self-end" style={{ gridArea: 'left' }}>
-        <div className="text-sm">
-          {left.name}: <span className="font-mono">{left.score}</span>
-        </div>
         <div className="flex flex-col items-center">
+          <div className="text-sm mb-1">
+            {left.name}: <span className="font-mono">{left.score}</span>
+          </div>
+          <div
+            className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+            data-testid="hand-count-3"
+          >
+            {`🀫 x ${String(left.hand.length + (left.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+          </div>
           {left.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
               {left.melds.map((m, idx) => (
