@@ -118,7 +118,7 @@ describe('RiverView', () => {
     render(<RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="grid" />);
     const div = screen.getByTestId('grid');
     const className = div.getAttribute('class') || '';
-    expect(className).toContain('grid-cols-[repeat(4,_max-content)]');
+    expect(className).toContain('grid-cols-[repeat(6,_max-content)]');
   });
 
   it('applies the same grid size for all seats', () => {
