@@ -58,7 +58,7 @@ describe('MeldView', () => {
     expect(html).not.toContain('rotate(180deg)');
   });
 
-  it('rotates the whole meld for side seats', () => {
+  it('does not rotate the meld container', () => {
     const meld: Meld = {
       type: 'pon',
       tiles: [
@@ -70,7 +70,7 @@ describe('MeldView', () => {
       calledTileId: 'a',
     };
     const html = renderToStaticMarkup(<MeldView meld={meld} seat={1} />);
-    expect(html).toContain('rotate(270deg)');
+    expect(html).not.toContain('rotate(270deg)');
   });
 
   it('shows face-down tiles for ankan', () => {
