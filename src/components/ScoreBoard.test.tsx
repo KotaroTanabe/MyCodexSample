@@ -7,6 +7,7 @@ import { ScoreBoard } from './ScoreBoard';
 describe('ScoreBoard', () => {
   it('displays kyoku, wall count, honba and kyotaku icons', () => {
     render(<ScoreBoard kyoku={1} wallCount={69} kyotaku={2} honba={2} />);
+    expect(screen.getByTestId('score-board')).toBeTruthy();
     expect(screen.getByText('東1局')).toBeTruthy();
     expect(screen.getByText('残り69')).toBeTruthy();
     expect(screen.getByText('2本場')).toBeTruthy();
