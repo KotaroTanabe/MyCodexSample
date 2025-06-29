@@ -83,7 +83,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   return (
     <div
       data-testid="ui-board"
-      className="w-full grid gap-0 place-items-center mx-auto max-w-screen-md"
+      className="w-full grid gap-0 place-items-center mx-auto max-w-screen-md relative"
       style={{
         gridTemplateColumns: 'auto auto auto',
         gridTemplateRows: 'auto 1fr auto',
@@ -113,7 +113,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           dataTestId="discard-seat-2"
           showBorder={showBorders}
         />
-        <MeldArea melds={top.melds} seat={top.seat} showBorder={showBorders} />
         {top.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
             <RiichiStick />
@@ -127,7 +126,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <div className="text-sm mb-1">
             {right.name}: <span className="font-mono">{right.score}</span>
           </div>
-          <MeldArea melds={right.melds} seat={right.seat} showBorder={showBorders} />
           {right.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
@@ -158,7 +156,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <div className="text-sm mb-1">
             {left.name}: <span className="font-mono">{left.score}</span>
           </div>
-          <MeldArea melds={left.melds} seat={left.seat} showBorder={showBorders} />
           {left.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
@@ -212,7 +209,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           dataTestId="discard-seat-0"
           showBorder={showBorders}
         />
-        <MeldArea melds={me.melds} seat={me.seat} showBorder={showBorders} />
         {me.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
             <RiichiStick />
@@ -322,13 +318,42 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           >
             リーチ
           </button>
-        )}
-        {onToggleAI && (
-          <label className="flex items-center gap-2 mt-2">
-            <input type="checkbox" checked={playerIsAI} onChange={onToggleAI} />
-            観戦モード
-          </label>
-        )}
+      )}
+      {onToggleAI && (
+        <label className="flex items-center gap-2 mt-2">
+          <input type="checkbox" checked={playerIsAI} onChange={onToggleAI} />
+          観戦モード
+        </label>
+      )}
+      </div>
+      {/* Meld areas in corners */}
+      <div className="absolute left-0 top-0">
+        <MeldArea
+          melds={top.melds}
+          seat={top.seat}
+          showBorder={showBorders && top.melds.length > 0}
+        />
+      </div>
+      <div className="absolute right-0 top-0">
+        <MeldArea
+          melds={right.melds}
+          seat={right.seat}
+          showBorder={showBorders && right.melds.length > 0}
+        />
+      </div>
+      <div className="absolute left-0 bottom-0">
+        <MeldArea
+          melds={left.melds}
+          seat={left.seat}
+          showBorder={showBorders && left.melds.length > 0}
+        />
+      </div>
+      <div className="absolute right-0 bottom-0">
+        <MeldArea
+          melds={me.melds}
+          seat={me.seat}
+          showBorder={showBorders && me.melds.length > 0}
+        />
       </div>
     </div>
   );
