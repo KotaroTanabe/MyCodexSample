@@ -30,6 +30,7 @@ import type { RoundResult } from '../components/RoundResultModal';
 import type { WinResult } from '../components/WinResultModal';
 import { exportLqRecord } from '../utils/paifuExport';
 import type { RecordHead } from '../types/jantama';
+import { shouldRotateRiichi } from './riichiUtil';
 
 const DEAD_WALL_SIZE = 14;
 
@@ -186,6 +187,7 @@ export const useGame = (gameLength: GameLength) => {
   const [riichiPool, setRiichiPool] = useState(0);
   const [honba, setHonba] = useState(0);
   const [pendingRiichi, setPendingRiichi] = useState<number | null>(null);
+  const [pendingRiichiIndicator, setPendingRiichiIndicator] = useState<number[]>([]);
   const [tsumoOption, setTsumoOption] = useState(false);
   const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
   const [log, setLog] = useState<LogEntry[]>([]);
@@ -202,6 +204,7 @@ export const useGame = (gameLength: GameLength) => {
   const tsumoOptionRef = useRef(tsumoOption);
   const kanDrawRef = useRef<number | null>(null);
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
+  const pendingRiichiIndicatorRef = useRef<number[]>([]);
   const recordHeadRef = useRef<RecordHead>({
     startTime: 0,
     endTime: 0,
@@ -264,6 +267,10 @@ export const useGame = (gameLength: GameLength) => {
   useEffect(() => {
     tsumoOptionRef.current = tsumoOption;
   }, [tsumoOption]);
+
+  useEffect(() => {
+    pendingRiichiIndicatorRef.current = pendingRiichiIndicator;
+  }, [pendingRiichiIndicator]);
 
   useEffect(() => {
     playersRef.current = players;
@@ -483,8 +490,15 @@ export const useGame = (gameLength: GameLength) => {
     const result = incrementDiscardCount(discardCounts, tile);
     setDiscardCounts(result.record);
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
-    const isRiichi = p[idx].isRiichi;
-    p[idx] = discardTile(p[idx], tileId, isRiichi);
+    const shouldMarkRiichi = shouldRotateRiichi(
+      idx,
+      pendingRiichi,
+      pendingRiichiIndicatorRef.current,
+    );
+    p[idx] = discardTile(p[idx], tileId, shouldMarkRiichi);
+    if (shouldMarkRiichi && pendingRiichiIndicatorRef.current.includes(idx)) {
+      setPendingRiichiIndicator(prev => prev.filter(s => s !== idx));
+    }
     setPlayers(p);
     playersRef.current = p;
     setLog(prev => appendDiscardLog(prev, idx, tile));
@@ -568,6 +582,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     return;
     }
   p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
+  if (lastDiscard.tile.riichiDiscard) {
+    setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
+  }
   p[caller] = claimMeld(
     p[caller],
     [...meldTiles, lastDiscard.tile],
@@ -677,6 +694,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
     if (!meldTiles) return;
     p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
+    if (lastDiscard.tile.riichiDiscard) {
+      setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
+    }
     p[caller] = claimMeld(
       p[caller],
       [...meldTiles, lastDiscard.tile],
@@ -872,6 +892,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];
   p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
+  if (lastDiscard.tile.riichiDiscard) {
+    setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
+  }
   p[caller] = claimMeld(
     p[caller],
     [...tiles, lastDiscard.tile],
@@ -1044,6 +1067,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     riichiPool,
     honba,
     pendingRiichi,
+    pendingRiichiIndicator,
     tsumoOption,
     ronCandidate,
     log,
