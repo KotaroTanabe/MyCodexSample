@@ -202,13 +202,20 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         className="flex flex-col items-center mt-2"
         style={{ gridArea: 'me' }}
       >
-        <RiverView
-          tiles={me.discard}
-          seat={me.seat}
-          lastDiscard={lastDiscard}
-          dataTestId="discard-seat-0"
-          showBorder={showBorders}
-        />
+        <div className="flex items-start gap-2">
+          <RiverView
+            tiles={me.discard}
+            seat={me.seat}
+            lastDiscard={lastDiscard}
+            dataTestId="discard-seat-0"
+            showBorder={showBorders}
+          />
+          <MeldArea
+            melds={me.melds}
+            seat={me.seat}
+            showBorder={showBorders && me.melds.length > 0}
+          />
+        </div>
         {me.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
             <RiichiStick />
@@ -346,13 +353,6 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           melds={left.melds}
           seat={left.seat}
           showBorder={showBorders && left.melds.length > 0}
-        />
-      </div>
-      <div className="absolute right-0 bottom-0">
-        <MeldArea
-          melds={me.melds}
-          seat={me.seat}
-          showBorder={showBorders && me.melds.length > 0}
         />
       </div>
     </div>
