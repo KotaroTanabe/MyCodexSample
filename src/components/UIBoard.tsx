@@ -103,7 +103,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           data-testid="hand-count-2"
         >
           <span className="font-emoji tile-font-size">🀫</span>
-          {` x ${String(top.hand.length + (top.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+          {` x ${String(top.hand.length).padStart(2, '0')}`}
         </div>
         {top.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
@@ -136,7 +136,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             data-testid="hand-count-1"
           >
             <span className="font-emoji tile-font-size">🀫</span>
-            {` x ${String(right.hand.length + (right.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+            {` x ${String(right.hand.length).padStart(2, '0')}`}
           </div>
           {right.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
@@ -170,7 +170,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             data-testid="hand-count-3"
           >
             <span className="font-emoji tile-font-size">🀫</span>
-            {` x ${String(left.hand.length + (left.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+            {` x ${String(left.hand.length).padStart(2, '0')}`}
           </div>
           {left.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
