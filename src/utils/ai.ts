@@ -1,11 +1,12 @@
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
-import { getValidCallOptions } from './meld';
+import { getValidCallOptions, selectMeldTiles } from './meld';
 import { calcShanten } from './shanten';
 import { canDiscardTile } from '../components/Player';
 
 /**
  * Choose an AI call action based on available options.
- * Prioritizes kan, then pon, then chi, otherwise pass.
+ * Kan is always taken. Pon/Chi are chosen only if they
+ * improve the player's shanten number.
  */
 export function chooseAICallOption(
   player: PlayerState,
@@ -15,9 +16,32 @@ export function chooseAICallOption(
     o => o !== 'pass',
   ) as MeldType[];
   if (options.includes('kan')) return 'kan';
-  if (options.includes('pon')) return 'pon';
-  if (options.includes('chi')) return 'chi';
-  return 'pass';
+
+  const base = calcShanten(player.hand, player.melds.length);
+  const baseValue = Math.min(base.standard, base.chiitoi, base.kokushi);
+
+  let best: MeldType | null = null;
+  let bestValue = baseValue;
+
+  for (const action of options) {
+    if (action === 'kan') continue;
+    const tiles = selectMeldTiles(player, tile, action);
+    if (!tiles) continue;
+    const remaining = player.hand.filter(t => !tiles.some(m => m.id === t.id));
+    let min = Infinity;
+    for (const d of remaining) {
+      const after = remaining.filter(t => t.id !== d.id);
+      const s = calcShanten(after, player.melds.length + 1);
+      const value = Math.min(s.standard, s.chiitoi, s.kokushi);
+      if (value < min) min = value;
+    }
+    if (min < bestValue) {
+      bestValue = min;
+      best = action;
+    }
+  }
+
+  return best ?? 'pass';
 }
 
 /**
