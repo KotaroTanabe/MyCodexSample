@@ -2,11 +2,11 @@ import React from 'react';
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
 import { TileView } from './TileView';
 import { canDeclareRiichi } from './Player';
-import { MeldView } from './MeldView';
 import { RiverView } from './RiverView';
 import { ScoreBoard } from './ScoreBoard';
 import { RiichiStick } from './RiichiStick';
 import { HandView } from './HandView';
+import { MeldArea } from './MeldArea';
 import { isWinningHand, detectYaku } from '../score/yaku';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
@@ -41,6 +41,7 @@ interface UIBoardProps {
   onRonPass?: () => void;
   playerIsAI?: boolean;
   onToggleAI?: () => void;
+  showBorders?: boolean;
 }
 
 // 簡易UI：自分の手牌＋捨て牌、AIの捨て牌のみ表示
@@ -70,6 +71,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   onRonPass,
   playerIsAI,
   onToggleAI,
+  showBorders = true,
 }) => {
   if (players.length === 0) {
     return null;
@@ -105,13 +107,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <span className="font-emoji tile-font-size">🀫</span>
           {` x ${String(top.hand.length).padStart(2, '0')}`}
         </div>
-        {top.melds.length > 0 && (
-          <div className="flex gap-1 mb-1">
-            {top.melds.map((m, idx) => (
-              <MeldView key={idx} meld={m} seat={top.seat} />
-            ))}
-          </div>
-        )}
+        <MeldArea melds={top.melds} seat={top.seat} showBorder={showBorders} />
         {top.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
             <RiichiStick />
@@ -122,6 +118,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           seat={top.seat}
           lastDiscard={lastDiscard}
           dataTestId="discard-seat-2"
+          showBorder={showBorders}
         />
       </div>
 
@@ -138,13 +135,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             <span className="font-emoji tile-font-size">🀫</span>
             {` x ${String(right.hand.length).padStart(2, '0')}`}
           </div>
-          {right.melds.length > 0 && (
-            <div className="flex gap-1 mb-1">
-              {right.melds.map((m, idx) => (
-                <MeldView key={idx} meld={m} seat={right.seat} />
-              ))}
-            </div>
-          )}
+          <MeldArea melds={right.melds} seat={right.seat} showBorder={showBorders} />
           {right.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
@@ -155,6 +146,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             seat={right.seat}
             lastDiscard={lastDiscard}
             dataTestId="discard-seat-1"
+            showBorder={showBorders}
           />
         </div>
       </div>
@@ -172,13 +164,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             <span className="font-emoji tile-font-size">🀫</span>
             {` x ${String(left.hand.length).padStart(2, '0')}`}
           </div>
-          {left.melds.length > 0 && (
-            <div className="flex gap-1 mb-1">
-              {left.melds.map((m, idx) => (
-                <MeldView key={idx} meld={m} seat={left.seat} />
-              ))}
-            </div>
-          )}
+          <MeldArea melds={left.melds} seat={left.seat} showBorder={showBorders} />
           {left.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
@@ -189,6 +175,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             seat={left.seat}
             lastDiscard={lastDiscard}
             dataTestId="discard-seat-3"
+            showBorder={showBorders}
           />
         </div>
       </div>
@@ -215,13 +202,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         className="flex flex-col items-center mt-2"
         style={{ gridArea: 'me' }}
       >
-        {me.melds.length > 0 && (
-          <div className="flex gap-2 mb-2">
-            {me.melds.map((m, idx) => (
-              <MeldView key={idx} meld={m} seat={me.seat} />
-            ))}
-          </div>
-        )}
+        <MeldArea melds={me.melds} seat={me.seat} showBorder={showBorders} />
         {me.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
             <RiichiStick />
@@ -232,6 +213,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           seat={me.seat}
           lastDiscard={lastDiscard}
           dataTestId="discard-seat-0"
+          showBorder={showBorders}
         />
         <div className="text-sm mb-1">
           {me.name}: <span className="font-mono">{me.score}</span>
@@ -264,6 +246,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           drawnTile={me.drawnTile}
           onDiscard={onDiscard}
           isMyTurn={isMyTurn}
+          showBorder={showBorders}
         />
         {callOptions && callOptions.length > 0 && (
           <div className="flex gap-2 mt-2">

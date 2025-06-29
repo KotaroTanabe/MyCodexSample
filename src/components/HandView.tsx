@@ -15,9 +15,11 @@ interface HandViewProps {
   drawnTile?: Tile | null;
   onDiscard: (tileId: string) => void;
   isMyTurn: boolean;
+  showBorder?: boolean;
+  dataTestId?: string;
 }
 
-export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard, isMyTurn }) => {
+export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard, isMyTurn, showBorder = true, dataTestId }) => {
   const handTiles = drawnTile ? tiles.filter(t => t.id !== drawnTile.id) : tiles;
   const placeholders = Math.max(0, RESERVED_HAND_SLOTS - handTiles.length - 1);
   const renderButton = (tile: Tile, extraClass: string) => {
@@ -40,7 +42,10 @@ export const HandView: React.FC<HandViewProps> = ({ tiles, drawnTile, onDiscard,
     );
   };
   return (
-    <div className="flex gap-2 items-center overflow-x-auto">
+    <div
+      className={`flex gap-2 items-center overflow-x-auto ${showBorder ? 'border' : ''}`}
+      data-testid={dataTestId}
+    >
       <span className="text-xs text-gray-600">手牌</span>
       {handTiles.map(t => renderButton(t, ''))}
       {drawnTile ? (
