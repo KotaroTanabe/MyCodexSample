@@ -228,11 +228,21 @@ export const useGame = (gameLength: GameLength) => {
       playersRef.current = playersRef.current.map((pl, idx) =>
         idx === 0 ? { ...pl, isAI: next } : pl,
       );
-      if (next && turnRef.current === 0) {
-        setTimeout(() => {
-          const tile = playersRef.current[0].hand[0];
-          handleDiscard(tile.id);
-        }, 500);
+      if (next) {
+        if (callOptions && lastDiscard) {
+          setTimeout(() => {
+            const action = chooseAICallOption(
+              playersRef.current[0],
+              lastDiscard.tile,
+            );
+            handleCallAction(action);
+          }, 500);
+        } else if (turnRef.current === 0) {
+          setTimeout(() => {
+            const tile = playersRef.current[0].hand[0];
+            handleDiscard(tile.id);
+          }, 500);
+        }
       }
       return next;
     });
