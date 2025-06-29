@@ -4,7 +4,7 @@ import { TileView } from './TileView';
 import { rotationForSeat } from '../utils/rotation';
 import { calledRotation } from '../utils/calledRotation';
 
-export const RIVER_COLS = 6;
+export const RIVER_COLS = 4;
 export const RIVER_ROWS_MOBILE = 3;
 export const RIVER_ROWS_DESKTOP = 6;
 export const RIVER_GAP_PX = 4;
@@ -17,7 +17,7 @@ export const RIVER_GAP_PX = 4;
 export const CALLED_OFFSET = 'calc(var(--tile-font-size) / 5)';
 
 export const GRID_CLASS =
-  'grid grid-cols-[repeat(6,_max-content)] grid-rows-3 sm:grid-rows-6';
+  'grid grid-cols-[repeat(4,_max-content)] grid-rows-3 sm:grid-rows-6';
 
 /**
  * Positional adjustment for a tile claimed from another player's river.
