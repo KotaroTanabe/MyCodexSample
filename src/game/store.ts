@@ -206,6 +206,11 @@ export const useGame = (gameLength: GameLength) => {
   const kanDrawRef = useRef<number | null>(null);
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
   const pendingRiichiIndicatorRef = useRef<number[]>([]);
+  const pendingRiichiRef = useRef<number | null>(null);
+  const updatePendingRiichi = (value: number | null) => {
+    setPendingRiichi(value);
+    pendingRiichiRef.current = value;
+  };
   const recordHeadRef = useRef<RecordHead>({
     startTime: 0,
     endTime: 0,
@@ -274,6 +279,10 @@ export const useGame = (gameLength: GameLength) => {
   }, [pendingRiichiIndicator]);
 
   useEffect(() => {
+    pendingRiichiRef.current = pendingRiichi;
+  }, [pendingRiichi]);
+
+  useEffect(() => {
     playersRef.current = players;
     if (players.length > 0) {
       const s = calcShanten(players[0].hand, players[0].melds.length);
@@ -334,7 +343,7 @@ export const useGame = (gameLength: GameLength) => {
     setTurn(0);
     setDiscardCounts({});
     setLastDiscard(null);
-    setPendingRiichi(null);
+    updatePendingRiichi(null);
     setTsumoOption(false);
     setRonCandidate(null);
     setRoundResult(null);
@@ -478,14 +487,14 @@ export const useGame = (gameLength: GameLength) => {
     let p = [...playersRef.current];
     const tile = p[idx].hand.find(t => t.id === tileId);
     if (!tile) return;
-    const err = validateDiscard(p[idx], tileId, pendingRiichi === idx);
+    const err = validateDiscard(p[idx], tileId, pendingRiichiRef.current === idx);
     if (err) {
       setMessage(err);
       return;
     }
     setSelfKanOptions(null);
     setChiTileOptions(null);
-    if (pendingRiichi !== idx && p[idx].ippatsu) {
+    if (pendingRiichiRef.current !== idx && p[idx].ippatsu) {
       p[idx] = clearIppatsu(p[idx]);
     }
     const result = incrementDiscardCount(discardCounts, tile);
@@ -493,7 +502,7 @@ export const useGame = (gameLength: GameLength) => {
     setLastDiscard({ tile, player: idx, isShonpai: result.isShonpai });
     const shouldMarkRiichi = shouldRotateRiichi(
       idx,
-      pendingRiichi,
+      pendingRiichiRef.current,
       pendingRiichiIndicatorRef.current,
     );
     p[idx] = discardTile(p[idx], tileId, shouldMarkRiichi);
@@ -514,10 +523,10 @@ export const useGame = (gameLength: GameLength) => {
         return;
       }
     }
-    if (pendingRiichi === idx) {
+    if (pendingRiichiRef.current === idx) {
       p[idx] = { ...p[idx], score: p[idx].score - 1000, ippatsu: true };
       setRiichiPool(prev => prev + 1);
-      setPendingRiichi(null);
+      updatePendingRiichi(null);
       setPlayers(p);
       playersRef.current = p;
     }
@@ -882,7 +891,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     p[0] = declareRiichi(p[0], isDouble);
     setPlayers(p);
     playersRef.current = p;
-    setPendingRiichi(0);
+    updatePendingRiichi(0);
     setMessage('リーチする牌を選んでください');
     setLog(prev => [...prev, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }]);
     logRef.current = [...logRef.current, { type: 'riichi', player: 0, tile: p[0].drawnTile as Tile }];
@@ -990,7 +999,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       p[ai] = declareRiichi(p[ai], isDouble);
       setPlayers(p);
       playersRef.current = p;
-      setPendingRiichi(ai);
+      updatePendingRiichi(ai);
       setMessage(`${p[ai].name} がリーチしました。`);
       setLog(prev => [
         ...prev,
@@ -1062,7 +1071,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setLastDiscard(null);
       setSelfKanOptions(null);
       setChiTileOptions(null);
-      setPendingRiichi(null);
+      updatePendingRiichi(null);
       setTsumoOption(false);
       setRonCandidate(null);
       setRoundResult(null);
