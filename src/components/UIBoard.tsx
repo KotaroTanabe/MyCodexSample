@@ -181,7 +181,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
 
       {/* ドラ表示と局情報 */}
       <div
-        className="flex items-center gap-4 justify-center"
+        className="flex flex-col items-center gap-4 justify-center sm:flex-row"
         style={{ gridArea: 'center' }}
         data-testid="info-area"
       >

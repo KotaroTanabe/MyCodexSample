@@ -450,6 +450,12 @@ describe('UIBoard layout', () => {
     const info = screen.getByTestId('info-area');
     expect(info.style.gridArea).toBe('center');
   });
+
+  it('stacks scoreboard and dora display vertically', () => {
+    renderBoard({ standard: 1, chiitoi: 1, kokushi: 13 });
+    const info = screen.getByTestId('info-area');
+    expect(info.className).toContain('flex-col');
+  });
 });
 
 describe('UIBoard borders option', () => {
