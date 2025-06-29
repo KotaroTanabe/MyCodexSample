@@ -6,7 +6,7 @@ import { UIBoard } from './UIBoard';
 import { createInitialPlayerState, canDeclareRiichi } from './Player';
 import { RESERVED_HAND_SLOTS } from './HandView';
 import { Tile } from '../types/mahjong';
-import type { PlayerState } from "../types/mahjong";
+import type { PlayerState, Meld } from "../types/mahjong";
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
@@ -654,5 +654,45 @@ describe('UIBoard hand count', () => {
     expect(riverRight.parentElement?.lastElementChild).toBe(hc1);
     expect(riverTop.parentElement).toBe(hc2.parentElement);
     expect(riverLeft.parentElement?.firstElementChild).toBe(hc3);
+  });
+});
+
+describe('UIBoard meld area placement', () => {
+  it('places the player\'s melds next to their river', () => {
+    const sampleMeld: Meld = {
+      type: 'chi',
+      tiles: [
+        { suit: 'man', rank: 1, id: 'a' },
+        { suit: 'man', rank: 2, id: 'b' },
+        { suit: 'man', rank: 3, id: 'c' },
+      ],
+      fromPlayer: 1,
+      calledTileId: 'b',
+    };
+    const players: PlayerState[] = [
+      { ...createInitialPlayerState('me', false, 0), melds: [sampleMeld] },
+      createInitialPlayerState('ai1', true, 1),
+      createInitialPlayerState('ai2', true, 2),
+      createInitialPlayerState('ai3', true, 3),
+    ];
+    render(
+      <UIBoard
+        players={players}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+    const river = screen.getByTestId('discard-seat-0');
+    const container = river.parentElement as HTMLElement;
+    expect(container.children.length).toBe(2);
+    const label = container.children[1].querySelector('span[aria-hidden="true"]');
+    expect(label?.textContent).toBe('鳴き牌');
   });
 });
