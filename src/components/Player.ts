@@ -86,6 +86,19 @@ export function removeDiscardTile(
   };
 }
 
+export function markDiscardCalled(
+  player: PlayerState,
+  tileId: string,
+  callerSeat: number,
+): PlayerState {
+  return {
+    ...player,
+    discard: player.discard.map(t =>
+      t.id === tileId ? { ...t, called: true, calledFrom: callerSeat } : t,
+    ),
+  };
+}
+
 function arrangeChiTiles(
   tiles: Tile[],
   calledTileId: string,
