@@ -99,10 +99,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           {top.name}: <span className="font-mono">{top.score}</span>
         </div>
         <div
-          className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+          className="text-xs font-mono mb-1 w-16 text-center"
           data-testid="hand-count-2"
         >
-          {`🀫 x ${String(top.hand.length + (top.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+          <span className="font-emoji tile-font-size">🀫</span>
+          {` x ${String(top.hand.length).padStart(2, '0')}`}
         </div>
         {top.melds.length > 0 && (
           <div className="flex gap-1 mb-1">
@@ -131,10 +132,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             {right.name}: <span className="font-mono">{right.score}</span>
           </div>
           <div
-            className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+            className="text-xs font-mono mb-1 w-16 text-center"
             data-testid="hand-count-1"
           >
-            {`🀫 x ${String(right.hand.length + (right.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+            <span className="font-emoji tile-font-size">🀫</span>
+            {` x ${String(right.hand.length).padStart(2, '0')}`}
           </div>
           {right.melds.length > 0 && (
             <div className="flex gap-1 mb-1">
@@ -164,10 +166,11 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             {left.name}: <span className="font-mono">{left.score}</span>
           </div>
           <div
-            className="text-xs font-emoji font-mono mb-1 w-16 text-center"
+            className="text-xs font-mono mb-1 w-16 text-center"
             data-testid="hand-count-3"
           >
-            {`🀫 x ${String(left.hand.length + (left.drawnTile ? 1 : 0)).padStart(2, '0')}`}
+            <span className="font-emoji tile-font-size">🀫</span>
+            {` x ${String(left.hand.length).padStart(2, '0')}`}
           </div>
           {left.melds.length > 0 && (
             <div className="flex gap-1 mb-1">

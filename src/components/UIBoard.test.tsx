@@ -585,7 +585,7 @@ describe('UIBoard hand count', () => {
       { ...createInitialPlayerState('ai2', true, 2), hand: makeTiles(7) },
       {
         ...createInitialPlayerState('ai3', true, 3),
-        hand: makeTiles(13),
+        hand: [...makeTiles(13), t('man', 2, 'draw')],
         drawnTile: t('man', 2, 'draw'),
       },
     ];
@@ -603,8 +603,14 @@ describe('UIBoard hand count', () => {
         lastDiscard={null}
       />,
     );
-    expect(screen.getByTestId('hand-count-1').textContent).toBe('🀫 x 13');
-    expect(screen.getByTestId('hand-count-2').textContent).toBe('🀫 x 07');
-    expect(screen.getByTestId('hand-count-3').textContent).toBe('🀫 x 14');
+    const hc1 = screen.getByTestId('hand-count-1');
+    const hc2 = screen.getByTestId('hand-count-2');
+    const hc3 = screen.getByTestId('hand-count-3');
+    expect(hc1.textContent).toBe('🀫 x 13');
+    expect(hc2.textContent).toBe('🀫 x 07');
+    expect(hc3.textContent).toBe('🀫 x 14');
+    [hc1, hc2, hc3].forEach(el => {
+      expect(el.querySelector('.tile-font-size')).not.toBeNull();
+    });
   });
 });
