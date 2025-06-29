@@ -65,6 +65,7 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
           <option value="multiCalls">複数鳴き</option>
           <option value="kanVariants">カン各種</option>
           <option value="longRiver">捨て牌19枚</option>
+          <option value="allFuro">全員鳴き</option>
         </select>
       </div>
       <textarea
