@@ -3,12 +3,19 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { WinResultModal } from './WinResultModal';
-import { PlayerState } from '../types/mahjong';
+import { PlayerState, Tile } from '../types/mahjong';
+
+function t(suit: Tile['suit'], rank: number, id: string): Tile {
+  return { suit, rank, id };
+}
 
 const players: PlayerState[] = [
   { hand: [], discard: [], melds: [], score: 32000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0 },
   { hand: [], discard: [], melds: [], score: 28000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1 },
 ];
+
+const hand = [t('man', 1, 'm1'), t('man', 2, 'm2')];
+const winTile = t('man', 2, 'm2');
 
 describe('WinResultModal', () => {
   it('shows custom next label', () => {
@@ -17,6 +24,9 @@ describe('WinResultModal', () => {
         players={players}
         winner={0}
         winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
         yaku={['立直']}
         han={1}
         fu={30}
@@ -34,6 +44,9 @@ describe('WinResultModal', () => {
         players={players}
         winner={0}
         winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
         yaku={['立直']}
         han={1}
         fu={30}
@@ -42,6 +55,25 @@ describe('WinResultModal', () => {
         onNext={() => {}}
       />,
     );
-    expect(screen.getByLabelText('1萬')).toBeTruthy();
+    expect(screen.getAllByLabelText('1萬').length).toBeGreaterThan(0);
+  });
+
+  it('shows winning hand and tile', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="ron"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getAllByLabelText('1萬').length).toBeGreaterThan(0);
   });
 });
