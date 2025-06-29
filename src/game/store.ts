@@ -1001,7 +1001,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setMessage(`${playersRef.current[ai].name} がリーチしました。`);
     }
     setTimeout(() => {
-      const tile = chooseAIDiscardTile(playersRef.current[ai]);
+      const tile = chooseAIDiscardTile(
+        playersRef.current[ai],
+        pendingRiichiRef.current === ai,
+      );
       handleDiscard(tile.id);
     }, 500);
   };
