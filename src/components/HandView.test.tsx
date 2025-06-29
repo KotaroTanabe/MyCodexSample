@@ -15,8 +15,8 @@ describe('HandView', () => {
   it('reserves a slot for the drawn tile even when none is present', () => {
     const tiles = Array.from({ length: 13 }, (_, i) => t('man', ((i % 9) + 1) as number, `m${i}`));
     render(<HandView tiles={tiles} drawnTile={null} onDiscard={() => {}} isMyTurn />);
-    const container = screen.getByText('手牌').parentElement as HTMLElement;
-    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 1);
+    const container = screen.getAllByText('手牌')[0].parentElement as HTMLElement;
+    expect(container.children.length).toBe(RESERVED_HAND_SLOTS + 2);
     const drawSlot = container.querySelector('span.opacity-0.ml-4');
     expect(drawSlot).toBeTruthy();
     expect(drawSlot?.textContent).toBe('🀇');
@@ -47,5 +47,14 @@ describe('HandView', () => {
       />,
     );
     expect(screen.getByTestId('hv2').className).not.toContain('border');
+  });
+
+  it('displays a background label', () => {
+    render(
+      <HandView tiles={[]} drawnTile={null} onDiscard={() => {}} isMyTurn />,
+    );
+    const container = screen.getAllByText('手牌')[0].parentElement as HTMLElement;
+    const label = container.querySelector('span[aria-hidden="true"]');
+    expect(label?.textContent).toBe('手牌');
   });
 });

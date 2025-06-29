@@ -15,10 +15,16 @@ export const MeldArea: React.FC<MeldAreaProps> = ({ melds, seat, showBorder = tr
   const placeholders = Math.max(0, RESERVED_MELD_SLOTS - melds.length);
   return (
     <div
-      className={`flex gap-1 mb-1 ${showBorder ? 'border rounded' : ''}`}
+      className={`relative flex gap-1 mb-1 ${showBorder ? 'border rounded' : ''}`}
       style={{ minHeight: `calc(var(--tile-font-size) + 4px)` }}
       data-testid={dataTestId}
     >
+      <span
+        className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs opacity-25 pointer-events-none select-none"
+        aria-hidden="true"
+      >
+        鳴き牌
+      </span>
       {melds.map((m, idx) => (
         <MeldView key={idx} meld={m} seat={seat} />
       ))}

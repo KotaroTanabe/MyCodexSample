@@ -11,9 +11,10 @@ import {
 
 interface Props {
   gameLength: GameLength;
+  showBorders?: boolean;
 }
 
-export const GameController: React.FC<Props> = ({ gameLength }) => {
+export const GameController: React.FC<Props> = ({ gameLength, showBorders = true }) => {
   const game = useGame(gameLength);
   const maxKyoku = maxKyokuForLength(gameLength);
 
@@ -45,6 +46,7 @@ export const GameController: React.FC<Props> = ({ gameLength }) => {
         onRonPass={!game.players[0]?.isAI ? game.handleRonPass : undefined}
         playerIsAI={game.playerIsAI}
         onToggleAI={game.togglePlayerAI}
+        showBorders={showBorders}
       />
       <div className="mt-2">{game.message}</div>
       <button className="px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadLog}>
