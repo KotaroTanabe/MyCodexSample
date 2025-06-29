@@ -24,7 +24,7 @@ import { isWinningHand, detectYaku } from '../score/yaku';
 import { calculateScore } from '../score/score';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from '../components/DiscardUtil';
-import { chooseAICallOption } from '../utils/ai';
+import { chooseAICallOption, chooseAIDiscardTile } from '../utils/ai';
 import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import type { RoundResult } from '../components/RoundResultModal';
 import type { WinResult } from '../components/WinResultModal';
@@ -949,7 +949,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     drawForCurrentPlayer();
     if (wallRef.current.length === 0) return;
     setTimeout(() => {
-      const tile = playersRef.current[ai].hand[0];
+      const tile = chooseAIDiscardTile(playersRef.current[ai]);
       handleDiscard(tile.id);
     }, 500);
   };
