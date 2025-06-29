@@ -574,3 +574,37 @@ describe('UIBoard win options', () => {
     expect(screen.getAllByText('スルー').length).toBe(1);
   });
 });
+
+describe('UIBoard hand count', () => {
+  it('displays other players\' hand counts', () => {
+    const makeTiles = (n: number) =>
+      Array.from({ length: n }, (_, i) => t('man', 1, `t${i}`));
+    const players: PlayerState[] = [
+      createInitialPlayerState('me', false, 0),
+      { ...createInitialPlayerState('ai1', true, 1), hand: makeTiles(13) },
+      { ...createInitialPlayerState('ai2', true, 2), hand: makeTiles(7) },
+      {
+        ...createInitialPlayerState('ai3', true, 3),
+        hand: makeTiles(13),
+        drawnTile: t('man', 2, 'draw'),
+      },
+    ];
+    render(
+      <UIBoard
+        players={players}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+        lastDiscard={null}
+      />,
+    );
+    expect(screen.getByTestId('hand-count-1').textContent).toBe('🀫 x 13');
+    expect(screen.getByTestId('hand-count-2').textContent).toBe('🀫 x 07');
+    expect(screen.getByTestId('hand-count-3').textContent).toBe('🀫 x 14');
+  });
+});
