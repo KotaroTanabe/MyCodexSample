@@ -184,13 +184,28 @@ describe('RiverView', () => {
     expect(nb.className).not.toContain('border');
   });
 
-  it('displays a background label', () => {
+  it('displays a background label when border is shown', () => {
     render(
       <RiverView tiles={[]} seat={0} lastDiscard={null} dataTestId="rv-label" />,
     );
     const div = screen.getByTestId('rv-label');
     const label = div.querySelector('span[aria-hidden="true"]');
     expect(label?.textContent).toBe('河');
+  });
+
+  it('hides the background label when border is off', () => {
+    render(
+      <RiverView
+        tiles={[]}
+        seat={0}
+        lastDiscard={null}
+        dataTestId="rv-label-off"
+        showBorder={false}
+      />,
+    );
+    const div = screen.getByTestId('rv-label-off');
+    const label = div.querySelector('span[aria-hidden="true"]');
+    expect(label).toBeNull();
   });
 
 });

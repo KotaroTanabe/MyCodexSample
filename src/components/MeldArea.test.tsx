@@ -40,10 +40,19 @@ describe('MeldArea', () => {
     expect(div.children.length).toBe(RESERVED_MELD_SLOTS + 1);
   });
 
-  it('displays a background label', () => {
+  it('displays a background label when border is shown', () => {
     render(<MeldArea melds={[]} seat={0} dataTestId="ma-label" />);
     const div = screen.getByTestId('ma-label');
     const label = div.querySelector('span[aria-hidden="true"]');
     expect(label?.textContent).toBe('鳴き牌');
+  });
+
+  it('hides the background label when border is off', () => {
+    render(
+      <MeldArea melds={[]} seat={0} dataTestId="ma-label-off" showBorder={false} />,
+    );
+    const div = screen.getByTestId('ma-label-off');
+    const label = div.querySelector('span[aria-hidden="true"]');
+    expect(label).toBeNull();
   });
 });
