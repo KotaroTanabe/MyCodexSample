@@ -49,14 +49,18 @@ export function chooseAICallOption(
  * Evaluates every discardable tile and selects one that
  * results in the lowest shanten value.
  */
-export function chooseAIDiscardTile(player: PlayerState): Tile {
+export function chooseAIDiscardTile(
+  player: PlayerState,
+  declaringRiichi = false,
+): Tile {
   let best: Tile | null = null;
   let bestShanten = Infinity;
   for (const tile of player.hand) {
-    if (!canDiscardTile(player, tile.id)) continue;
+    if (!declaringRiichi && !canDiscardTile(player, tile.id)) continue;
     const remaining = player.hand.filter(t => t.id !== tile.id);
     const s = calcShanten(remaining, player.melds.length);
     const value = Math.min(s.standard, s.chiitoi, s.kokushi);
+    if (player.isRiichi && value > 0) continue;
     if (value < bestShanten) {
       bestShanten = value;
       best = tile;

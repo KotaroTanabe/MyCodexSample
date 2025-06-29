@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { chooseAICallOption, chooseAIDiscardTile } from './ai';
 import { calcShanten } from './shanten';
 import { Tile, PlayerState } from '../types/mahjong';
-import { createInitialPlayerState } from '../components/Player';
+import {
+  createInitialPlayerState,
+  isTenpaiAfterDiscard,
+} from '../components/Player';
 
 function makePlayer(hand: Tile[]): PlayerState {
   return { ...createInitialPlayerState('ai', true), hand };
@@ -115,5 +118,31 @@ describe('chooseAIDiscardTile', () => {
     };
     const min = Math.min(...hand.map(evaluate));
     expect(evaluate(chosen)).toBe(min);
+  });
+
+  it('keeps tenpai when declaring riichi', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a'),
+      t('man', 1, 'a2'),
+      t('man', 2, 'b1'),
+      t('man', 2, 'b2'),
+      t('pin', 3, 'c1'),
+      t('pin', 3, 'c2'),
+      t('pin', 4, 'd1'),
+      t('pin', 4, 'd2'),
+      t('sou', 5, 'e1'),
+      t('sou', 5, 'e2'),
+      t('sou', 6, 'f1'),
+      t('sou', 6, 'f2'),
+      t('man', 7, 'g1'),
+      t('man', 8, 'h1'),
+    ];
+    const player: PlayerState = {
+      ...createInitialPlayerState('ai', true),
+      hand,
+      isRiichi: true,
+    };
+    const chosen = chooseAIDiscardTile(player, true);
+    expect(isTenpaiAfterDiscard(player, chosen.id)).toBe(true);
   });
 });
