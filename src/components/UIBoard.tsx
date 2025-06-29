@@ -127,26 +127,28 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <div className="text-sm mb-1">
             {right.name}: <span className="font-mono">{right.score}</span>
           </div>
-          <div
-            className="text-xs font-mono mb-1 w-16 text-center"
-            data-testid="hand-count-1"
-          >
-            <span className="font-emoji tile-font-size">🀫</span>
-            {` x ${String(right.hand.length).padStart(2, '0')}`}
-          </div>
           <MeldArea melds={right.melds} seat={right.seat} showBorder={showBorders} />
           {right.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
             </div>
           )}
-          <RiverView
-            tiles={right.discard}
-            seat={right.seat}
-            lastDiscard={lastDiscard}
-            dataTestId="discard-seat-1"
-            showBorder={showBorders}
-          />
+          <div className="flex items-start gap-2">
+            <RiverView
+              tiles={right.discard}
+              seat={right.seat}
+              lastDiscard={lastDiscard}
+              dataTestId="discard-seat-1"
+              showBorder={showBorders}
+            />
+            <div
+              className="text-xs font-mono w-16 text-center"
+              data-testid="hand-count-1"
+            >
+              <span className="font-emoji tile-font-size">🀫</span>
+              {` x ${String(right.hand.length).padStart(2, '0')}`}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -156,26 +158,28 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           <div className="text-sm mb-1">
             {left.name}: <span className="font-mono">{left.score}</span>
           </div>
-          <div
-            className="text-xs font-mono mb-1 w-16 text-center"
-            data-testid="hand-count-3"
-          >
-            <span className="font-emoji tile-font-size">🀫</span>
-            {` x ${String(left.hand.length).padStart(2, '0')}`}
-          </div>
           <MeldArea melds={left.melds} seat={left.seat} showBorder={showBorders} />
           {left.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
               <RiichiStick />
             </div>
           )}
-          <RiverView
-            tiles={left.discard}
-            seat={left.seat}
-            lastDiscard={lastDiscard}
-            dataTestId="discard-seat-3"
-            showBorder={showBorders}
-          />
+          <div className="flex items-start gap-2">
+            <div
+              className="text-xs font-mono w-16 text-center"
+              data-testid="hand-count-3"
+            >
+              <span className="font-emoji tile-font-size">🀫</span>
+              {` x ${String(left.hand.length).padStart(2, '0')}`}
+            </div>
+            <RiverView
+              tiles={left.discard}
+              seat={left.seat}
+              lastDiscard={lastDiscard}
+              dataTestId="discard-seat-3"
+              showBorder={showBorders}
+            />
+          </div>
         </div>
       </div>
 
