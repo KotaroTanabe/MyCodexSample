@@ -13,6 +13,7 @@ import {
   canDiscardTile,
   canCallMeld,
   removeDiscardTile,
+  markDiscardCalled,
 } from './Player';
 import { generateTileWall } from './TileWall';
 import { Tile, PlayerState, MeldType } from '../types/mahjong';
@@ -70,6 +71,18 @@ describe('removeDiscardTile', () => {
     const updated = removeDiscardTile(player, 'a');
     expect(updated.discard).toHaveLength(1);
     expect(updated.discard[0].id).toBe('b');
+  });
+});
+
+describe('markDiscardCalled', () => {
+  it('marks the specified tile as called with the caller seat', () => {
+    const player: PlayerState = {
+      ...createInitialPlayerState('test', false),
+      discard: [{ suit: 'man', rank: 1, id: 'a' }],
+    };
+    const updated = markDiscardCalled(player, 'a', 3);
+    expect(updated.discard[0].called).toBe(true);
+    expect(updated.discard[0].calledFrom).toBe(3);
   });
 });
 
