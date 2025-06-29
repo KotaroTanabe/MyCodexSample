@@ -1,11 +1,18 @@
 import React from 'react';
-import { PlayerState, Tile } from '../types/mahjong';
+import { PlayerState, Tile, Meld } from '../types/mahjong';
 import { TileView } from './TileView';
+import { MeldView } from './MeldView';
 
 export interface WinResult {
   players: PlayerState[];
   winner: number;
   winType: 'ron' | 'tsumo';
+  /** tiles in the winning hand, excluding called melds */
+  hand: Tile[];
+  /** melds claimed before the win */
+  melds: Meld[];
+  /** tile used to complete the hand */
+  winTile: Tile;
   yaku: string[];
   han: number;
   fu: number;
@@ -23,6 +30,9 @@ export const WinResultModal: React.FC<Props> = ({
   players,
   winner,
   winType,
+  hand,
+  melds,
+  winTile,
   yaku,
   han,
   fu,
@@ -48,6 +58,18 @@ export const WinResultModal: React.FC<Props> = ({
             ))}
           </div>
         )}
+        <div className="mb-2 flex flex-wrap items-center gap-1">
+          {melds.map((m, i) => (
+            <MeldView key={i} meld={m} seat={winner} />
+          ))}
+          {hand.map(t => (
+            <TileView
+              key={t.id}
+              tile={t}
+              className={t.id === winTile.id ? 'border-2 border-red-500' : ''}
+            />
+          ))}
+        </div>
         <table className="border-collapse text-sm mb-2">
           <thead>
             <tr>
