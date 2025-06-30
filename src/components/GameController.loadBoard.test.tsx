@@ -28,4 +28,17 @@ describe('GameController load board', () => {
     );
     expect(kanCount).toBeGreaterThanOrEqual(3);
   });
+
+  it('loads allFuro preset', async () => {
+    render(<GameController gameLength="tonnan" />);
+    await screen.findAllByText('手牌');
+    const select = screen.getAllByLabelText('プリセット')[0];
+    fireEvent.change(select, { target: { value: 'allFuro' } });
+    fireEvent.click(screen.getAllByText('盤面読み込み')[0]);
+    const text = screen.getAllByLabelText('盤面入力')[0] as HTMLTextAreaElement;
+    const board = JSON.parse(text.value);
+    expect(board.players.every((p: any) => p.melds.length > 0)).toBe(true);
+    expect(board.wall.length).toBeGreaterThan(0);
+    expect(board.dora.length).toBeGreaterThan(0);
+  });
 });
