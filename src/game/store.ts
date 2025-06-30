@@ -298,6 +298,7 @@ export const useGame = (gameLength: GameLength) => {
   const honbaRef = useRef(honba);
   const logRef = useRef<LogEntry[]>(log);
   const tsumoOptionRef = useRef(tsumoOption);
+  const actionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const kanDrawRef = useRef<number | null>(null);
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
   const pendingRiichiIndicatorRef = useRef<number[]>([]);
@@ -308,6 +309,18 @@ export const useGame = (gameLength: GameLength) => {
     rule: { gameLength },
     players: [],
   });
+
+  const clearActionTimer = () => {
+    if (actionTimerRef.current !== null) {
+      clearTimeout(actionTimerRef.current);
+      actionTimerRef.current = null;
+    }
+  };
+
+  const setActionTimeout = (fn: () => void, delay: number) => {
+    clearActionTimer();
+    actionTimerRef.current = setTimeout(fn, delay);
+  };
   const [preset, setPreset] = useState<keyof typeof boardPresets>('basic');
 
   useEffect(() => {
@@ -325,7 +338,7 @@ export const useGame = (gameLength: GameLength) => {
       );
       if (next) {
         if (callOptions && lastDiscard) {
-          setTimeout(() => {
+          setActionTimeout(() => {
             const action = chooseAICallOption(
               playersRef.current[0],
               lastDiscard.tile,
@@ -333,7 +346,7 @@ export const useGame = (gameLength: GameLength) => {
             handleCallAction(action);
           }, 500);
         } else if (turnRef.current === 0) {
-          setTimeout(() => {
+          setActionTimeout(() => {
             const tile = playersRef.current[0].hand[0];
             handleDiscard(tile.id);
           }, 500);
@@ -400,6 +413,7 @@ export const useGame = (gameLength: GameLength) => {
 
   // ラウンド初期化関数
   const startRound = (resetKyoku: boolean, roundNumber: number = kyokuRef.current) => {
+    clearActionTimer();
     let wallStack = generateTileWall();
     let wanpai = wallStack.slice(0, DEAD_WALL_SIZE);
     wallStack = wallStack.slice(DEAD_WALL_SIZE);
@@ -863,13 +877,14 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
     setLastDiscard(null);
     setTurn(caller);
-    setTimeout(() => {
+    setActionTimeout(() => {
       const tile = playersRef.current[caller].hand[0];
       handleDiscard(tile.id);
     }, 500);
   };
 
   const performTsumo = (idx: number) => {
+    clearActionTimer();
     const p = [...playersRef.current];
     let ura: Tile[] = [];
     if (p[idx].isRiichi) {
@@ -932,6 +947,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
   };
 
   const performRon = (winner: number, from: number, tile: Tile) => {
+    clearActionTimer();
     const p = [...playersRef.current];
     let ura: Tile[] = [];
     if (p[winner].isRiichi) {
@@ -1111,7 +1127,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       performRiichi(ai);
       setMessage(`${playersRef.current[ai].name} がリーチしました。`);
     }
-    setTimeout(() => {
+    setActionTimeout(() => {
       const tile = chooseAIDiscardTile(
         playersRef.current[ai],
         pendingRiichiRef.current === ai,
@@ -1125,7 +1141,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setRonCandidate(null);
     let next = (turnRef.current + 1) % 4;
     setTurn(next);
-    setTimeout(() => {
+    setActionTimeout(() => {
       if (playersRef.current[next].isAI) {
         handleAITurn(next);
       } else {
@@ -1137,6 +1153,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
   // リセット
   const handleRestart = () => {
     // Start a completely new game with fresh scores
+    clearActionTimer();
     setKyoku(1);
     startRound(true, 1);
   };
@@ -1155,6 +1172,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   const handleLoadBoard = () => {
     try {
+      clearActionTimer();
       const data: BoardData = JSON.parse(boardInput);
       setPlayers(data.players);
       playersRef.current = data.players;
