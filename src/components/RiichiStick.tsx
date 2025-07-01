@@ -1,5 +1,15 @@
 import React from 'react';
+import { rotationForSeat } from '../utils/rotation';
 
-export const RiichiStick: React.FC<{ className?: string }> = ({ className }) => (
-  <span className={`riichi-stick ${className ?? ''}`} aria-label="riichi stick" />
+interface RiichiStickProps {
+  seat: number;
+  className?: string;
+}
+
+export const RiichiStick: React.FC<RiichiStickProps> = ({ seat, className }) => (
+  <span
+    className={`riichi-stick ${className ?? ''}`}
+    style={{ transform: `rotate(${rotationForSeat(seat) + 90}deg)` }}
+    aria-label="riichi stick"
+  />
 );
