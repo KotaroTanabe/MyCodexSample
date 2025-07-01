@@ -145,4 +145,26 @@ describe('chooseAIDiscardTile', () => {
     const chosen = chooseAIDiscardTile(player, true);
     expect(isTenpaiAfterDiscard(player, chosen.id)).toBe(true);
   });
+
+  it('prefers isolated tiles when shanten is unchanged', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'p1'),
+      t('man', 1, 'p2'),
+      t('man', 2, 's1'),
+      t('man', 3, 's2'),
+      t('pin', 5, 'i1'),
+      t('sou', 7, 'i2'),
+      t('pin', 9, 'i3'),
+      t('sou', 9, 'i4'),
+      t('wind', 1, 'i5'),
+      t('dragon', 1, 'i6'),
+      t('pin', 1, 'i7'),
+      t('sou', 3, 'i8'),
+      t('man', 7, 'i9'),
+      t('pin', 7, 'i10'),
+    ];
+    const player = makePlayer(hand);
+    const chosen = chooseAIDiscardTile(player);
+    expect(['p1', 'p2', 's1', 's2']).not.toContain(chosen.id);
+  });
 });
