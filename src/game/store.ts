@@ -298,6 +298,7 @@ export const useGame = (gameLength: GameLength) => {
   const honbaRef = useRef(honba);
   const logRef = useRef<LogEntry[]>(log);
   const tsumoOptionRef = useRef(tsumoOption);
+  const winResultRef = useRef<WinResult | null>(winResult);
   const actionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const kanDrawRef = useRef<number | null>(null);
   const drawInfoRef = useRef<Record<number, { rinshan: boolean; last: boolean }>>({});
@@ -387,6 +388,10 @@ export const useGame = (gameLength: GameLength) => {
   useEffect(() => {
     tsumoOptionRef.current = tsumoOption;
   }, [tsumoOption]);
+
+  useEffect(() => {
+    winResultRef.current = winResult;
+  }, [winResult]);
 
   useEffect(() => {
     pendingRiichiIndicatorRef.current = pendingRiichiIndicator;
@@ -1113,6 +1118,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
   // ターン進行
   const handleAITurn = (ai: number) => {
+    if (winResultRef.current) return;
     if (lastDiscard && lastDiscard.player !== ai) {
       const action = chooseAICallOption(playersRef.current[ai], lastDiscard.tile);
       if (action !== 'pass') {
@@ -1122,6 +1128,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       setLastDiscard(null);
     }
     drawForCurrentPlayer();
+    if (winResultRef.current) return;
     if (wallRef.current.length === 0) return;
     if (canDeclareRiichi(playersRef.current[ai])) {
       performRiichi(ai);
@@ -1249,6 +1256,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     handleTsumoPass,
     handleRon,
     handleRonPass,
+    handleAITurn,
     nextTurn,
     nextKyoku,
     handleRestart,
