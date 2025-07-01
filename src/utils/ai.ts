@@ -55,14 +55,33 @@ export function chooseAIDiscardTile(
 ): Tile {
   let best: Tile | null = null;
   let bestShanten = Infinity;
+  let bestSynergy = Infinity;
+
+  function calcSynergy(tile: Tile): number {
+    let score = 0;
+    for (const other of player.hand) {
+      if (other.id === tile.id) continue;
+      if (other.suit !== tile.suit) continue;
+      const diff = Math.abs(other.rank - tile.rank);
+      if (diff === 0) score += 2;
+      else if (diff === 1) score += 1;
+      else if (diff === 2) score += 0.5;
+    }
+    return score;
+  }
   for (const tile of player.hand) {
     if (!declaringRiichi && !canDiscardTile(player, tile.id)) continue;
     const remaining = player.hand.filter(t => t.id !== tile.id);
     const s = calcShanten(remaining, player.melds.length);
     const value = Math.min(s.standard, s.chiitoi, s.kokushi);
     if (player.isRiichi && value > 0) continue;
-    if (value < bestShanten) {
+    const synergy = calcSynergy(tile);
+    if (
+      value < bestShanten ||
+      (value === bestShanten && synergy < bestSynergy)
+    ) {
       bestShanten = value;
+      bestSynergy = synergy;
       best = tile;
     }
   }
