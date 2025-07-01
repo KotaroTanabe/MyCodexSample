@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
 import { WinResultModal } from './WinResultModal';
 import { PlayerState, Tile } from '../types/mahjong';
+
+afterEach(() => cleanup());
 
 function t(suit: Tile['suit'], rank: number, id: string): Tile {
   return { suit, rank, id };
@@ -74,6 +76,7 @@ describe('WinResultModal', () => {
         onNext={() => {}}
       />,
     );
-    expect(screen.getAllByLabelText('1萬').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('あがり牌:')).toHaveLength(1);
+    expect(screen.getAllByLabelText('2萬')).toHaveLength(2);
   });
 });
