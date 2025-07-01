@@ -6,6 +6,7 @@ import { UIBoard } from './UIBoard';
 import { createInitialPlayerState, canDeclareRiichi } from './Player';
 import { RESERVED_HAND_SLOTS } from './HandView';
 import { Tile } from '../types/mahjong';
+import { rotationForSeat } from '../utils/rotation';
 import type { PlayerState, Meld } from "../types/mahjong";
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -556,6 +557,39 @@ describe('UIBoard riichi indicators', () => {
       />,
     );
     expect(screen.getAllByTestId('riichi-indicator').length).toBe(2);
+  });
+
+  it('rotates riichi stick toward center for each seat', () => {
+    [0, 1, 2, 3].forEach(seat => {
+      const players = [
+        createInitialPlayerState('p0', false, 0),
+        createInitialPlayerState('p1', true, 1),
+        createInitialPlayerState('p2', true, 2),
+        createInitialPlayerState('p3', true, 3),
+      ];
+      players[seat].isRiichi = true;
+      render(
+        <UIBoard
+          players={players}
+          dora={[]}
+          kyoku={1}
+          wallCount={70}
+          kyotaku={0}
+          honba={0}
+          onDiscard={() => {}}
+          isMyTurn={seat === 0}
+          shanten={{ standard: 0, chiitoi: 0, kokushi: 0 }}
+          lastDiscard={null}
+        />,
+      );
+      const stick = screen
+        .getByTestId('riichi-indicator')
+        .firstElementChild as HTMLElement;
+      expect(stick.style.transform).toBe(
+        `rotate(${rotationForSeat(seat) + 90}deg)`,
+      );
+      cleanup();
+    });
   });
 });
 

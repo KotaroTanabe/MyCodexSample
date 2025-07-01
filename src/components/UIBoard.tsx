@@ -115,7 +115,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         />
         {top.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick />
+            <RiichiStick seat={top.seat} />
           </div>
         )}
       </div>
@@ -128,7 +128,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           </div>
           {right.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
-              <RiichiStick />
+              <RiichiStick seat={right.seat} />
             </div>
           )}
           <div className="flex items-start gap-2">
@@ -158,7 +158,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           </div>
           {left.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
-              <RiichiStick />
+              <RiichiStick seat={left.seat} />
             </div>
           )}
           <div className="flex items-start gap-2">
@@ -218,7 +218,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         </div>
         {me.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick />
+            <RiichiStick seat={me.seat} />
           </div>
         )}
         <div className="text-sm mb-1">
