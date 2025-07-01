@@ -43,10 +43,11 @@ export function payoutNoten(
   }
   const notenCount = players.length - tenpaiCount;
   const penalty = 1000;
-  const bonus = (notenCount * penalty) / tenpaiCount;
   const updated: PlayerState[] = players.map((p, idx) => {
-    if (tenpai[idx]) return { ...p, score: p.score + bonus };
-    return { ...p, score: p.score - penalty };
+    if (tenpai[idx]) {
+      return { ...p, score: p.score + penalty * notenCount };
+    }
+    return { ...p, score: p.score - penalty * tenpaiCount };
   });
   const changes = updated.map((p, idx) => p.score - players[idx].score);
   return { players: updated, changes };
