@@ -55,8 +55,9 @@ describe('exhausted wall ends the round in a draw', () => {
     wall = [];
 
     const tenpai = [true, false, false, true];
-    // 2 players tenpai -> each noten player pays 1000 and each tenpai player gains 1000
+    // 2人テンパイの場合、ノーテン者はそれぞれテンパイ者2人に1000点ずつ支払う
+    // よってテンパイ者は2000点受け取り、ノーテン者は2000点支払いとなるはず
     const { players: updated } = payoutNoten(players, tenpai);
-    expect(updated.map(p => p.score)).toEqual([26000, 24000, 24000, 26000]);
+    expect(updated.map(p => p.score)).toEqual([27000, 23000, 23000, 27000]);
   });
 });
