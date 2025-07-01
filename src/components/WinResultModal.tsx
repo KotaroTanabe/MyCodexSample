@@ -58,6 +58,10 @@ export const WinResultModal: React.FC<Props> = ({
             ))}
           </div>
         )}
+        <div className="mb-2 text-sm flex items-center gap-1">
+          <span>あがり牌:</span>
+          <TileView tile={winTile} />
+        </div>
         <div className="mb-2 flex flex-wrap items-center gap-1">
           {melds.map((m, i) => (
             <MeldView key={i} meld={m} seat={winner} />
