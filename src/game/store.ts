@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Tile, PlayerState, LogEntry, MeldType } from '../types/mahjong';
+import { Tile, PlayerState, LogEntry, MeldType, RoundStartInfo } from '../types/mahjong';
 import { isChankan } from './isChankan';
 import { generateTileWall, drawDoraIndicator } from '../components/TileWall';
 import {
@@ -30,6 +30,7 @@ import { payoutTsumo, payoutRon, payoutNoten } from '../utils/payout';
 import type { RoundResult } from '../components/RoundResultModal';
 import type { WinResult } from '../components/WinResultModal';
 import { exportLqRecord } from '../utils/paifuExport';
+import { exportMjaiRecord } from '../utils/mjaiExport';
 import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
 
@@ -310,6 +311,7 @@ export const useGame = (gameLength: GameLength) => {
     rule: { gameLength },
     players: [],
   });
+  const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
 
   const clearActionTimer = () => {
     if (actionTimerRef.current !== null) {
@@ -453,6 +455,12 @@ export const useGame = (gameLength: GameLength) => {
     const extra = drawTiles(p[0], wallStack, 1);
     p[0] = extra.player;
     wallStack = extra.wall;
+    roundStartInfoRef.current = {
+      hands: p.map(pl => [...pl.hand]),
+      dealer: 0,
+      doraIndicator: doraTiles[0],
+      kyoku: roundNumber,
+    };
     setPlayers(p);
     playersRef.current = p;
     setWall(wallStack);
@@ -1177,6 +1185,22 @@ const handleCallAction = (action: MeldType | 'pass') => {
     URL.revokeObjectURL(url);
   };
 
+  const handleDownloadMjaiLog = () => {
+    if (!roundStartInfoRef.current) return;
+    const lines = exportMjaiRecord(
+      logRef.current,
+      roundStartInfoRef.current,
+      playersRef.current.map(p => p.score),
+    );
+    const blob = new Blob([lines.join('\n')], { type: 'application/jsonl' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'log.mjai.jsonl';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleLoadBoard = () => {
     try {
       clearActionTimer();
@@ -1261,6 +1285,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     nextKyoku,
     handleRestart,
     handleDownloadLog,
+    handleDownloadMjaiLog,
     handleLoadBoard,
   };
 };

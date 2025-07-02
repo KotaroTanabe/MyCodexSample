@@ -52,6 +52,9 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
       <button className="px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadLog}>
         ログダウンロード
       </button>
+      <button className="ml-2 px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadMjaiLog}>
+        MJAIログダウンロード
+      </button>
       <div className="my-2 flex items-center gap-2">
         <label htmlFor="preset" className="whitespace-nowrap">プリセット</label>
         <select

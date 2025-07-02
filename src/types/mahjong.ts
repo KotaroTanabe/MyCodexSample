@@ -43,6 +43,17 @@ export interface PlayerState {
   seat: number;
 }
 
+export interface RoundStartInfo {
+  /** starting hand for each player (seat order 0-3) */
+  hands: Tile[][];
+  /** seat index of the dealer */
+  dealer: number;
+  /** first dora indicator */
+  doraIndicator: Tile;
+  /** round number */
+  kyoku: number;
+}
+
 export type LogEntry =
   | { type: 'startRound'; kyoku: number }
   | { type: 'draw'; player: number; tile: Tile }
