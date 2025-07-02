@@ -331,6 +331,7 @@ export const useGame = (gameLength: GameLength) => {
   }, [preset]);
 
   const togglePlayerAI = () => {
+    clearActionTimer();
     setPlayerIsAI(prev => {
       const next = !prev;
       setPlayers(ps =>
