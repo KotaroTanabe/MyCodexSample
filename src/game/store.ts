@@ -779,6 +779,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
   setSelfKanOptions(null);
   setChiTileOptions(null);
   setTurn(caller);
+  turnRef.current = caller;
 };
 
   const performSelfKan = (caller: number, tiles: Tile[]) => {
@@ -890,6 +891,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
 
     setLastDiscard(null);
     setTurn(caller);
+    turnRef.current = caller;
     setActionTimeout(() => {
       const tile = playersRef.current[caller].hand[0];
       handleDiscard(tile.id);
@@ -1082,6 +1084,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setChiTileOptions(null);
     setSelfKanOptions(null);
     setTurn(caller);
+    turnRef.current = caller;
   };
 
   const handleTsumo = () => {
