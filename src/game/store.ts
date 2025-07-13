@@ -504,8 +504,14 @@ export const useGame = (gameLength: GameLength) => {
     setMessage(
       `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
     );
-    setLog([{ type: 'startRound', kyoku: roundNumber }]);
-    logRef.current = [{ type: 'startRound', kyoku: roundNumber }];
+    setLog([
+      { type: 'startRound', kyoku: roundNumber },
+      { type: 'draw', player: 0, tile: extra.player.drawnTile as Tile },
+    ]);
+    logRef.current = [
+      { type: 'startRound', kyoku: roundNumber },
+      { type: 'draw', player: 0, tile: extra.player.drawnTile as Tile },
+    ];
     kanDrawRef.current = null;
     drawInfoRef.current = {};
     setPhase('playing');
@@ -646,6 +652,10 @@ export const useGame = (gameLength: GameLength) => {
       pendingRiichiRef.current,
       pendingRiichiIndicatorRef.current,
     );
+    if (pendingRiichiRef.current === idx) {
+      setLog(prev => [...prev, { type: 'riichi', player: idx, tile }]);
+      logRef.current = [...logRef.current, { type: 'riichi', player: idx, tile }];
+    }
     p[idx] = discardTile(p[idx], tileId, shouldMarkRiichi);
     if (shouldMarkRiichi && pendingRiichiIndicatorRef.current.includes(idx)) {
       setPendingRiichiIndicator(prev => prev.filter(s => s !== idx));
@@ -1053,8 +1063,6 @@ const handleCallAction = (action: MeldType | 'pass') => {
     playersRef.current = p;
     setPendingRiichi(idx);
     pendingRiichiRef.current = idx;
-    setLog(prev => [...prev, { type: 'riichi', player: idx, tile: p[idx].drawnTile as Tile }]);
-    logRef.current = [...logRef.current, { type: 'riichi', player: idx, tile: p[idx].drawnTile as Tile }];
   };
 
   const handleRiichi = () => {
