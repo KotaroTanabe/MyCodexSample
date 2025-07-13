@@ -31,6 +31,7 @@ import type { RoundResult } from '../components/RoundResultModal';
 import type { WinResult } from '../components/WinResultModal';
 import { exportLqRecord } from '../utils/paifuExport';
 import { exportMjaiRecord } from '../utils/mjaiExport';
+import { exportTenhouLog } from '../utils/tenhouExport';
 import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
 
@@ -312,6 +313,14 @@ export const useGame = (gameLength: GameLength) => {
     players: [],
   });
   const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
+  const startScoresRef = useRef<number[]>([]);
+  const endInfoRef = useRef<{
+    result: '和了' | '流局';
+    diffs: number[];
+    winner?: number;
+    loser?: number;
+    uraDora?: Tile[];
+  } | null>(null);
 
   const clearActionTimer = () => {
     if (actionTimerRef.current !== null) {
@@ -463,6 +472,8 @@ export const useGame = (gameLength: GameLength) => {
     };
     setPlayers(p);
     playersRef.current = p;
+    startScoresRef.current = p.map(pl => pl.score);
+    endInfoRef.current = null;
     setWall(wallStack);
     wallRef.current = wallStack;
     setDeadWall(wanpai);
@@ -549,6 +560,7 @@ export const useGame = (gameLength: GameLength) => {
     const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
     setPlayers(updated);
     playersRef.current = updated;
+    endInfoRef.current = { result: '流局', diffs: changes };
     const results: RoundResult = {
       results: updated.map((p, idx) => ({
         name: p.name,
@@ -942,6 +954,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(newPlayers);
     playersRef.current = newPlayers;
+    endInfoRef.current = {
+      result: '和了',
+      diffs: newPlayers.map((pl, i) => pl.score - startScoresRef.current[i]),
+      winner: idx,
+      loser: idx,
+      uraDora: ura,
+    };
     setLog(prev => [...prev, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }]);
     logRef.current = [...logRef.current, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }];
     setMessage(`${p[idx].name} の和了！`);
@@ -1007,6 +1026,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
     }
     setPlayers(updated);
     playersRef.current = updated;
+    endInfoRef.current = {
+      result: '和了',
+      diffs: updated.map((pl, i) => pl.score - startScoresRef.current[i]),
+      winner,
+      loser: from,
+      uraDora: ura,
+    };
     setLog(prev => [...prev, { type: 'ron', player: winner, tile, from }]);
     logRef.current = [...logRef.current, { type: 'ron', player: winner, tile, from }];
     setMessage(`${p[winner].name} のロン！`);
@@ -1204,6 +1230,23 @@ const handleCallAction = (action: MeldType | 'pass') => {
     URL.revokeObjectURL(url);
   };
 
+  const handleDownloadTenhouLog = () => {
+    if (!roundStartInfoRef.current || !endInfoRef.current) return;
+    const data = exportTenhouLog(
+      roundStartInfoRef.current,
+      logRef.current,
+      startScoresRef.current,
+      endInfoRef.current,
+    );
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'log.tenhou.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleLoadBoard = () => {
     try {
       clearActionTimer();
@@ -1289,6 +1332,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     handleRestart,
     handleDownloadLog,
     handleDownloadMjaiLog,
+    handleDownloadTenhouLog,
     handleLoadBoard,
   };
 };
