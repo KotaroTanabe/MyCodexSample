@@ -82,7 +82,7 @@ describe('exportTenhouLog', () => {
     const scores = [25000, 25000, 25000, 25000];
     const json = exportTenhouLog(start, log, scores, end);
     const dahai = json.log[0][6];
-    expect(dahai[0]).toBe('r' + tileToTenhouNumber(discardTile));
+    expect(dahai).toEqual(['r' + tileToTenhouNumber(discardTile)]);
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
