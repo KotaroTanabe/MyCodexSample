@@ -2,7 +2,6 @@ import React from 'react';
 import { Tile } from '../types/mahjong';
 import { TileView } from './TileView';
 import { rotationForSeat } from '../utils/rotation';
-import { calledRotation } from '../utils/calledRotation';
 
 export const RIVER_COLS = 6;
 export const RIVER_ROWS_MOBILE = 3;
@@ -14,30 +13,8 @@ export const RIVER_GAP_PX = 4;
  * Using a CSS calculation keeps the spacing consistent when users
  * change the `--tile-font-size` variable to scale tiles.
  */
-export const CALLED_OFFSET = 'calc(var(--tile-font-size) / 5)';
-
 export const GRID_CLASS =
   'grid grid-cols-[repeat(6,_max-content)] grid-rows-3 sm:grid-rows-4';
-
-/**
- * Positional adjustment for a tile claimed from another player's river.
- *
- * Each seat uses a different translation so that called tiles visually shift
- * toward the caller. The offset pairs with {@link calledRotation} and
- * {@link rotationForSeat} to display the tile at the correct angle.
- */
-const calledOffset = (seat: number): string => {
-  switch (seat % 4) {
-    case 1:
-      return `translateY(-${CALLED_OFFSET})`;
-    case 2:
-      return `translateX(-${CALLED_OFFSET})`;
-    case 3:
-      return `translateY(${CALLED_OFFSET})`;
-    default:
-      return `translateX(${CALLED_OFFSET})`;
-  }
-};
 
 /**
  * Minimum cells to reserve for a player's discard area on large screens.
@@ -84,12 +61,9 @@ export const RiverView: React.FC<RiverViewProps> = ({
   dataTestId,
   showBorder = true,
 }) => {
-  // Called (melded) tiles should appear at the right edge of each player's
-  // discard area, mimicking a real mahjong table. We therefore reorder the
-  // tiles so that any claimed tile is rendered last.
-  const regularTiles = tiles.filter(t => !t.called);
-  const calledTiles = tiles.filter(t => t.called);
-  const ordered = [...regularTiles, ...calledTiles];
+  // Discards are shown in order. Claimed tiles are removed from the river
+  // entirely, so filter them out here.
+  const ordered = tiles.filter(t => !t.called);
   const reservedSlots = useResponsiveRiverSlots();
   const rowCount = reservedSlots / RIVER_COLS;
   const gapPx = RIVER_GAP_PX * (rowCount - 1);
@@ -115,25 +89,14 @@ export const RiverView: React.FC<RiverViewProps> = ({
           河
         </span>
       )}
-      {ordered.map(tile => {
-        const extraRotation =
-          tile.calledFrom !== undefined
-            ? calledRotation(seat, tile.calledFrom)
-            : tile.called || tile.riichiDiscard
-              ? 90
-              : 0;
-        return (
-          <TileView
-            key={tile.id}
-            tile={tile}
-            rotate={extraRotation}
-            extraTransform={
-              tile.called || tile.calledFrom !== undefined ? calledOffset(seat) : ''
-            }
-            isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
-          />
-        );
-      })}
+      {ordered.map(tile => (
+        <TileView
+          key={tile.id}
+          tile={tile}
+          rotate={tile.riichiDiscard ? 90 : 0}
+          isShonpai={lastDiscard?.tile.id === tile.id && lastDiscard.isShonpai}
+        />
+      ))}
       {Array.from({ length: placeholdersCount }).map((_, idx) => (
         <span
           key={`placeholder-${idx}`}
