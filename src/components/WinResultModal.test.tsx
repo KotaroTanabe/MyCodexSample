@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { WinResultModal } from './WinResultModal';
 import { PlayerState, Tile } from '../types/mahjong';
@@ -100,5 +100,28 @@ describe('WinResultModal', () => {
       />,
     );
     expect(screen.getByText(/ドラ1/)).toBeTruthy();
+  });
+
+  it('calls download callback', () => {
+    const fn = vi.fn();
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        dora={[]}
+        onNext={() => {}}
+        onDownloadTenhou={fn}
+      />,
+    );
+    screen.getByText('Tenhouログダウンロード').click();
+    expect(fn).toHaveBeenCalled();
   });
 });
