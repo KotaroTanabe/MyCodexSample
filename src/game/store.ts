@@ -968,6 +968,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       han,
       fu,
       points,
+      dora,
       uraDora: ura,
     });
   };
@@ -1039,6 +1040,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       han,
       fu,
       points,
+      dora,
       uraDora: ura,
     });
   };

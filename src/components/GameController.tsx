@@ -55,9 +55,6 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
       <button className="ml-2 px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadMjaiLog}>
         MJAIログダウンロード
       </button>
-      <button className="ml-2 px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadTenhouLog}>
-        Tenhouログダウンロード
-      </button>
       <div className="my-2 flex items-center gap-2">
         <label htmlFor="preset" className="whitespace-nowrap">プリセット</label>
         <select
@@ -87,6 +84,7 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         <WinResultModal
           {...game.winResult}
           nextLabel={game.kyoku >= maxKyoku ? '結果発表へ' : undefined}
+          onDownloadTenhou={game.handleDownloadTenhouLog}
           onNext={() => {
             const dealerWon = game.winResult!.winner === 0;
             game.setWinResult(null);
@@ -98,6 +96,7 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         <RoundResultModal
           results={game.roundResult.results}
           nextLabel={game.kyoku >= maxKyoku ? '結果発表へ' : undefined}
+          onDownloadTenhou={game.handleDownloadTenhouLog}
           onNext={() => {
             game.setRoundResult(null);
             game.nextKyoku(true);

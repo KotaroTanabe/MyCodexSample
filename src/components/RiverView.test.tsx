@@ -75,6 +75,41 @@ describe('RiverView', () => {
     expect(tile).toBeNull();
   });
 
+  it('rotates called tile horizontally when from opposite seat', () => {
+    const tiles = [{ ...t('pin', 5, 'd'), called: true, calledFrom: 2 }];
+    render(
+      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-opp" />,
+    );
+    const tile = screen.getByTestId('rv-opp').querySelector('[style]');
+    const style = tile?.getAttribute('style') || '';
+    expect(style).toContain('rotate(90deg)');
+    expect(style).not.toContain('rotate(180deg)');
+  });
+
+  it('rotates called tile based on caller to the right', () => {
+    const tiles = [{ ...t('pin', 5, 'e'), called: true, calledFrom: 0 }];
+    render(
+      <RiverView tiles={tiles} seat={3} lastDiscard={null} dataTestId="rv-right" />,
+    );
+    const tile = screen.getByTestId('rv-right').querySelector('[style]');
+    const style = tile?.getAttribute('style') || '';
+    expect(style).toContain('rotate(-90deg)');
+  });
+
+  it('moves called tiles to the end of the river', () => {
+    const tiles = [
+      t('man', 1, 'a'),
+      { ...t('pin', 5, 'b'), called: true, calledFrom: 1 },
+      t('sou', 2, 'c'),
+    ];
+    render(
+      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-order" />,
+    );
+    const tileEls = screen.getByTestId('rv-order').querySelectorAll('[aria-label]');
+    const labels = Array.from(tileEls).map(el => el.getAttribute('aria-label'));
+    expect(labels).toEqual(['1萬', '2索', '5筒']);
+  });
+
   it('uses consistent gap for all seats', () => {
     [0, 1, 2, 3].forEach(seat => {
       render(

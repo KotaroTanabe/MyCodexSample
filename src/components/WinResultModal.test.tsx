@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { WinResultModal } from './WinResultModal';
 import { PlayerState, Tile } from '../types/mahjong';
@@ -33,6 +33,7 @@ describe('WinResultModal', () => {
         han={1}
         fu={30}
         points={1000}
+        dora={[]}
         onNext={() => {}}
         nextLabel="次へ"
       />,
@@ -53,6 +54,7 @@ describe('WinResultModal', () => {
         han={1}
         fu={30}
         points={1000}
+        dora={[]}
         uraDora={[{ suit: 'man', rank: 1, id: 'u1' }]}
         onNext={() => {}}
       />,
@@ -73,10 +75,53 @@ describe('WinResultModal', () => {
         han={1}
         fu={30}
         points={1000}
+        dora={[]}
         onNext={() => {}}
       />,
     );
     expect(screen.getAllByText('あがり牌:')).toHaveLength(1);
     expect(screen.getAllByLabelText('2萬')).toHaveLength(2);
+  });
+  it('shows dora count in yaku text', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={2}
+        fu={30}
+        points={2000}
+        dora={[t('man', 1, 'd1')]}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByText(/ドラ1/)).toBeTruthy();
+  });
+
+  it('calls download callback', () => {
+    const fn = vi.fn();
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        dora={[]}
+        onNext={() => {}}
+        onDownloadTenhou={fn}
+      />,
+    );
+    screen.getByText('Tenhouログダウンロード').click();
+    expect(fn).toHaveBeenCalled();
   });
 });
