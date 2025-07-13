@@ -2,6 +2,7 @@ import React from 'react';
 import { PlayerState, Tile, Meld } from '../types/mahjong';
 import { TileView } from './TileView';
 import { MeldView } from './MeldView';
+import { countDora } from '../utils/dora';
 
 export interface WinResult {
   players: PlayerState[];
@@ -17,6 +18,8 @@ export interface WinResult {
   han: number;
   fu: number;
   points: number;
+  /** dora indicators revealed during play */
+  dora: Tile[];
   /** ura-dora indicators revealed after a riichi win */
   uraDora?: Tile[];
 }
@@ -37,19 +40,36 @@ export const WinResultModal: React.FC<Props> = ({
   han,
   fu,
   points,
+  dora,
   uraDora,
   onNext,
   nextLabel = '次局へ',
 }) => {
   if (players.length === 0) return null;
   const title = winType === 'ron' ? 'ロン和了' : 'ツモ和了';
+  const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
+  const doraCount = countDora(allTiles, [...dora, ...(uraDora ?? [])]);
+  const yakuText = [
+    ...yaku,
+    doraCount > 0 ? `ドラ${doraCount}` : undefined,
+  ]
+    .filter(Boolean)
+    .join('、');
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 shadow-lg">
         <h2 className="text-lg font-bold mb-2">{title}</h2>
         <div className="mb-2 text-sm">
-          {yaku.join('、')} {han}翻 {fu}符 {points}点
+          {yakuText} {han}翻 {fu}符 {points}点
         </div>
+        {dora.length > 0 && (
+          <div className="mb-2 text-sm flex items-center gap-1">
+            <span>表ドラ:</span>
+            {dora.map(t => (
+              <TileView key={t.id} tile={t} />
+            ))}
+          </div>
+        )}
         {uraDora && uraDora.length > 0 && (
           <div className="mb-2 text-sm flex items-center gap-1">
             <span>裏ドラ:</span>
