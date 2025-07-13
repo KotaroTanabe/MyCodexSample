@@ -38,8 +38,8 @@ describe('MeldView', () => {
       <MeldView meld={{ ...base, fromPlayer: 3 }} seat={0} />,
     );
 
-    expect(htmlRight).toContain('rotate(90deg)');
-    expect(htmlLeft).toContain('rotate(-90deg)');
+    expect(htmlRight).toContain('rotate(-90deg)');
+    expect(htmlLeft).toContain('rotate(90deg)');
   });
 
   it('rotates called tile horizontally when from opposite seat', () => {
