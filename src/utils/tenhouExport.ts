@@ -109,7 +109,8 @@ export function exportTenhouLog(
   return {
     title: ['', ''],
     name: ['A', 'B', 'C', 'D'],
-    rule: { disp: 'MyMahjong', aka: 0 },
+    // Fixed rule display string for Tenhou format
+    rule: { disp: '四南喰', aka: 0 },
     log: [hand],
   };
 }

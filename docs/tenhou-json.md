@@ -16,7 +16,7 @@ A log object has four top-level keys:
 {
   "title": ["", ""],
   "name": ["A", "B", "C", "D"],
-  "rule": {"disp": "MyMahjong", "aka": 0},
+  "rule": {"disp": "四南喰", "aka": 0},
   "log": []
 }
 ```
