@@ -11,7 +11,7 @@ import {
   canDeclareRiichi,
   clearIppatsu,
   canCallMeld,
-  markDiscardCalled,
+  removeDiscardTile,
 } from '../components/Player';
 import { validateDiscard, appendDiscardLog } from './helpers';
 import {
@@ -733,11 +733,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     nextTurn();
     return;
     }
-  p[discarder] = markDiscardCalled(
-    p[discarder],
-    lastDiscard.tile.id,
-    caller,
-  );
+  p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
   if (lastDiscard.tile.riichiDiscard) {
     setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
   }
@@ -850,11 +846,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     p = [...p];
     const meldTiles = selectMeldTiles(p[caller], lastDiscard.tile, action);
     if (!meldTiles) return;
-    p[discarder] = markDiscardCalled(
-      p[discarder],
-      lastDiscard.tile.id,
-      caller,
-    );
+    p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
     if (lastDiscard.tile.riichiDiscard) {
       setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
     }
@@ -1080,11 +1072,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     const caller = 0;
     const discarder = lastDiscard.player;
     let p = [...playersRef.current];
-  p[discarder] = markDiscardCalled(
-    p[discarder],
-    lastDiscard.tile.id,
-    caller,
-  );
+  p[discarder] = removeDiscardTile(p[discarder], lastDiscard.tile.id);
   if (lastDiscard.tile.riichiDiscard) {
     setPendingRiichiIndicator(prev => Array.from(new Set([...prev, discarder])));
   }

@@ -8,7 +8,6 @@ import {
   RESERVED_RIVER_SLOTS,
   RESERVED_RIVER_SLOTS_MOBILE,
   RIVER_GAP_PX,
-  CALLED_OFFSET,
   GRID_CLASS,
 } from './RiverView';
 import { Tile } from '../types/mahjong';
@@ -67,40 +66,13 @@ describe('RiverView', () => {
     expect(tileEls[1].getAttribute('style')).toContain('rotate(90deg)');
   });
 
-  it('offsets called tiles using the constant and rotates based on caller', () => {
-    const tiles = [{ ...t('pin', 5, 'c'), called: true, calledFrom: 1 }];
+  it('does not render tiles marked as called', () => {
+    const tiles = [{ ...t('pin', 5, 'x'), called: true, calledFrom: 1 }];
     render(
       <RiverView tiles={tiles} seat={2} lastDiscard={null} dataTestId="rv-called" />,
     );
-    const tile = screen.getByTestId('rv-called').querySelector('[style]');
-    const style = tile?.getAttribute('style') || '';
-    expect(style).toContain(`translateX(-${CALLED_OFFSET})`);
-    expect(style).toContain('rotate(-90deg)');
-  });
-
-  it('rotates called tile horizontally when from opposite seat', () => {
-    const tiles = [{ ...t('pin', 5, 'd'), called: true, calledFrom: 2 }];
-    render(
-      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-opp" />,
-    );
-    const tile = screen.getByTestId('rv-opp').querySelector('[style]');
-    const style = tile?.getAttribute('style') || '';
-    expect(style).toContain('rotate(90deg)');
-    expect(style).not.toContain('rotate(180deg)');
-  });
-
-  it('moves called tiles to the end of the river', () => {
-    const tiles = [
-      t('man', 1, 'a'),
-      { ...t('pin', 5, 'b'), called: true, calledFrom: 1 },
-      t('sou', 2, 'c'),
-    ];
-    render(
-      <RiverView tiles={tiles} seat={0} lastDiscard={null} dataTestId="rv-order" />,
-    );
-    const tileEls = screen.getByTestId('rv-order').querySelectorAll('[aria-label]');
-    const labels = Array.from(tileEls).map(el => el.getAttribute('aria-label'));
-    expect(labels).toEqual(['1萬', '2索', '5筒']);
+    const tile = screen.getByTestId('rv-called').querySelector('[aria-label]');
+    expect(tile).toBeNull();
   });
 
   it('uses consistent gap for all seats', () => {

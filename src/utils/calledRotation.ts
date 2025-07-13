@@ -10,11 +10,11 @@ export const calledRotation = (seat: number, from: number): number => {
   const diff = (from - seat + 4) % 4;
   switch (diff) {
     case 1:
-      return 90; // from right
+      return -90; // from right
     case 2:
       return 90; // from opposite
     case 3:
-      return -90; // from left
+      return 90; // from left
     default:
       return 0;
   }
