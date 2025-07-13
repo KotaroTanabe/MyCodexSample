@@ -41,7 +41,8 @@ export function exportTenhouLog(
   const take: (Array<number | string>)[] = [[], [], [], []];
   const dahai: (Array<number | string>)[] = [[], [], [], []];
 
-  for (const entry of log) {
+  for (let i = 0; i < log.length; i++) {
+    const entry = log[i];
     switch (entry.type) {
       case 'draw':
         take[entry.player].push(tileToTenhouNumber(entry.tile));
@@ -49,9 +50,19 @@ export function exportTenhouLog(
       case 'discard':
         dahai[entry.player].push(tileToTenhouNumber(entry.tile));
         break;
-      case 'riichi':
+      case 'riichi': {
         dahai[entry.player].push('r' + tileToTenhouNumber(entry.tile));
+        const next = log[i + 1];
+        if (
+          next &&
+          next.type === 'discard' &&
+          next.player === entry.player &&
+          next.tile.id === entry.tile.id
+        ) {
+          i++;
+        }
         break;
+      }
       case 'meld':
         take[entry.player].push(encodeMeld(entry));
         dahai[entry.from].push(0);
