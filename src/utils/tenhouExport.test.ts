@@ -52,4 +52,38 @@ describe('exportTenhouLog', () => {
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
+
+  it('uses discard tile for riichi event', () => {
+    const drawTile = makeTile(32);
+    const discardTile = makeTile(31);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(0).map((_, i) => makeTile(i + 2)));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: drawTile,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 0, tile: drawTile },
+      { type: 'riichi', player: 0, tile: discardTile },
+      { type: 'discard', player: 0, tile: discardTile },
+      { type: 'tsumo', player: 0, tile: drawTile },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    const dahai = json.log[0][6];
+    expect(dahai[0]).toBe('r' + tileToTenhouNumber(discardTile));
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
 });
