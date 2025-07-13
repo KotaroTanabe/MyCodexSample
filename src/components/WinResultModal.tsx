@@ -3,6 +3,28 @@ import { PlayerState, Tile, Meld } from '../types/mahjong';
 import { TileView } from './TileView';
 import { MeldView } from './MeldView';
 import { countDora } from '../utils/dora';
+import { calcBase } from '../score/score';
+
+function formatPointsText(
+  han: number,
+  fu: number,
+  seatWind: number,
+  winType: 'ron' | 'tsumo',
+) {
+  const base = calcBase(han, fu);
+  if (winType === 'ron') {
+    const mult = seatWind === 1 ? 6 : 4;
+    const total = Math.ceil((base * mult) / 100) * 100;
+    return `${total}点`;
+  }
+  if (seatWind === 1) {
+    const each = Math.ceil((base * 2) / 100) * 100;
+    return `${each}点オール`;
+  }
+  const nonDealer = Math.ceil(base / 100) * 100;
+  const dealerPay = Math.ceil((base * 2) / 100) * 100;
+  return `${nonDealer}点-${dealerPay}点`;
+}
 
 export interface WinResult {
   players: PlayerState[];
@@ -40,7 +62,7 @@ export const WinResultModal: React.FC<Props> = ({
   yaku,
   han,
   fu,
-  points,
+  points: _points,
   dora,
   uraDora,
   onNext,
@@ -57,12 +79,15 @@ export const WinResultModal: React.FC<Props> = ({
   ]
     .filter(Boolean)
     .join('、');
+  const seatWind = players[winner].seat + 1;
+  const pointsText = formatPointsText(han, fu, seatWind, winType);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 shadow-lg">
         <h2 className="text-lg font-bold mb-2">{title}</h2>
+        <div className="mb-2 text-sm">{pointsText}</div>
         <div className="mb-2 text-sm">
-          {yakuText} {han}翻 {fu}符 {points}点
+          {yakuText} {han}翻 {fu}符
         </div>
         {dora.length > 0 && (
           <div className="mb-2 text-sm flex items-center gap-1">

@@ -124,4 +124,25 @@ describe('WinResultModal', () => {
     screen.getByText('Tenhouログダウンロード').click();
     expect(fn).toHaveBeenCalled();
   });
+
+  it('shows tsumo points text with split payments', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={2}
+        fu={30}
+        points={1000}
+        dora={[]}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByText('1000点オール')).toBeTruthy();
+    expect(screen.getByText('立直 2翻 30符')).toBeTruthy();
+  });
 });
