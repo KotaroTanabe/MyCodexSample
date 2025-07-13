@@ -98,6 +98,7 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         <RoundResultModal
           results={game.roundResult.results}
           nextLabel={game.kyoku >= maxKyoku ? '結果発表へ' : undefined}
+          onDownloadTenhou={game.handleDownloadTenhouLog}
           onNext={() => {
             game.setRoundResult(null);
             game.nextKyoku(true);

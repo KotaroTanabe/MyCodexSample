@@ -15,9 +15,10 @@ interface Props {
   results: RoundResultRow[];
   onNext: () => void;
   nextLabel?: string;
+  onDownloadTenhou?: () => void;
 }
 
-export const RoundResultModal: React.FC<Props> = ({ results, onNext, nextLabel = '次局へ' }) => {
+export const RoundResultModal: React.FC<Props> = ({ results, onNext, nextLabel = '次局へ', onDownloadTenhou }) => {
   if (results.length === 0) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -43,6 +44,14 @@ export const RoundResultModal: React.FC<Props> = ({ results, onNext, nextLabel =
             ))}
           </tbody>
         </table>
+        {onDownloadTenhou && (
+          <button
+            className="mt-2 mr-2 px-2 py-1 bg-gray-200 rounded"
+            onClick={onDownloadTenhou}
+          >
+            Tenhou形式ログ
+          </button>
+        )}
         <button className="mt-2 px-4 py-1 bg-blue-500 text-white rounded" onClick={onNext}>{nextLabel}</button>
       </div>
     </div>
