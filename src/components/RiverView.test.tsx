@@ -75,7 +75,7 @@ describe('RiverView', () => {
     const tile = screen.getByTestId('rv-called').querySelector('[style]');
     const style = tile?.getAttribute('style') || '';
     expect(style).toContain(`translateX(-${CALLED_OFFSET})`);
-    expect(style).toContain('rotate(-90deg)');
+    expect(style).toContain('rotate(90deg)');
   });
 
   it('rotates called tile horizontally when from opposite seat', () => {
@@ -87,6 +87,16 @@ describe('RiverView', () => {
     const style = tile?.getAttribute('style') || '';
     expect(style).toContain('rotate(90deg)');
     expect(style).not.toContain('rotate(180deg)');
+  });
+
+  it('rotates called tile based on caller to the right', () => {
+    const tiles = [{ ...t('pin', 5, 'e'), called: true, calledFrom: 0 }];
+    render(
+      <RiverView tiles={tiles} seat={3} lastDiscard={null} dataTestId="rv-right" />,
+    );
+    const tile = screen.getByTestId('rv-right').querySelector('[style]');
+    const style = tile?.getAttribute('style') || '';
+    expect(style).toContain('rotate(-90deg)');
   });
 
   it('moves called tiles to the end of the river', () => {
