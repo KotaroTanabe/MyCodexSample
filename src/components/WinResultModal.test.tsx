@@ -101,4 +101,45 @@ describe('WinResultModal', () => {
     );
     expect(screen.getByText(/ドラ1/)).toBeTruthy();
   });
+
+  it('shows dealer tsumo points with all text', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        dora={[]}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByText('1000点オール')).toBeTruthy();
+    expect(screen.getByText(/立直 1翻 30符/)).toBeTruthy();
+  });
+
+  it('shows non-dealer tsumo split payments', () => {
+    render(
+      <WinResultModal
+        players={players}
+        winner={1}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={500}
+        dora={[]}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByText('500点-1000点')).toBeTruthy();
+  });
 });

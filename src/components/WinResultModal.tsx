@@ -55,12 +55,20 @@ export const WinResultModal: React.FC<Props> = ({
   ]
     .filter(Boolean)
     .join('、');
+  const isDealer = players[winner].seat === 0;
+  let pointsText = `${points}点`;
+  if (winType === 'tsumo') {
+    pointsText = isDealer
+      ? `${points}点オール`
+      : `${points}点-${points * 2}点`;
+  }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 shadow-lg">
         <h2 className="text-lg font-bold mb-2">{title}</h2>
+        <div className="mb-2 text-sm">{pointsText}</div>
         <div className="mb-2 text-sm">
-          {yakuText} {han}翻 {fu}符 {points}点
+          {yakuText} {han}翻 {fu}符
         </div>
         {dora.length > 0 && (
           <div className="mb-2 text-sm flex items-center gap-1">
