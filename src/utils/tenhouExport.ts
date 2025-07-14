@@ -49,7 +49,7 @@ export function exportTenhouLog(
         take[entry.player].push(tileToTenhouNumber(entry.tile));
         lastDraw[entry.player] = entry.tile;
         break;
-      case 'discard':
+      case 'discard': {
         const prev = log[i - 1];
         if (
           lastDraw[entry.player] &&
@@ -64,6 +64,7 @@ export function exportTenhouLog(
         }
         lastDraw[entry.player] = null;
         break;
+      }
       case 'riichi': {
         dahai[entry.player].push('r' + tileToTenhouNumber(entry.tile));
         const next = log[i + 1];
