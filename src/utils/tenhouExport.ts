@@ -37,7 +37,17 @@ export function exportTenhouLog(
   startScores: number[],
   end: RoundEndInfo,
 ) {
-  const hai = round.hands.map(h => h.map(tileToTenhouNumber));
+  const hai = round.hands.map((h, idx) => {
+    const nums = h.map(tileToTenhouNumber);
+    if (idx === round.dealer && nums.length === 14) {
+      let maxIdx = 0;
+      for (let i = 1; i < nums.length; i++) {
+        if (nums[i] > nums[maxIdx]) maxIdx = i;
+      }
+      nums.splice(maxIdx, 1);
+    }
+    return nums;
+  });
   const take: (Array<number | string>)[] = [[], [], [], []];
   const dahai: (Array<number | string>)[] = [[], [], [], []];
   const lastDraw: (Tile | null)[] = [null, null, null, null];
