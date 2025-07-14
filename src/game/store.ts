@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
 import { Tile, PlayerState, LogEntry, MeldType, RoundStartInfo } from '../types/mahjong';
 import { isChankan } from './isChankan';
 import { generateTileWall, drawDoraIndicator } from '../components/TileWall';
@@ -1255,6 +1256,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     );
     await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setMessage('Tenhouログをコピーしました');
+    toast.success('Tenhouログをコピーしました');
   };
 
   const handleLoadBoard = () => {

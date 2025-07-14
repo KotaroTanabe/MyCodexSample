@@ -4,6 +4,8 @@ import { FuQuiz } from './components/FuQuiz';
 import { ScoreQuiz } from './components/ScoreQuiz';
 import { ShantenQuiz } from './components/ShantenQuiz';
 import { HelpModal } from './components/HelpModal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [tileFont, setTileFont] = useState(2);
@@ -109,6 +111,7 @@ function App() {
         <ShantenQuiz />
       )}
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      <ToastContainer position="bottom-right" />
       </div>
     </div>
   );
