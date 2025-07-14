@@ -22,4 +22,13 @@ describe('RoundResultModal', () => {
     screen.getByText('Tenhou形式ログ').click();
     expect(fn).toHaveBeenCalled();
   });
+
+  it('calls copy callback', () => {
+    const fn = vi.fn();
+    render(
+      <RoundResultModal results={results} onNext={() => {}} onCopyTenhou={fn} />,
+    );
+    screen.getByText('コピー').click();
+    expect(fn).toHaveBeenCalled();
+  });
 });

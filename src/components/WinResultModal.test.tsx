@@ -125,6 +125,29 @@ describe('WinResultModal', () => {
     expect(fn).toHaveBeenCalled();
   });
 
+  it('calls copy callback', () => {
+    const fn = vi.fn();
+    render(
+      <WinResultModal
+        players={players}
+        winner={0}
+        winType="tsumo"
+        hand={hand}
+        melds={[]}
+        winTile={winTile}
+        yaku={['立直']}
+        han={1}
+        fu={30}
+        points={1000}
+        dora={[]}
+        onNext={() => {}}
+        onCopyTenhou={fn}
+      />,
+    );
+    screen.getByText('コピー').click();
+    expect(fn).toHaveBeenCalled();
+  });
+
   it('shows tsumo points text with split payments', () => {
     render(
       <WinResultModal
