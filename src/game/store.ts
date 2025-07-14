@@ -1245,6 +1245,18 @@ const handleCallAction = (action: MeldType | 'pass') => {
     URL.revokeObjectURL(url);
   };
 
+  const handleCopyTenhouLog = async () => {
+    if (!roundStartInfoRef.current || !endInfoRef.current) return;
+    const data = exportTenhouLog(
+      roundStartInfoRef.current,
+      logRef.current,
+      startScoresRef.current,
+      endInfoRef.current,
+    );
+    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    setMessage('Tenhouログをコピーしました');
+  };
+
   const handleLoadBoard = () => {
     try {
       clearActionTimer();
@@ -1331,6 +1343,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     handleDownloadLog,
     handleDownloadMjaiLog,
     handleDownloadTenhouLog,
+    handleCopyTenhouLog,
     handleLoadBoard,
   };
 };
