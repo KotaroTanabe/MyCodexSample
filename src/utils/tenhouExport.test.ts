@@ -116,4 +116,35 @@ describe('exportTenhouLog', () => {
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
+
+  it('encodes tsumogiri as 60', () => {
+    const t = makeTile(42);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 0, tile: t },
+      { type: 'discard', player: 0, tile: t },
+      { type: 'tsumo', player: 0, tile: t },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    expect(json.log[0][6]).toEqual([60]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
 });
