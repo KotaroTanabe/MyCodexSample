@@ -80,7 +80,7 @@ export function exportTenhouLog(
         dahai[entry.from].push(0);
         lastDraw[entry.player] = null;
         break;
-      case 'tsumo':
+      case 'tsumo': {
         // If the previous event was the draw of this tile, we already
         // recorded it. Avoid duplicating the winning tile in the take list.
         const prev = log[i - 1];
@@ -97,6 +97,7 @@ export function exportTenhouLog(
           lastDraw[entry.player] = null;
         }
         break;
+      }
       case 'ron':
         take[entry.player].push(tileToTenhouNumber(entry.tile));
         lastDraw[entry.player] = null;
