@@ -211,4 +211,37 @@ describe('exportTenhouLog', () => {
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
+
+  it('outputs 13-tile starting hand for dealer', () => {
+    const extra = makeTile(99);
+    const base = makeTile(1);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(base));
+    hands[0].push(extra); // dealer has 14 tiles
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: base,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 0, tile: extra },
+      { type: 'tsumo', player: 0, tile: base },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    expect(json.log[0][4]).toHaveLength(13);
+    expect(json.log[0][5][0]).toBe(tileToTenhouNumber(extra));
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
 });

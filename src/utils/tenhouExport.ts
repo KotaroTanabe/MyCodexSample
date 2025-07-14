@@ -38,6 +38,23 @@ export function exportTenhouLog(
   end: RoundEndInfo,
 ) {
   const hai = round.hands.map(h => h.map(tileToTenhouNumber));
+  // Dealer has 14 tiles in RoundStartInfo; Tenhou format expects 13.
+  // Remove the tile that was drawn before the round began so it only
+  // appears in the take list.
+  if (hai[round.dealer].length === 14) {
+    let drawTile: Tile | null = null;
+    for (const e of log) {
+      if (e.type === 'draw' && e.player === round.dealer) {
+        drawTile = e.tile;
+        break;
+      }
+    }
+    if (drawTile) {
+      const n = tileToTenhouNumber(drawTile);
+      const idx = hai[round.dealer].indexOf(n);
+      if (idx !== -1) hai[round.dealer].splice(idx, 1);
+    }
+  }
   const take: (Array<number | string>)[] = [[], [], [], []];
   const dahai: (Array<number | string>)[] = [[], [], [], []];
   const lastDraw: (Tile | null)[] = [null, null, null, null];
