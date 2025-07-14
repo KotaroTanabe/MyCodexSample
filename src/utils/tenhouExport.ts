@@ -40,16 +40,31 @@ export function exportTenhouLog(
   const hai = round.hands.map(h => h.map(tileToTenhouNumber));
   const take: (Array<number | string>)[] = [[], [], [], []];
   const dahai: (Array<number | string>)[] = [[], [], [], []];
+  const lastDraw: (Tile | null)[] = [null, null, null, null];
 
   for (let i = 0; i < log.length; i++) {
     const entry = log[i];
     switch (entry.type) {
       case 'draw':
         take[entry.player].push(tileToTenhouNumber(entry.tile));
+        lastDraw[entry.player] = entry.tile;
         break;
-      case 'discard':
-        dahai[entry.player].push(tileToTenhouNumber(entry.tile));
+      case 'discard': {
+        const prev = log[i - 1];
+        if (
+          lastDraw[entry.player] &&
+          prev &&
+          prev.type === 'draw' &&
+          prev.player === entry.player &&
+          lastDraw[entry.player]!.id === entry.tile.id
+        ) {
+          dahai[entry.player].push(60);
+        } else {
+          dahai[entry.player].push(tileToTenhouNumber(entry.tile));
+        }
+        lastDraw[entry.player] = null;
         break;
+      }
       case 'riichi': {
         dahai[entry.player].push('r' + tileToTenhouNumber(entry.tile));
         const next = log[i + 1];
@@ -61,17 +76,21 @@ export function exportTenhouLog(
         ) {
           i++;
         }
+        lastDraw[entry.player] = null;
         break;
       }
       case 'meld':
         take[entry.player].push(encodeMeld(entry));
         dahai[entry.from].push(0);
+        lastDraw[entry.player] = null;
         break;
       case 'tsumo':
         take[entry.player].push(tileToTenhouNumber(entry.tile));
+        lastDraw[entry.player] = null;
         break;
       case 'ron':
         take[entry.player].push(tileToTenhouNumber(entry.tile));
+        lastDraw[entry.player] = null;
         break;
     }
   }
