@@ -50,12 +50,8 @@ export function exportTenhouLog(
         lastDraw[entry.player] = entry.tile;
         break;
       case 'discard': {
-        const prev = log[i - 1];
         if (
           lastDraw[entry.player] &&
-          prev &&
-          prev.type === 'draw' &&
-          prev.player === entry.player &&
           lastDraw[entry.player]!.id === entry.tile.id
         ) {
           dahai[entry.player].push(60);
