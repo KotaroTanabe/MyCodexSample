@@ -116,7 +116,9 @@ export function exportTenhouLog(
         break;
       }
       case 'ron':
-        take[entry.player].push(tileToTenhouNumber(entry.tile));
+        // Ron tiles should not appear in the take list. Only the
+        // discarded tile from the losing player is recorded. See
+        // docs/tenhou-json.md for details.
         lastDraw[entry.player] = null;
         break;
     }
