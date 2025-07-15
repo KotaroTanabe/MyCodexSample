@@ -212,6 +212,37 @@ describe('exportTenhouLog', () => {
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
+  it('does not record ron tile in take list', () => {
+    const t = makeTile(88);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 1, tile: t },
+      { type: 'discard', player: 1, tile: t },
+      { type: 'ron', player: 2, tile: t, from: 1 },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 2,
+      loser: 1,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    expect(json.log[0][11]).toEqual([]); // player 2 take list
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
   it('outputs 13-tile starting hand for dealer', () => {
     const extra = makeTile(99);
     const base = makeTile(1);
