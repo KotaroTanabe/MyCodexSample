@@ -160,6 +160,37 @@ npm run lint
 - 裏ドラ (Ura Dora)
 - 一発 (Ippatsu)
 
+### Yaku Implementation Status
+
+| Yaku | Implemented |
+| --- | --- |
+| Tanyao | ✓ |
+| Yakuhai | ✓ |
+| Menzen Tsumo | ✓ |
+| Pinfu | ✓ |
+| Iipeiko | ✓ |
+| Chiitoitsu | ✓ |
+| Toitoi | ✓ |
+| Sanankou | ✓ |
+| Sanshoku Doujun | ✓ |
+| San Doukou | ✓ |
+| Ittsu | ✓ |
+| Chanta | ✓ |
+| Junchan | ✗ |
+| Honitsu | ✓ |
+| Chinitsu | ✓ |
+| Riichi | ✓ |
+| Double Riichi | ✓ |
+| Ippatsu | ✓ |
+| Rinshan Kaihou | ✓ |
+| Chankan | ✓ |
+| Haitei | ✓ |
+| Houtei | ✓ |
+| Ura Dora | ✓ |
+| Kokushi Musou | ✓ |
+| San Kantsu | ✗ |
+| Su Kantsu | ✗ |
+
 ## 牌譜エクスポート
 
 対局ログは `.lq.GameDetailRecords` 形式でダウンロードできます。メニューの
