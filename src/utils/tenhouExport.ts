@@ -26,9 +26,26 @@ export function tileToTenhouNumber(tile: Tile): number {
 }
 
 function encodeMeld(e: Extract<LogEntry, { type: 'meld' }>): string {
-  const nums = e.tiles.map(t => tileToTenhouNumber(t)).join('');
+  // Last element in tiles is always the called tile.
+  const called = tileToTenhouNumber(e.tiles[e.tiles.length - 1]);
+  const others = e.tiles
+    .slice(0, e.tiles.length - 1)
+    .map(t => tileToTenhouNumber(t))
+    .sort((a, b) => a - b);
   const prefix = e.meldType === 'chi' ? 'c' : e.meldType === 'pon' ? 'p' : 'm';
-  return prefix + nums;
+
+  if (e.meldType === 'chi') {
+    // Chi is always from the player to the left.
+    return prefix + [called, ...others].join('');
+  }
+
+  // For pon/kan the prefix is inserted before the called tile.
+  const diff = (e.from - e.player + 4) % 4;
+  const pos = diff === 3 ? 0 : diff === 2 ? 1 : 2;
+  others.splice(pos, 0, called);
+  return others
+    .map((n, i) => (i === pos ? prefix + n : String(n)))
+    .join('');
 }
 
 export function exportTenhouLog(
@@ -94,7 +111,10 @@ export function exportTenhouLog(
       }
       case 'meld':
         take[entry.player].push(encodeMeld(entry));
-        dahai[entry.from].push(0);
+        if (entry.meldType === 'kan' && entry.kanType === 'daiminkan') {
+          // In Tenhou logs, only daiminkan replaces the discard with 0.
+          dahai[entry.from].push(0);
+        }
         lastDraw[entry.player] = null;
         break;
       case 'tsumo': {

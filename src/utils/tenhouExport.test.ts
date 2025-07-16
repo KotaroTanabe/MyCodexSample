@@ -275,4 +275,39 @@ describe('exportTenhouLog', () => {
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
+
+  it('encodes chi meld and keeps discard tile', () => {
+    const t7: Tile = { suit: 'pin', rank: 7, id: 't7' };
+    const t8: Tile = { suit: 'pin', rank: 8, id: 't8' };
+    const t9: Tile = { suit: 'pin', rank: 9, id: 't9' };
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t7));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t7,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 1, tile: t8 },
+      { type: 'discard', player: 1, tile: t7 },
+      { type: 'meld', player: 2, tiles: [t8, t9, t7], meldType: 'chi', from: 1 },
+      { type: 'tsumo', player: 0, tile: t7 },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    expect(json.log[0][11]).toEqual(['c272829']);
+    expect(json.log[0][9]).toEqual([tileToTenhouNumber(t7)]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
 });
