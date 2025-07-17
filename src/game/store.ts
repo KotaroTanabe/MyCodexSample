@@ -37,6 +37,14 @@ import type { RoundEndInfo } from '../utils/tenhouExport';
 import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
 
+/**
+ * Rotate players so that the next dealer sits at seat 0.
+ */
+const rotateSeats = (players: PlayerState[]): PlayerState[] => {
+  const reordered = [...players.slice(1), players[0]];
+  return reordered.map((p, idx) => ({ ...p, seat: idx }));
+};
+
 const DEAD_WALL_SIZE = 14;
 
 export type GameLength = 'east1' | 'tonpu' | 'tonnan';
@@ -549,6 +557,9 @@ export const useGame = (gameLength: GameLength) => {
     if (next > maxKyoku) {
       setPhase('end');
     } else {
+      const rotated = rotateSeats(playersRef.current);
+      setPlayers(rotated);
+      playersRef.current = rotated;
       setKyoku(next);
       startRound(false, next);
     }
