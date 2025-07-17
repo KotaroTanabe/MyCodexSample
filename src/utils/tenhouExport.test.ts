@@ -310,4 +310,40 @@ describe('exportTenhouLog', () => {
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
+
+  it('encodes kakan as discard and rinshan draw', () => {
+    const base: Tile = { suit: 'man', rank: 1, id: 'b' };
+    const rinshan: Tile = { suit: 'man', rank: 2, id: 'r' };
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(base));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: base,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 0, tile: base },
+      { type: 'meld', player: 0, tiles: [base, base, base, base], meldType: 'kan', from: 1, kanType: 'kakan' },
+      { type: 'draw', player: 0, tile: rinshan },
+      { type: 'tsumo', player: 0, tile: rinshan },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    const code = tileToTenhouNumber(base);
+    const expected = `${code}${code}k${code}${code}`;
+    expect(json.log[0][6]).toEqual([expected]);
+    expect(json.log[0][5]).toEqual([code, tileToTenhouNumber(rinshan)]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
 });

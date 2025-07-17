@@ -26,25 +26,31 @@ export function tileToTenhouNumber(tile: Tile): number {
 }
 
 function encodeMeld(e: Extract<LogEntry, { type: 'meld' }>): string {
-  // Last element in tiles is always the called tile.
+  const prefixMap = {
+    chi: 'c',
+    pon: 'p',
+    kan: e.kanType === 'daiminkan' ? 'm' : e.kanType === 'kakan' ? 'k' : 'a',
+  } as const;
+
+  if (e.meldType === 'chi') {
+    const called = tileToTenhouNumber(e.tiles[e.tiles.length - 1]);
+    const others = e.tiles
+      .slice(0, e.tiles.length - 1)
+      .map(t => tileToTenhouNumber(t))
+      .sort((a, b) => a - b);
+    return prefixMap.chi + [called, ...others].join('');
+  }
+
   const called = tileToTenhouNumber(e.tiles[e.tiles.length - 1]);
   const others = e.tiles
     .slice(0, e.tiles.length - 1)
     .map(t => tileToTenhouNumber(t))
     .sort((a, b) => a - b);
-  const prefix = e.meldType === 'chi' ? 'c' : e.meldType === 'pon' ? 'p' : 'm';
-
-  if (e.meldType === 'chi') {
-    // Chi is always from the player to the left.
-    return prefix + [called, ...others].join('');
-  }
-
-  // For pon/kan the prefix is inserted before the called tile.
   const diff = (e.from - e.player + 4) % 4;
-  const pos = diff === 3 ? 0 : diff === 2 ? 1 : 2;
+  const pos = diff === 3 ? 0 : diff === 2 ? 1 : diff === 1 ? 2 : 3;
   others.splice(pos, 0, called);
   return others
-    .map((n, i) => (i === pos ? prefix + n : String(n)))
+    .map((n, i) => (i === pos ? prefixMap[e.meldType] + n : String(n)))
     .join('');
 }
 
@@ -110,10 +116,14 @@ export function exportTenhouLog(
         break;
       }
       case 'meld':
-        take[entry.player].push(encodeMeld(entry));
-        if (entry.meldType === 'kan' && entry.kanType === 'daiminkan') {
-          // In Tenhou logs, only daiminkan replaces the discard with 0.
-          dahai[entry.from].push(0);
+        if (entry.meldType === 'kan' && entry.kanType !== 'daiminkan') {
+          dahai[entry.player].push(encodeMeld(entry));
+        } else {
+          take[entry.player].push(encodeMeld(entry));
+          if (entry.meldType === 'kan' && entry.kanType === 'daiminkan') {
+            // In Tenhou logs, only daiminkan replaces the discard with 0.
+            dahai[entry.from].push(0);
+          }
         }
         lastDraw[entry.player] = null;
         break;
