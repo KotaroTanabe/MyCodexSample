@@ -127,19 +127,9 @@ npm run lint
 - `public/` … favicon等
 - `tailwind.config.js`, `postcss.config.js` … CSSビルド
 - `vite.config.js` … Pages対応
- - `.github/workflows/ci.yml` … CIワークフロー
+- `.github/workflows/ci.yml` … CIワークフロー
 
-## 牌の回転ユーティリティ
-
-`rotationForSeat`、`calledRotation`、`calledOffset` は牌の向きと位置を制御するヘルパー関数です。
-`rotationForSeat` は各プレイヤーの座席に応じた基本角度を返し、
-`calledRotation` は他家から鳴いた牌をどの方向から取ったかで追加回転を決定します。
-`calledOffset` はその牌を少しずらして配置するための変換値を返し、主に `RiverView` で利用されます。
-
-これらを組み合わせることで、鳴き牌を含む捨て牌の向きを簡潔に表現できます。
-レイアウトを拡張する際は、この3関数を基準に角度やオフセットを調整するだけで対応可能です。
-さらに `RiverView` では、鳴かれた捨て牌を河から除去し、
-副露した面子の右端に移動させて表示します。実卓の四隅に鳴き牌を置く挙動を再現するための仕様です。
+詳細な牌の回転ロジックについては [docs/rotation-utils.md](docs/rotation-utils.md) を参照してください。
 
 ---
 
