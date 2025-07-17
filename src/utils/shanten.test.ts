@@ -6,6 +6,7 @@ import {
   calcShanten,
 } from './shanten';
 import { Tile } from '../types/mahjong';
+import { tilesFromString } from './tileString';
 
 describe('shanten calculations', () => {
   const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -114,5 +115,11 @@ describe('shanten calculations', () => {
     ];
     // 234p 567p 77p 22345s -> waiting on 6p or 9p
     expect(calcStandardShanten(hand)).toBe(0);
+  });
+
+  it('computes 0 shanten for 678p1234466s5s with open 555m', () => {
+    const hand = tilesFromString('678p1234466s5s');
+    // 555m is already opened, so openMelds = 1
+    expect(calcStandardShanten(hand, 1)).toBe(0);
   });
 });

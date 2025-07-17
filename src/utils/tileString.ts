@@ -13,3 +13,21 @@ export function tileToKanji(tile: Tile): string {
   return honorMap[tile.suit]?.[tile.rank] ?? '';
 }
 
+let idCounter = 0;
+
+/** Parse compact tile notation like `123m456p` into Tile objects. */
+export function tilesFromString(notation: string): Tile[] {
+  const tiles: Tile[] = [];
+  const regex = /(\d+)([mpsz])/g;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(notation)) !== null) {
+    const digits = match[1];
+    const suitCode = match[2];
+    const suit = suitCode === 'm' ? 'man' : suitCode === 'p' ? 'pin' : suitCode === 's' ? 'sou' : 'wind';
+    for (const d of digits) {
+      tiles.push({ suit, rank: parseInt(d, 10), id: `t${idCounter++}` });
+    }
+  }
+  return tiles;
+}
+
