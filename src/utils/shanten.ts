@@ -15,9 +15,9 @@ export function calcStandardShanten(hand: Tile[], openMelds = 0): number {
   function dfs(idx: number, melds: number, pairs: number, taatsu: number) {
     while (idx < 34 && counts[idx] === 0) idx++;
     if (idx >= 34) {
-      let t = taatsu;
+      let t = taatsu + Math.max(0, pairs - 1);
       if (t > 4 - melds) t = 4 - melds;
-      const shanten = 8 - melds * 2 - t - Math.min(pairs, 1);
+      const shanten = 8 - melds * 2 - t - (pairs > 0 ? 1 : 0);
       if (shanten < minShanten) minShanten = shanten;
       return;
     }

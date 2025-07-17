@@ -36,9 +36,9 @@ describe('shanten calculations', () => {
       t('sou', 2, 'm'), t('sou', 3, 'n'),
     ];
     expect(calcChiitoiShanten(hand)).toBe(0);
-    expect(calcStandardShanten(hand)).toBe(1);
+    expect(calcStandardShanten(hand)).toBe(0);
     expect(calcKokushiShanten(hand)).toBe(9);
-    expect(calcShanten(hand)).toEqual({ standard: 1, chiitoi: 0, kokushi: 9 });
+    expect(calcShanten(hand)).toEqual({ standard: 0, chiitoi: 0, kokushi: 9 });
   });
 
   it('calculates chiitoitsu 2-shanten', () => {
@@ -102,7 +102,7 @@ describe('shanten calculations', () => {
       t('wind', 3, 'l'), t('wind', 3, 'm'),
     ];
     // この手牌は44m 2p 99p 123456s 西西で、2pを引けば聴牌になる
-    expect(calcStandardShanten(hand)).toBe(3);
+    expect(calcStandardShanten(hand)).toBe(1);
   });
 
   it('calculates tenpai for 2345677p 8p 22345s', () => {
@@ -121,5 +121,19 @@ describe('shanten calculations', () => {
     const hand = tilesFromString('678p1234466s5s');
     // 555m is already opened, so openMelds = 1
     expect(calcStandardShanten(hand, 1)).toBe(0);
+  });
+
+  it('computes shabo wait correctly regardless of open melds', () => {
+    const patterns: [number, string][] = [
+      [0, '111m234p567s33m99p'],
+      [1, '234p567s33m99p'],
+      [2, '567s33m99p'],
+      [3, '33m99p'],
+    ];
+    // 3面子2対子形で一つの対子を塔子とみなすため 0 向聴になる
+    for (const [n, str] of patterns) {
+      const hand = tilesFromString(str);
+      expect(calcStandardShanten(hand, n)).toBe(0);
+    }
   });
 });
