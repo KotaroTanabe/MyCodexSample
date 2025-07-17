@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { explainShanten } from './shantenExplain';
+import { tilesFromString } from './tileString';
 import { Tile } from '../types/mahjong';
 
 describe('explainShanten', () => {
@@ -15,7 +16,13 @@ describe('explainShanten', () => {
       t('dragon', 3, 'n'),
     ];
     const { shanten, explanation } = explainShanten(hand);
-    expect(shanten).toBe(4);
-    expect(explanation).toBe('標準形: 面子0組、対子2組、ターツ3組 -> 8 - 0*2 - 3 - 1 = 4');
+    expect(shanten).toBe(3);
+    expect(explanation).toBe('標準形: 面子0組、対子2組、ターツ4組 -> 8 - 0*2 - 4 - 1 = 3');
+  });
+
+  it('counts extra pair as taatsu', () => {
+    const { shanten, explanation } = explainShanten(tilesFromString('11m22m345p678p789s5m'));
+    expect(shanten).toBe(0);
+    expect(explanation).toBe('聴牌。標準形: 面子3組、対子2組、ターツ1組 -> 8 - 3*2 - 1 - 1 = 0');
   });
 });

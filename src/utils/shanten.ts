@@ -45,6 +45,7 @@ export function calcStandardShanten(hand: Tile[], openMelds = 0): number {
     if (counts[idx] >= 2) {
       counts[idx] -= 2;
       dfs(idx, melds, pairs + 1, taatsu);
+      dfs(idx, melds, pairs, taatsu + 1);
       counts[idx] += 2;
     }
 
