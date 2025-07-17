@@ -43,12 +43,19 @@ describe('exportTenhouLog', () => {
       winner: 0,
       loser: 0,
       uraDora: [],
+      han: 1,
+      fu: 30,
+      seatWind: 1,
+      winType: 'tsumo',
+      yakuList: [{ name: '立直', han: 1 }],
     };
     const scores = [25000, 25000, 25000, 25000];
     const json = exportTenhouLog(start, log, scores, end);
     expect(json.log[0][1]).toEqual(scores);
     expect(json.log[0][4][0]).toBe(tileToTenhouNumber(t));
     expect(json.log[0][16][0]).toBe('和了');
+    expect(json.log[0][16][2][3]).toBe('30符1飜500点∀');
+    expect(json.log[0][16][2][4]).toBe('立直(1飜)');
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });

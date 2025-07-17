@@ -71,16 +71,38 @@ Meld calls such as chi, pon and kan are encoded as strings beginning with
 a chi using 1-2-3 characters. The `result_info` array lists the winning
 and losing players, a hand value string and the yaku.
 
-Our implementation currently supports only a subset of this
-specification:
+Ura dora indicators are recorded but only revealed in the log when a
+hand is won.
 
-- Ura dora indicators are recorded but only revealed in the log when a
-  hand is won.
-- The result array stores only score deltas and a simple win record
-  without detailed point strings or yaku information.
+### Hand value strings
 
-Despite these limitations, the produced logs can be consumed by tools
-expecting the basic `tenhou.net/6` structure.
+`result_info` contains a string describing the hand value. The format
+matches the notation used by Tenhou:
+
+- **Parent tsumo** – `l符m飜n点∀` (e.g. `25符3飜1600点∀`)
+- **Child tsumo**  – `l符m飜n-2n点` (e.g. `30符3飜1000-2000点`)
+- **Ron win**      – `l符m飜n点`
+
+For hands worth mangan or higher, the `l符m飜` portion is replaced with
+the limit name (`満貫`, `跳満`, `倍満`, `三倍満`, `役満`). Example:
+`満貫12000点`.
+
+After the value string, each yaku is listed in the form
+`YAKU_NAME(han飜)`.
+
+The result array therefore looks like the following:
+
+```jsonc
+[
+  win_player,
+  deal_in_player,
+  win_player, // repeated as in Tenhou logs
+  "value string",
+  "立直(1飜)",
+  "門前清自摸和(1飜)",
+  "ドラ(1飜)"
+]
+```
 
 ## Legends
 ```jsonc
