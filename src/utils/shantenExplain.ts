@@ -36,10 +36,16 @@ export function calcStandardDetail(hand: Tile[], openMelds = 0) {
       melds++;
     }
   }
+  let pairUsed = false;
   for (let i = 0; i < 34; i++) {
     while (counts[i] >= 2) {
       counts[i] -= 2;
       pairs++;
+      if (!pairUsed) {
+        pairUsed = true;
+      } else {
+        taatsu++;
+      }
     }
   }
   for (let i = 0; i < 27; i++) {
@@ -56,13 +62,7 @@ export function calcStandardDetail(hand: Tile[], openMelds = 0) {
       taatsu++;
     }
   }
-  for (let i = 0; i < 34; i++) {
-    while (counts[i] >= 2) {
-      counts[i] -= 2;
-      taatsu++;
-    }
-  }
-  pairForShanten = Math.min(pairs, 1);
+  pairForShanten = pairUsed ? 1 : 0;
   melds += openMelds;
   if (taatsu > 4 - melds) taatsu = 4 - melds;
   const shanten = 8 - melds * 2 - taatsu - pairForShanten;
