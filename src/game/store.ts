@@ -826,17 +826,23 @@ const handleCallAction = (action: MeldType | 'pass') => {
       kanType = 'kakan';
     }
 
-    p[caller] = claimMeld(p[caller], tiles, 'kan', from, calledId, kanType);
+    const ordered = [...tiles];
+    const idx = ordered.findIndex(t => t.id === calledId);
+    if (idx >= 0) {
+      const calledTile = ordered.splice(idx, 1)[0];
+      ordered.push(calledTile);
+    }
+    p[caller] = claimMeld(p[caller], ordered, 'kan', from, calledId, kanType);
 
     setPlayers(p);
     playersRef.current = p;
     setLog(prev => [
       ...prev,
-      { type: 'meld', player: caller, tiles, meldType: 'kan', from, kanType },
+      { type: 'meld', player: caller, tiles: ordered, meldType: 'kan', from, kanType },
     ]);
     logRef.current = [
       ...logRef.current,
-      { type: 'meld', player: caller, tiles, meldType: 'kan', from, kanType },
+      { type: 'meld', player: caller, tiles: ordered, meldType: 'kan', from, kanType },
     ];
 
     kanDrawRef.current = caller;
