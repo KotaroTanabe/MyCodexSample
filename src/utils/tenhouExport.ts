@@ -1,4 +1,5 @@
 import { LogEntry, RoundStartInfo, Tile } from '../types/mahjong';
+import { calcBase, calcRoundedScore } from '../score/score';
 
 export interface RoundEndInfo {
   result: '和了' | '流局';
@@ -6,6 +7,11 @@ export interface RoundEndInfo {
   winner?: number;
   loser?: number;
   uraDora?: Tile[];
+  han?: number;
+  fu?: number;
+  seatWind?: number;
+  winType?: 'ron' | 'tsumo';
+  yakuList?: { name: string; han: number }[];
 }
 
 export function tileToTenhouNumber(tile: Tile): number {
@@ -52,6 +58,37 @@ function encodeMeld(e: Extract<LogEntry, { type: 'meld' }>): string {
   return others
     .map((n, i) => (i === pos ? prefixMap[e.meldType] + n : String(n)))
     .join('');
+}
+
+function formatPointString(han: number, fu: number, seatWind: number, winType: 'ron' | 'tsumo'): string {
+  const base = calcBase(han, fu);
+  const limit =
+    han >= 13
+      ? '役満'
+      : han >= 11
+      ? '三倍満'
+      : han >= 8
+      ? '倍満'
+      : han >= 6
+      ? '跳満'
+      : han === 5 || base >= 2000
+      ? '満貫'
+      : null;
+
+  if (winType === 'ron') {
+    const pts = calcRoundedScore(han, fu, seatWind === 1, 'ron');
+    return limit ? `${limit}${pts}点` : `${fu}符${han}飜${pts}点`;
+  }
+
+  if (seatWind === 1) {
+    const each = calcRoundedScore(han, fu, true, 'tsumo');
+    return limit ? `${limit}${each}点∀` : `${fu}符${han}飜${each}点∀`;
+  }
+  const child = calcRoundedScore(han, fu, false, 'tsumo');
+  const dealer = calcRoundedScore(han, fu, true, 'tsumo');
+  return limit
+    ? `${limit}${child}-${dealer}点`
+    : `${fu}符${han}飜${child}-${dealer}点`;
 }
 
 export function exportTenhouLog(
@@ -180,7 +217,15 @@ export function exportTenhouLog(
 
   const resultArr: any[] = [end.result, end.diffs];
   if (end.result === '和了') {
-    resultArr.push([end.winner, end.loser ?? end.winner, end.winner, '']);
+    const pointStr =
+      end.han !== undefined &&
+      end.fu !== undefined &&
+      end.seatWind !== undefined &&
+      end.winType
+        ? formatPointString(end.han, end.fu, end.seatWind, end.winType)
+        : '';
+    const yaku = end.yakuList?.map(y => `${y.name}(${y.han}飜)`) ?? [];
+    resultArr.push([end.winner, end.loser ?? end.winner, end.winner, pointStr, ...yaku]);
   }
   hand.push(resultArr);
 

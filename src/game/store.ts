@@ -33,6 +33,7 @@ import type { WinResult } from '../components/WinResultModal';
 import { exportLqRecord } from '../utils/paifuExport';
 import { exportMjaiRecord } from '../utils/mjaiExport';
 import { exportTenhouLog } from '../utils/tenhouExport';
+import type { RoundEndInfo } from '../utils/tenhouExport';
 import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
 
@@ -315,13 +316,7 @@ export const useGame = (gameLength: GameLength) => {
   });
   const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
   const startScoresRef = useRef<number[]>([]);
-  const endInfoRef = useRef<{
-    result: '和了' | '流局';
-    diffs: number[];
-    winner?: number;
-    loser?: number;
-    uraDora?: Tile[];
-  } | null>(null);
+  const endInfoRef = useRef<RoundEndInfo | null>(null);
 
   const clearActionTimer = () => {
     if (actionTimerRef.current !== null) {
@@ -969,6 +964,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
       winner: idx,
       loser: idx,
       uraDora: ura,
+      han,
+      fu,
+      seatWind,
+      winType: 'tsumo',
+      yakuList: yaku,
     };
     setLog(prev => [...prev, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }]);
     logRef.current = [...logRef.current, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }];
@@ -1042,6 +1042,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
       winner,
       loser: from,
       uraDora: ura,
+      han,
+      fu,
+      seatWind,
+      winType: 'ron',
+      yakuList: yaku,
     };
     setLog(prev => [...prev, { type: 'ron', player: winner, tile, from }]);
     logRef.current = [...logRef.current, { type: 'ron', player: winner, tile, from }];
