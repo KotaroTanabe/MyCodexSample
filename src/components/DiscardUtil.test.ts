@@ -20,7 +20,7 @@ describe('findRonWinner', () => {
     const p1 = createInitialPlayerState('p1', false);
     const p2 = { ...createInitialPlayerState('p2', false), hand: winningBase };
     const players = [p1, p2];
-    const idx = findRonWinner(players, 0, winningTile);
+    const idx = findRonWinner(players, 0, winningTile, 1);
     expect(idx).toBe(1);
   });
 
@@ -28,7 +28,23 @@ describe('findRonWinner', () => {
     const p1 = createInitialPlayerState('p1', false);
     const p2 = createInitialPlayerState('p2', false);
     const players = [p1, p2];
-    const idx = findRonWinner(players, 0, winningTile);
+    const idx = findRonWinner(players, 0, winningTile, 1);
+    expect(idx).toBeNull();
+  });
+
+  it('ignores hands with only dora', () => {
+    const base: Tile[] = [
+      t('man',1,'a1'),t('man',2,'a2'),t('man',3,'a3'),
+      t('pin',4,'b4'),t('pin',5,'b5'),t('pin',6,'b6'),
+      t('sou',7,'c7'),t('sou',8,'c8'),t('sou',9,'c9'),
+      t('man',3,'d3'),t('man',4,'d4'),t('man',5,'d5'),
+      t('wind',3,'w1'),
+    ];
+    const win = t('wind',3,'w2');
+    const p1 = createInitialPlayerState('p1', false);
+    const p2 = { ...createInitialPlayerState('p2', false), hand: base };
+    const players = [p1, p2];
+    const idx = findRonWinner(players, 0, win, 1);
     expect(idx).toBeNull();
   });
 });
