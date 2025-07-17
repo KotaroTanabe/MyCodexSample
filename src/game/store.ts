@@ -613,13 +613,24 @@ export const useGame = (gameLength: GameLength) => {
         return;
       }
     }
-    if (isWinningHand([...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)])) {
-      if (p[currentIndex].isAI || currentIndex !== 0) {
-        performTsumo(currentIndex);
-        return;
-      } else {
-        setTsumoOption(true);
-        return;
+    const fullHand = [...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)];
+    if (isWinningHand(fullHand)) {
+      const seatWind = p[currentIndex].seat + 1;
+      const roundWind = kyokuRef.current <= 4 ? 1 : 2;
+      const yaku = detectYaku(p[currentIndex].hand, p[currentIndex].melds, {
+        isTsumo: true,
+        seatWind,
+        roundWind,
+      });
+      const hasBaseYaku = yaku.some(y => y.name !== 'Ura Dora');
+      if (hasBaseYaku) {
+        if (p[currentIndex].isAI || currentIndex !== 0) {
+          performTsumo(currentIndex);
+          return;
+        } else {
+          setTsumoOption(true);
+          return;
+        }
       }
     }
     if (last) {
@@ -665,7 +676,8 @@ export const useGame = (gameLength: GameLength) => {
     playersRef.current = p;
     setLog(prev => appendDiscardLog(prev, idx, tile));
     logRef.current = appendDiscardLog(logRef.current, idx, tile);
-    const winIdx = findRonWinner(p, idx, tile);
+    const roundWind = kyokuRef.current <= 4 ? 1 : 2;
+    const winIdx = findRonWinner(p, idx, tile, roundWind);
     if (winIdx !== null) {
       if (p[winIdx].isAI || winIdx !== 0) {
         performRon(winIdx, idx, tile);
@@ -944,6 +956,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
       roundWind,
       uraDoraIndicators: ura,
     });
+    const baseYaku = yaku.filter(y => y.name !== 'Ura Dora');
+    if (baseYaku.length === 0) {
+      if (idx === 0) setMessage('役なし');
+      return;
+    }
     const { han, fu, points } = calculateScore(
       p[idx].hand,
       p[idx].melds,
@@ -1017,6 +1034,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
       roundWind,
       uraDoraIndicators: ura,
     });
+    const baseYaku = yaku.filter(y => y.name !== 'Ura Dora');
+    if (baseYaku.length === 0) {
+      if (winner === 0) setMessage('役なし');
+      return;
+    }
     const { han, fu, points } = calculateScore(
       [...p[winner].hand, tile],
       p[winner].melds,
