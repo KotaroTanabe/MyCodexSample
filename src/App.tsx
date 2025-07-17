@@ -3,13 +3,14 @@ import { GameController } from './components/GameController';
 import { FuQuiz } from './components/FuQuiz';
 import { ScoreQuiz } from './components/ScoreQuiz';
 import { ShantenQuiz } from './components/ShantenQuiz';
+import { UkeireQuiz } from './components/UkeireQuiz';
 import { HelpModal } from './components/HelpModal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [tileFont, setTileFont] = useState(2);
-  const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz'>('game');
+  const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz' | 'ukeire-quiz'>('game');
   const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
     'east1',
   );
@@ -48,7 +49,11 @@ function App() {
               onChange={e =>
                 setMode(
                   e.target.value as
-                    'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz',
+                    | 'game'
+                    | 'fu-quiz'
+                    | 'score-quiz'
+                    | 'shanten-quiz'
+                    | 'ukeire-quiz',
                 )
               }
               className="border px-2 py-1"
@@ -57,6 +62,7 @@ function App() {
               <option value="fu-quiz">符クイズ</option>
               <option value="score-quiz">点数クイズ</option>
               <option value="shanten-quiz">向聴数クイズ</option>
+              <option value="ukeire-quiz">受け入れ枚数クイズ</option>
             </select>
           </div>
         {mode === 'game' && (
@@ -107,8 +113,10 @@ function App() {
         <FuQuiz />
       ) : mode === 'score-quiz' ? (
         <ScoreQuiz />
-      ) : (
+      ) : mode === 'shanten-quiz' ? (
         <ShantenQuiz />
+      ) : (
+        <UkeireQuiz />
       )}
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <ToastContainer position="bottom-right" />
