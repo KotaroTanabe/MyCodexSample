@@ -68,12 +68,12 @@ describe('payoutNoten', () => {
     const players = setupPlayers();
     const tenpai = [true, true, false, false];
     const { players: updated } = payoutNoten(players, tenpai);
-    // 2人テンパイ・2人ノーテンの場合、ノーテン者はテンパイ者それぞれに1000点支払う
-    // よってテンパイ者は1000点×2=2000点受け取り、ノーテン者は2000点支払いとなるはず
-    expect(updated[0].score).toBe(players[0].score + 2000);
-    expect(updated[1].score).toBe(players[1].score + 2000);
+    // 2人テンパイ・2人ノーテンの場合、ノーテン合計3000点をテンパイ同士で分け合う
+    // よってテンパイ者は1500点受け取り、ノーテン者は1500点支払いとなるはず
+    expect(updated[0].score).toBe(players[0].score + 1500);
+    expect(updated[1].score).toBe(players[1].score + 1500);
     for (let i = 2; i < 4; i++) {
-      expect(updated[i].score).toBe(players[i].score - 2000);
+      expect(updated[i].score).toBe(players[i].score - 1500);
     }
   });
 

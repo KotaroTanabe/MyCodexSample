@@ -42,12 +42,14 @@ export function payoutNoten(
     return { players: [...players], changes: players.map(() => 0) };
   }
   const notenCount = players.length - tenpaiCount;
-  const penalty = 1000;
+  const totalPenalty = 3000;
+  const gain = totalPenalty / tenpaiCount;
+  const loss = totalPenalty / notenCount;
   const updated: PlayerState[] = players.map((p, idx) => {
     if (tenpai[idx]) {
-      return { ...p, score: p.score + penalty * notenCount };
+      return { ...p, score: p.score + gain };
     }
-    return { ...p, score: p.score - penalty * tenpaiCount };
+    return { ...p, score: p.score - loss };
   });
   const changes = updated.map((p, idx) => p.score - players[idx].score);
   return { players: updated, changes };
