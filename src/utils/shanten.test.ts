@@ -136,4 +136,9 @@ describe('shanten calculations', () => {
       expect(calcStandardShanten(hand, n)).toBe(0);
     }
   });
+  it('uses extra pair as taatsu when beneficial', () => {
+    const hand = tilesFromString('11m22m345p678p789s5m');
+    // One pair is used as the head, the other as a taatsu
+    expect(calcStandardShanten(hand)).toBe(0);
+  });
 });
