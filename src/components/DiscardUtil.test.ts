@@ -71,4 +71,28 @@ describe('findRonWinner', () => {
     const idx = findRonWinner(players, 1, winTile, 1);
     expect(idx).toBe(0);
   });
+
+  it('detects ron on tsumogiri 6p for 6p/9p wait', () => {
+    const base: Tile[] = [
+      t('pin', 2, 'a'),
+      t('pin', 3, 'b'),
+      t('pin', 4, 'c'),
+      t('pin', 5, 'd'),
+      t('pin', 6, 'e'),
+      t('pin', 7, 'f'),
+      t('pin', 7, 'g'),
+      t('pin', 8, 'h'),
+      t('sou', 2, 'i'),
+      t('sou', 2, 'j'),
+      t('sou', 3, 'k'),
+      t('sou', 4, 'l'),
+      t('sou', 5, 'm'),
+    ];
+    const winTile = t('pin', 6, 'ron');
+    const p1 = { ...createInitialPlayerState('p1', false), hand: base };
+    const p2 = createInitialPlayerState('p2', false);
+    const players = [p1, p2];
+    const idx = findRonWinner(players, 1, winTile, 1);
+    expect(idx).toBe(0);
+  });
 });

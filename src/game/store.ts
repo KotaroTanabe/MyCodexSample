@@ -688,7 +688,8 @@ export const useGame = (gameLength: GameLength) => {
     setLog(prev => appendDiscardLog(prev, idx, tile));
     logRef.current = appendDiscardLog(logRef.current, idx, tile);
     const roundWind = kyokuRef.current <= 4 ? 1 : 2;
-    const winIdx = findRonWinner(p, idx, tile, roundWind);
+    const ronTile = p[idx].drawnTile ?? tile;
+    const winIdx = findRonWinner(p, idx, ronTile, roundWind);
     if (winIdx !== null) {
       if (p[winIdx].isAI || winIdx !== 0) {
         performRon(winIdx, idx, tile);
