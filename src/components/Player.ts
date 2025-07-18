@@ -63,7 +63,10 @@ export function discardTile(
     ...player,
     hand: sortHand(newHand),
     discard: [...player.discard, tile],
-    drawnTile: null,
+    drawnTile:
+      player.drawnTile && player.drawnTile.id === tileId
+        ? player.drawnTile
+        : null,
   };
 }
 
