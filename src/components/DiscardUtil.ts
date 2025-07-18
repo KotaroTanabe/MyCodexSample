@@ -1,4 +1,4 @@
-import { Tile } from '../types/mahjong';
+import { Tile, PlayerState } from '../types/mahjong';
 import { isWinningHand, detectYaku } from '../score/yaku';
 
 export function incrementDiscardCount(
@@ -12,7 +12,10 @@ export function incrementDiscardCount(
 }
 
 export function findRonWinner(
-  players: { hand: Tile[]; melds: { tiles: Tile[] }[]; seat: number }[],
+  players: Pick<
+    PlayerState,
+    'hand' | 'melds' | 'seat' | 'isRiichi' | 'doubleRiichi' | 'ippatsu'
+  >[],
   discarderIndex: number,
   tile: Tile,
   roundWind: number,
@@ -28,7 +31,14 @@ export function findRonWinner(
       const yaku = detectYaku(
         [...players[i].hand, tile],
         players[i].melds as any,
-        { seatWind: players[i].seat + 1, roundWind, isTsumo: false },
+        {
+          seatWind: players[i].seat + 1,
+          roundWind,
+          isTsumo: false,
+          isRiichi: players[i].isRiichi,
+          doubleRiichi: players[i].doubleRiichi,
+          ippatsu: players[i].ippatsu,
+        },
       );
       const hasBaseYaku = yaku.some(y => y.name !== 'Ura Dora');
       if (hasBaseYaku) return i;
