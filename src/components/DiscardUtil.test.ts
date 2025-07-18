@@ -47,4 +47,28 @@ describe('findRonWinner', () => {
     const idx = findRonWinner(players, 0, win, 1);
     expect(idx).toBeNull();
   });
+
+  it('counts riichi as valid yaku', () => {
+    const base: Tile[] = [
+      t('man', 1, 'm1'),
+      t('man', 2, 'm2'),
+      t('man', 3, 'm3'),
+      t('pin', 2, 'p2'),
+      t('pin', 3, 'p3'),
+      t('pin', 4, 'p4'),
+      t('sou', 2, 's2'),
+      t('sou', 3, 's3'),
+      t('sou', 4, 's4'),
+      t('man', 5, 'm5'),
+      t('man', 6, 'm6'),
+      t('wind', 3, 'w1'),
+      t('wind', 3, 'w2'),
+    ];
+    const winTile = t('man', 7, 'm7');
+    const p1 = { ...createInitialPlayerState('p1', false), hand: base, isRiichi: true };
+    const p2 = createInitialPlayerState('p2', false);
+    const players = [p1, p2];
+    const idx = findRonWinner(players, 1, winTile, 1);
+    expect(idx).toBe(0);
+  });
 });
