@@ -609,15 +609,12 @@ export const useGame = (gameLength: GameLength) => {
     if (last) {
       // postpone exhaustion until after possible win/discard
     }
+    const kanOpts = getSelfKanOptions(playersRef.current[currentIndex]);
     if (!playersRef.current[currentIndex].isAI) {
-      const opts = getSelfKanOptions(playersRef.current[currentIndex]);
-      setSelfKanOptions(opts.length > 0 ? opts : null);
-    } else {
-      const opts = getSelfKanOptions(playersRef.current[currentIndex]);
-      if (opts.length > 0) {
-        performSelfKan(currentIndex, opts[0]);
-        return;
-      }
+      setSelfKanOptions(kanOpts.length > 0 ? kanOpts : null);
+    } else if (kanOpts.length > 0) {
+      performSelfKan(currentIndex, kanOpts[0]);
+      return;
     }
     const fullHand = [...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)];
     if (isWinningHand(fullHand)) {
@@ -638,6 +635,14 @@ export const useGame = (gameLength: GameLength) => {
           return;
         }
       }
+    }
+    if (
+      playersRef.current[currentIndex].isRiichi &&
+      !playersRef.current[currentIndex].isAI &&
+      kanOpts.length === 0
+    ) {
+      handleDiscard(p[currentIndex].drawnTile!.id);
+      return;
     }
     if (last) {
       handleWallExhaustion();
