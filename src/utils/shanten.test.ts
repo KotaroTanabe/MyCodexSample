@@ -123,6 +123,19 @@ describe('shanten calculations', () => {
     expect(calcStandardShanten(hand, 1)).toBe(0);
   });
 
+  it('computes shabo wait correctly regardless of open melds', () => {
+    const patterns: [number, string][] = [
+      [0, '111m234p567s33m99p'],
+      [1, '234p567s33m99p'],
+      [2, '567s33m99p'],
+      [3, '33m99p'],
+    ];
+    // 3面子2対子形で一つの対子を塔子とみなすため 0 向聴になる
+    for (const [n, str] of patterns) {
+      const hand = tilesFromString(str);
+      expect(calcStandardShanten(hand, n)).toBe(0);
+    }
+  });
   it('uses extra pair as taatsu when beneficial', () => {
     const hand = tilesFromString('11m22m345p678p789s5m');
     // One pair is used as the head, the other as a taatsu
