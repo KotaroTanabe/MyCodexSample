@@ -102,28 +102,6 @@ describe('WinResultModal', () => {
     expect(screen.getByText(/ドラ1/)).toBeTruthy();
   });
 
-  it('calls download callback', () => {
-    const fn = vi.fn();
-    render(
-      <WinResultModal
-        players={players}
-        winner={0}
-        winType="tsumo"
-        hand={hand}
-        melds={[]}
-        winTile={winTile}
-        yaku={['立直']}
-        han={1}
-        fu={30}
-        points={1000}
-        dora={[]}
-        onNext={() => {}}
-        onDownloadTenhou={fn}
-      />,
-    );
-    screen.getByText('Tenhouログダウンロード').click();
-    expect(fn).toHaveBeenCalled();
-  });
 
   it('calls copy callback', () => {
     const fn = vi.fn();
@@ -142,10 +120,12 @@ describe('WinResultModal', () => {
         dora={[]}
         onNext={() => {}}
         onCopyTenhou={fn}
-      />,
+      />, 
     );
-    screen.getByText('コピー').click();
+    screen.getByText('Tenhouログ コピー').click();
     expect(fn).toHaveBeenCalled();
+    const link = screen.getByRole('link', { name: '牌譜解析（外部サイト）' });
+    expect(link.getAttribute('href')).toBe('https://mjai.ekyu.moe/ja.html');
   });
 
   it('shows tsumo points text with split payments', () => {
