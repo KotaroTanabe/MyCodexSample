@@ -14,21 +14,14 @@ describe('RoundResultModal', () => {
     expect(screen.getByText('結果発表へ')).toBeTruthy();
   });
 
-  it('calls download callback', () => {
-    const fn = vi.fn();
-    render(
-      <RoundResultModal results={results} onNext={() => {}} onDownloadTenhou={fn} />,
-    );
-    screen.getByText('Tenhou形式ログ').click();
-    expect(fn).toHaveBeenCalled();
-  });
-
   it('calls copy callback', () => {
     const fn = vi.fn();
     render(
       <RoundResultModal results={results} onNext={() => {}} onCopyTenhou={fn} />,
     );
-    screen.getByText('コピー').click();
+    screen.getByText('Tenhouログ コピー').click();
     expect(fn).toHaveBeenCalled();
+    const link = screen.getByRole('link', { name: '牌譜解析（外部サイト）' });
+    expect(link.getAttribute('href')).toBe('https://mjai.ekyu.moe/ja.html');
   });
 });

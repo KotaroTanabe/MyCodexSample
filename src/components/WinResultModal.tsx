@@ -49,7 +49,6 @@ export interface WinResult {
 interface Props extends WinResult {
   onNext: () => void;
   nextLabel?: string;
-  onDownloadTenhou?: () => void;
   onCopyTenhou?: () => void;
 }
 
@@ -68,7 +67,6 @@ export const WinResultModal: React.FC<Props> = ({
   uraDora,
   onNext,
   nextLabel = '次局へ',
-  onDownloadTenhou,
   onCopyTenhou,
 }) => {
   if (players.length === 0) return null;
@@ -139,24 +137,22 @@ export const WinResultModal: React.FC<Props> = ({
             ))}
           </tbody>
         </table>
-        {(onDownloadTenhou || onCopyTenhou) && (
+        {onCopyTenhou && (
           <div className="flex gap-2 mt-2">
-            {onDownloadTenhou && (
-              <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={onDownloadTenhou}
-              >
-                Tenhouログダウンロード
-              </button>
-            )}
-            {onCopyTenhou && (
-              <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={onCopyTenhou}
-              >
-                コピー
-              </button>
-            )}
+            <button
+              className="px-2 py-1 bg-gray-200 rounded"
+              onClick={onCopyTenhou}
+            >
+              Tenhouログ コピー
+            </button>
+            <a
+              className="px-2 py-1 bg-gray-200 rounded"
+              href="https://mjai.ekyu.moe/ja.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              牌譜解析（外部サイト）
+            </a>
           </div>
         )}
         <button className="mt-2 px-4 py-1 bg-blue-500 text-white rounded" onClick={onNext}>

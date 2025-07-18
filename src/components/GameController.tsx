@@ -84,7 +84,6 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         <WinResultModal
           {...game.winResult}
           nextLabel={game.kyoku >= maxKyoku ? '結果発表へ' : undefined}
-          onDownloadTenhou={game.handleDownloadTenhouLog}
           onCopyTenhou={game.handleCopyTenhouLog}
           onNext={() => {
             const dealerWon = game.winResult!.winner === 0;
@@ -97,7 +96,6 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         <RoundResultModal
           results={game.roundResult.results}
           nextLabel={game.kyoku >= maxKyoku ? '結果発表へ' : undefined}
-          onDownloadTenhou={game.handleDownloadTenhouLog}
           onCopyTenhou={game.handleCopyTenhouLog}
           onNext={() => {
             game.setRoundResult(null);
