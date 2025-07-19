@@ -7,8 +7,8 @@ import {
   isTenpaiAfterDiscard,
 } from '../components/Player';
 
-function makePlayer(hand: Tile[]): PlayerState {
-  return { ...createInitialPlayerState('ai', true), hand };
+function makePlayer(hand: Tile[], seat = 0): PlayerState {
+  return { ...createInitialPlayerState('ai', true, seat), hand };
 }
 
 describe('chooseAICallOption', () => {
@@ -19,7 +19,7 @@ describe('chooseAICallOption', () => {
       { suit: 'man', rank: 3, id: 'b' },
       { suit: 'man', rank: 3, id: 'c' },
     ];
-    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('kan');
+    expect(chooseAICallOption(makePlayer(hand), discard, 3)).toBe('kan');
   });
 
   it('calls pon when it improves shanten', () => {
@@ -39,7 +39,7 @@ describe('chooseAICallOption', () => {
       { suit: 'man', rank: 9, id: 'l' },
       { suit: 'man', rank: 1, id: 'm' },
     ];
-    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('pon');
+    expect(chooseAICallOption(makePlayer(hand), discard, 3)).toBe('pon');
   });
 
   it('calls chi when it improves shanten', () => {
@@ -59,7 +59,16 @@ describe('chooseAICallOption', () => {
       { suit: 'pin', rank: 9, id: 'l' },
       { suit: 'pin', rank: 9, id: 'm' },
     ];
-    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('chi');
+    expect(chooseAICallOption(makePlayer(hand), discard, 3)).toBe('chi');
+  });
+
+  it('does not chi when caller is not left of discarder', () => {
+    const discard: Tile = { suit: 'pin', rank: 2, id: 'x' };
+    const hand: Tile[] = [
+      { suit: 'pin', rank: 1, id: 'f' },
+      { suit: 'pin', rank: 3, id: 'i' },
+    ];
+    expect(chooseAICallOption(makePlayer(hand, 1), discard, 3)).toBe('pass');
   });
 
   it('passes when call does not improve shanten', () => {
@@ -79,7 +88,7 @@ describe('chooseAICallOption', () => {
       { suit: 'sou', rank: 5, id: 'm' },
       { suit: 'sou', rank: 7, id: 'n' },
     ];
-    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('pass');
+    expect(chooseAICallOption(makePlayer(hand), discard, 3)).toBe('pass');
   });
 
   it('passes when no meld available', () => {
@@ -88,7 +97,7 @@ describe('chooseAICallOption', () => {
       { suit: 'man', rank: 1, id: 'a' },
       { suit: 'pin', rank: 2, id: 'b' },
     ];
-    expect(chooseAICallOption(makePlayer(hand), discard)).toBe('pass');
+    expect(chooseAICallOption(makePlayer(hand), discard, 3)).toBe('pass');
   });
 });
 
