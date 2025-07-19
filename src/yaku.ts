@@ -79,6 +79,12 @@ export const YAKU_LIST: Yaku[] = [
     hanOpen: 1,
   },
   {
+    name: 'Junchan',
+    description: '么九牌のみを含み字牌を含まない',
+    hanClosed: 3,
+    hanOpen: 2,
+  },
+  {
     name: 'Honitsu',
     description: '1種類の数牌と字牌のみで構成する',
     hanClosed: 3,
@@ -131,5 +137,17 @@ export const YAKU_LIST: Yaku[] = [
     description: '裏ドラによる加算',
     hanClosed: 1,
     hanOpen: 0,
+  },
+  {
+    name: 'San Kantsu',
+    description: '槓子を3組作る',
+    hanClosed: 2,
+    hanOpen: 2,
+  },
+  {
+    name: 'Su Kantsu',
+    description: '槓子を4組作る',
+    hanClosed: 13,
+    hanOpen: 13,
   },
 ];

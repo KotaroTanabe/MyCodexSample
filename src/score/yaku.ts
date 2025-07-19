@@ -301,6 +301,24 @@ function isChanta(parsed: { pair: Tile[]; melds: ParsedMeld[] }): boolean {
   return parsed.melds.every(m => m.tiles.some(isTerminalOrHonor));
 }
 
+function isJunchan(parsed: { pair: Tile[]; melds: ParsedMeld[] }): boolean {
+  if (!isChanta(parsed)) return false;
+  const tiles = [...parsed.pair, ...parsed.melds.flatMap(m => m.tiles)];
+  return tiles.every(t => t.suit !== 'wind' && t.suit !== 'dragon');
+}
+
+function countKans(melds: Meld[]): number {
+  return melds.filter(m => m.type === 'kan').length;
+}
+
+function isSanKantsu(melds: Meld[]): boolean {
+  return countKans(melds) >= 3;
+}
+
+function isSuKantsu(melds: Meld[]): boolean {
+  return countKans(melds) >= 4;
+}
+
 function isHonitsu(tiles: Tile[]): boolean {
   const suits = new Set(tiles.filter(t => t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou').map(t => t.suit));
   const hasHonor = tiles.some(t => t.suit === 'wind' || t.suit === 'dragon');
@@ -378,7 +396,9 @@ export function detectYaku(
   if (parsed && isIttsu(parsed)) {
     result.push({ name: 'Ittsu', han: isClosed ? 2 : 1 });
   }
-  if (parsed && isChanta(parsed)) {
+  if (parsed && isJunchan(parsed)) {
+    result.push({ name: 'Junchan', han: isClosed ? 3 : 2 });
+  } else if (parsed && isChanta(parsed)) {
     result.push({ name: 'Chanta', han: isClosed ? 2 : 1 });
   }
   if (isClosed && isPinfuHand(allTiles)) {
@@ -415,6 +435,11 @@ export function detectYaku(
     result.push({ name: 'Chinitsu', han: isClosed ? 6 : 5 });
   } else if (isHonitsu(allTiles)) {
     result.push({ name: 'Honitsu', han: isClosed ? 3 : 2 });
+  }
+  if (isSuKantsu(melds)) {
+    result.push({ name: 'Su Kantsu', han: 13 });
+  } else if (isSanKantsu(melds)) {
+    result.push({ name: 'San Kantsu', han: 2 });
   }
   const yakuhai = countValueTriplets(
     counts,
