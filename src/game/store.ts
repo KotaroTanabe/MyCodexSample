@@ -521,6 +521,10 @@ export const useGame = (gameLength: GameLength) => {
     kanDrawRef.current = null;
     drawInfoRef.current = {};
     setPhase('playing');
+    turnRef.current = dealerIdx;
+    if (firstIsAI) {
+      handleAITurn(dealerIdx);
+    }
   };
 
   // 初期化
