@@ -1286,6 +1286,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       logRef.current,
       startScoresRef.current,
       endInfoRef.current,
+      dora,
     );
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1303,6 +1304,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       logRef.current,
       startScoresRef.current,
       endInfoRef.current,
+      dora,
     );
     await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setMessage('Tenhouログをコピーしました');

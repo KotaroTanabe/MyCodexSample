@@ -347,9 +347,32 @@ describe('exportTenhouLog', () => {
     const scores = [25000, 25000, 25000, 25000];
     const json = exportTenhouLog(start, log, scores, end);
     const code = tileToTenhouNumber(base);
-    const expected = `${code}${code}k${code}${code}`;
-    expect(json.log[0][6]).toEqual([expected]);
-    expect(json.log[0][5]).toEqual([code, tileToTenhouNumber(rinshan)]);
+  const expected = `${code}${code}k${code}${code}`;
+  expect(json.log[0][6]).toEqual([expected]);
+  expect(json.log[0][5]).toEqual([code, tileToTenhouNumber(rinshan)]);
+  writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+  execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
+  it('includes kan dora indicators', () => {
+    const base = makeTile(1);
+    const kanDora = makeTile(2);
+    const start: RoundStartInfo = {
+      hands: Array(4)
+        .fill(0)
+        .map(() => Array(13).fill(base)),
+      dealer: 0,
+      doraIndicator: base,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [{ type: 'startRound', kyoku: 1 }];
+    const end: RoundEndInfo = { result: '流局', diffs: [0, 0, 0, 0] };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end, [base, kanDora]);
+    expect(json.log[0][2]).toEqual([
+      tileToTenhouNumber(base),
+      tileToTenhouNumber(kanDora),
+    ]);
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });

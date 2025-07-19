@@ -96,6 +96,7 @@ export function exportTenhouLog(
   log: LogEntry[],
   startScores: number[],
   end: RoundEndInfo,
+  doraIndicators: Tile[] = [round.doraIndicator],
 ) {
   const hai = round.hands.map(h => h.map(tileToTenhouNumber));
   // Dealer has 14 tiles in RoundStartInfo; Tenhou format expects 13.
@@ -191,7 +192,7 @@ export function exportTenhouLog(
     }
   }
 
-  const dora = [tileToTenhouNumber(round.doraIndicator)];
+  const dora = doraIndicators.map(tileToTenhouNumber);
   const ura = end.uraDora ? end.uraDora.map(tileToTenhouNumber) : [];
 
   const kyokuNum = round.kyoku - 1;
