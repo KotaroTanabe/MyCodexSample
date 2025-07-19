@@ -95,4 +95,55 @@ describe('findRonWinner', () => {
     const idx = findRonWinner(players, 1, winTile, 1);
     expect(idx).toBe(0);
   });
+
+  it('handles ron with open melds', () => {
+    const melds = [
+      {
+        type: 'pon' as const,
+        tiles: [
+          t('dragon', 2, 'dr1'),
+          t('dragon', 2, 'dr2'),
+          t('dragon', 2, 'dr3'),
+        ],
+        fromPlayer: 0,
+        calledTileId: 'dr1',
+      },
+      {
+        type: 'chi' as const,
+        tiles: [
+          t('sou', 4, 's4'),
+          t('sou', 5, 's5'),
+          t('sou', 6, 's6'),
+        ],
+        fromPlayer: 0,
+        calledTileId: 's4',
+      },
+      {
+        type: 'pon' as const,
+        tiles: [
+          t('pin', 2, 'p2a'),
+          t('pin', 2, 'p2b'),
+          t('pin', 2, 'p2c'),
+        ],
+        fromPlayer: 0,
+        calledTileId: 'p2a',
+      },
+    ];
+    const concealed = [
+      t('pin', 4, 'p4'),
+      t('pin', 6, 'p6'),
+      t('pin', 8, 'p8a'),
+      t('pin', 8, 'p8b'),
+    ];
+    const discard = t('pin', 5, 'p5');
+    const p1 = createInitialPlayerState('p1', false);
+    const p2 = {
+      ...createInitialPlayerState('p2', false, 1),
+      hand: concealed,
+      melds,
+    };
+    const players = [p1, p2];
+    const idx = findRonWinner(players, 0, discard, 1);
+    expect(idx).toBe(1);
+  });
 });
