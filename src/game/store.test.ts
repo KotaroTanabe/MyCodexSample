@@ -12,25 +12,14 @@ describe('game store', () => {
     expect(result.current.kyoku).toBe(2);
   });
 
-  it('rotates seats when dealer changes', () => {
+  it('rotates seat numbers when dealer changes', () => {
     const { result } = renderHook(() => useGame('tonpu'));
-    expect(result.current.players.map(p => p.name)).toEqual([
-      'あなた',
-      'AI下家',
-      'AI対面',
-      'AI上家',
-    ]);
+    expect(result.current.players.map(p => p.seat)).toEqual([0, 1, 2, 3]);
     act(() => {
       result.current.nextKyoku(false);
     });
-    expect(result.current.players.map(p => p.name)).toEqual([
-      'AI下家',
-      'AI対面',
-      'AI上家',
-      'あなた',
-    ]);
-    expect(result.current.players[0].seat).toBe(0);
-    expect(result.current.players[3].seat).toBe(3);
+    expect(result.current.players.map(p => p.seat)).toEqual([3, 0, 1, 2]);
+    expect(result.current.players[0].name).toBe('あなた');
   });
 
   it('ends game after final round draw', () => {
