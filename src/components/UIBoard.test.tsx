@@ -99,6 +99,55 @@ describe('UIBoard shanten display', () => {
     expect(screen.getByText('和了可能')).toBeTruthy();
   });
 
+  it('recognizes Yakuhai with seat wind pon when shanten is negative', () => {
+    const player = {
+      ...createInitialPlayerState('you', false, 0),
+    } as PlayerState;
+    player.melds = [
+      {
+        type: 'pon',
+        tiles: [t('wind', 1, 'e1'), t('wind', 1, 'e2'), t('wind', 1, 'e3')],
+        fromPlayer: 1,
+        calledTileId: 'e1',
+      },
+    ];
+    player.hand = [
+      t('man', 2, 'm2a'),
+      t('man', 3, 'm3a'),
+      t('man', 4, 'm4a'),
+      t('pin', 2, 'p2a'),
+      t('pin', 3, 'p3a'),
+      t('pin', 4, 'p4a'),
+      t('sou', 2, 's2a'),
+      t('sou', 3, 's3a'),
+      t('sou', 4, 's4a'),
+      t('man', 5, 'm5a'),
+      t('man', 5, 'm5b'),
+    ];
+    player.drawnTile = player.hand[player.hand.length - 1];
+    render(
+      <UIBoard
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: -1, chiitoi: 13, kokushi: 13 }}
+        lastDiscard={null}
+        tsumoOption={true}
+      />,
+    );
+    expect(screen.getByText('和了可能')).toBeTruthy();
+  });
+
   it('shows no-yaku notice when shanten is negative but hand has no yaku', () => {
     const player = { ...createInitialPlayerState('you', false) } as PlayerState;
     player.melds = [
