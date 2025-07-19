@@ -358,6 +358,7 @@ export const useGame = (gameLength: GameLength) => {
             const action = chooseAICallOption(
               playersRef.current[0],
               lastDiscard.tile,
+              playersRef.current[lastDiscard.player].seat,
             );
             handleCallAction(action);
           }, 500);
@@ -1212,7 +1213,11 @@ const handleCallAction = (action: MeldType | 'pass') => {
   const handleAITurn = (ai: number) => {
     if (winResultRef.current) return;
     if (lastDiscard && lastDiscard.player !== ai) {
-      const action = chooseAICallOption(playersRef.current[ai], lastDiscard.tile);
+      const action = chooseAICallOption(
+        playersRef.current[ai],
+        lastDiscard.tile,
+        playersRef.current[lastDiscard.player].seat,
+      );
       if (action !== 'pass') {
         performAICall(ai, action);
         return;

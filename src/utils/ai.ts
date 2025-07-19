@@ -1,5 +1,6 @@
 import { PlayerState, Tile, MeldType } from '../types/mahjong';
 import { getValidCallOptions, selectMeldTiles } from './meld';
+import { isLeftOf } from './table';
 import { calcShanten } from './shanten';
 import { canDiscardTile } from '../components/Player';
 
@@ -11,11 +12,15 @@ import { canDiscardTile } from '../components/Player';
 export function chooseAICallOption(
   player: PlayerState,
   tile: Tile,
+  discarderSeat: number,
 ): MeldType | 'pass' {
   const options = getValidCallOptions(player, tile).filter(
     o => o !== 'pass',
   ) as MeldType[];
-  if (options.includes('kan')) return 'kan';
+  const filtered = isLeftOf(player.seat, discarderSeat)
+    ? options
+    : options.filter(o => o !== 'chi');
+  if (filtered.includes('kan')) return 'kan';
 
   const base = calcShanten(player.hand, player.melds.length);
   const baseValue = Math.min(base.standard, base.chiitoi, base.kokushi);
@@ -23,7 +28,7 @@ export function chooseAICallOption(
   let best: MeldType | null = null;
   let bestValue = baseValue;
 
-  for (const action of options) {
+  for (const action of filtered) {
     if (action === 'kan') continue;
     const tiles = selectMeldTiles(player, tile, action);
     if (!tiles) continue;
