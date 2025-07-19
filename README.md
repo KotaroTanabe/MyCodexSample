@@ -167,7 +167,7 @@ npm run lint
 | San Doukou | ✓ |
 | Ittsu | ✓ |
 | Chanta | ✓ |
-| Junchan | ✗ |
+| Junchan | ✓ |
 | Honitsu | ✓ |
 | Chinitsu | ✓ |
 | Riichi | ✓ |
@@ -179,8 +179,19 @@ npm run lint
 | Houtei | ✓ |
 | Ura Dora | ✓ |
 | Kokushi Musou | ✓ |
-| San Kantsu | ✗ |
-| Su Kantsu | ✗ |
+| San Kantsu | ✓ |
+| Su Kantsu | ✓ |
+| Daisangen | ✗ |
+| Shousangen | ✗ |
+| Suu Ankou | ✗ |
+| Daisuushii | ✗ |
+| Shousuushii | ✗ |
+| Tsuuiisou | ✗ |
+| Chinroutou | ✗ |
+| Ryuuiisou | ✗ |
+| Chuuren Poutou | ✗ |
+| Tenhou / Chiihou | ✗ |
+| Renhou | ✗ |
 
 ## 牌譜エクスポート
 

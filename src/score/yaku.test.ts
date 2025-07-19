@@ -476,6 +476,44 @@ describe('Scoring', () => {
     expect(fu).toBe(40);
   });
 
+  it('detects Junchan', () => {
+    const hand: Tile[] = [
+      t('man',1,'j1'),t('man',2,'j2'),t('man',3,'j3'),
+      t('man',7,'j4'),t('man',8,'j5'),t('man',9,'j6'),
+      t('pin',1,'j7'),t('pin',1,'j8'),t('pin',1,'j9'),
+      t('sou',9,'j10'),t('sou',9,'j11'),t('sou',9,'j12'),
+      t('sou',1,'j13'),t('sou',1,'j14'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Junchan')).toBe(true);
+  });
+
+  it('detects San Kantsu', () => {
+    const concealed: Tile[] = [
+      t('man',1,'sk1'),t('man',1,'sk2'),t('man',1,'sk3'),
+      t('sou',1,'skp1'),t('sou',1,'skp2'),
+    ];
+    const melds: Meld[] = [
+      { type: 'kan', tiles: [t('dragon',1,'kd1'),t('dragon',1,'kd2'),t('dragon',1,'kd3')], fromPlayer: 0, calledTileId: 'kd1', kanType: 'daiminkan' },
+      { type: 'kan', tiles: [t('dragon',2,'kd4'),t('dragon',2,'kd5'),t('dragon',2,'kd6')], fromPlayer: 0, calledTileId: 'kd4', kanType: 'daiminkan' },
+      { type: 'kan', tiles: [t('dragon',3,'kd7'),t('dragon',3,'kd8'),t('dragon',3,'kd9')], fromPlayer: 0, calledTileId: 'kd7', kanType: 'daiminkan' },
+    ];
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
+    expect(yaku.some(y => y.name === 'San Kantsu')).toBe(true);
+  });
+
+  it('detects Su Kantsu', () => {
+    const concealed: Tile[] = [t('sou',1,'sks1'),t('sou',1,'sks2')];
+    const melds: Meld[] = [
+      { type: 'kan', tiles: [t('dragon',1,'k1a'),t('dragon',1,'k1b'),t('dragon',1,'k1c')], fromPlayer: 0, calledTileId: 'k1a', kanType: 'daiminkan' },
+      { type: 'kan', tiles: [t('dragon',2,'k2a'),t('dragon',2,'k2b'),t('dragon',2,'k2c')], fromPlayer: 0, calledTileId: 'k2a', kanType: 'daiminkan' },
+      { type: 'kan', tiles: [t('dragon',3,'k3a'),t('dragon',3,'k3b'),t('dragon',3,'k3c')], fromPlayer: 0, calledTileId: 'k3a', kanType: 'daiminkan' },
+      { type: 'kan', tiles: [t('man',1,'k4a'),t('man',1,'k4b'),t('man',1,'k4c')], fromPlayer: 0, calledTileId: 'k4a', kanType: 'daiminkan' },
+    ];
+    const yaku = detectYaku(concealed, melds, { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Su Kantsu')).toBe(true);
+  });
+
   it('adds riichi han when declared', () => {
     const hand: Tile[] = [
       t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),
