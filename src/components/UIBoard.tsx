@@ -239,7 +239,15 @@ export const UIBoard: React.FC<UIBoardProps> = ({
               if (!winning || !tsumoOption) {
                 console.warn('negative shanten but not tsumo/win', { hand: full, shanten, tsumoOption });
               }
-              const hasYaku = winning && detectYaku(me.hand, me.melds, { isTsumo: true }).length > 0;
+              const seatWind = me.seat + 1;
+              const roundWind = kyoku <= 4 ? 1 : 2;
+              const hasYaku =
+                winning &&
+                detectYaku(me.hand, me.melds, {
+                  isTsumo: true,
+                  seatWind,
+                  roundWind,
+                }).length > 0;
               return hasYaku ? <>和了可能</> : <>役なし</>;
             }
             return base === 0
