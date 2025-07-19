@@ -347,6 +347,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           melds={top.melds}
           seat={top.seat}
           showBorder={showBorders && top.melds.length > 0}
+          dataTestId="meld-seat-2"
         />
       </div>
       <div className="absolute right-0 top-0">
@@ -354,13 +355,15 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           melds={right.melds}
           seat={right.seat}
           showBorder={showBorders && right.melds.length > 0}
+          dataTestId="meld-seat-1"
         />
       </div>
-      <div className="absolute left-0 bottom-0">
+      <div className="absolute left-0 bottom-[10px]">
         <MeldArea
           melds={left.melds}
           seat={left.seat}
           showBorder={showBorders && left.melds.length > 0}
+          dataTestId="meld-seat-3"
         />
       </div>
     </div>
