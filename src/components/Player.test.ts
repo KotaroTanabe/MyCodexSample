@@ -133,6 +133,15 @@ describe('discardTile', () => {
     const updated = discardTile(player, 'b', true);
     expect(updated.discard[updated.discard.length - 1].riichiDiscard).toBe(true);
   });
+
+  it('clears drawnTile when discarding the drawn tile', () => {
+    const wall = generateTileWall();
+    const base = createInitialPlayerState('Bob', false);
+    const { player } = drawTiles(base, wall, 1);
+    const tileId = player.hand[0].id;
+    const updated = discardTile(player, tileId);
+    expect(updated.drawnTile).toBeNull();
+  });
 });
 
 describe('claimMeld', () => {
