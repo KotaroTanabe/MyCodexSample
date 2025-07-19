@@ -38,12 +38,12 @@ import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
 
 /**
- * Rotate players so that the next dealer sits at seat 0.
+ * Rotate seat numbers without reordering the array.
+ * This keeps the first array element as the controlling player
+ * while advancing the dealer position.
  */
-const rotateSeats = (players: PlayerState[]): PlayerState[] => {
-  const reordered = [...players.slice(1), players[0]];
-  return reordered.map((p, idx) => ({ ...p, seat: idx }));
-};
+const rotateSeatNumbers = (players: PlayerState[]): PlayerState[] =>
+  players.map(p => ({ ...p, seat: (p.seat + 3) % 4 }));
 
 const DEAD_WALL_SIZE = 14;
 
@@ -449,14 +449,14 @@ export const useGame = (gameLength: GameLength) => {
         createInitialPlayerState('AI上家', true, 3),
       ];
     } else {
-      p = playersRef.current.map(pl => ({
+      p = playersRef.current.map((pl, idx) => ({
         ...pl,
         hand: [],
         discard: [],
         melds: [],
         drawnTile: null,
         isRiichi: false,
-        isAI: pl.seat === 0 ? playerIsAI : pl.isAI,
+        isAI: idx === 0 ? playerIsAI : pl.isAI,
       }));
     }
     for (let i = 0; i < 4; i++) {
@@ -464,13 +464,14 @@ export const useGame = (gameLength: GameLength) => {
       p[i] = result.player;
       wallStack = result.wall;
     }
+    const dealerIdx = p.findIndex(pl => pl.seat === 0);
     // 親は1枚多く持つ
-    const extra = drawTiles(p[0], wallStack, 1);
-    p[0] = extra.player;
+    const extra = drawTiles(p[dealerIdx], wallStack, 1);
+    p[dealerIdx] = extra.player;
     wallStack = extra.wall;
     roundStartInfoRef.current = {
       hands: p.map(pl => [...pl.hand]),
-      dealer: 0,
+      dealer: dealerIdx,
       doraIndicator: doraTiles[0],
       kyoku: roundNumber,
     };
@@ -483,7 +484,7 @@ export const useGame = (gameLength: GameLength) => {
     setDeadWall(wanpai);
     deadWallRef.current = wanpai;
     setDora(doraTiles);
-    setTurn(0);
+    setTurn(dealerIdx);
     setDiscardCounts({});
     setLastDiscard(null);
     setPendingRiichi(null);
@@ -505,16 +506,17 @@ export const useGame = (gameLength: GameLength) => {
         isAI: p.isAI,
       }));
     }
+    const firstIsAI = p[dealerIdx].isAI;
     setMessage(
-      `配牌が完了しました。${playerIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
+      `配牌が完了しました。${firstIsAI ? 'AIのターンです。' : 'あなたのターンです。'}`,
     );
     setLog([
       { type: 'startRound', kyoku: roundNumber },
-      { type: 'draw', player: 0, tile: extra.player.drawnTile as Tile },
+      { type: 'draw', player: dealerIdx, tile: extra.player.drawnTile as Tile },
     ]);
     logRef.current = [
       { type: 'startRound', kyoku: roundNumber },
-      { type: 'draw', player: 0, tile: extra.player.drawnTile as Tile },
+      { type: 'draw', player: dealerIdx, tile: extra.player.drawnTile as Tile },
     ];
     kanDrawRef.current = null;
     drawInfoRef.current = {};
@@ -557,7 +559,7 @@ export const useGame = (gameLength: GameLength) => {
     if (next > maxKyoku) {
       setPhase('end');
     } else {
-      const rotated = rotateSeats(playersRef.current);
+      const rotated = rotateSeatNumbers(playersRef.current);
       setPlayers(rotated);
       playersRef.current = rotated;
       setKyoku(next);
