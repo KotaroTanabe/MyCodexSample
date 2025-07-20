@@ -358,7 +358,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           dataTestId="meld-seat-1"
         />
       </div>
-      <div className="absolute left-0 bottom-[10px]">
+      <div className="absolute left-0 bottom-[calc(var(--tile-font-size)*4)]">
         <MeldArea
           melds={left.melds}
           seat={left.seat}
