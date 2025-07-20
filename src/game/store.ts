@@ -32,7 +32,7 @@ import type { RoundResult } from '../components/RoundResultModal';
 import type { WinResult } from '../components/WinResultModal';
 import { exportLqRecord } from '../utils/paifuExport';
 import { exportMjaiRecord } from '../utils/mjaiExport';
-import { exportTenhouLog } from '../utils/tenhouExport';
+import { exportTenhouLog, tenhouJsonToUrl } from '../utils/tenhouExport';
 import type { RoundEndInfo } from '../utils/tenhouExport';
 import type { RecordHead } from '../types/jantama';
 import { shouldRotateRiichi } from './riichiUtil';
@@ -299,6 +299,7 @@ export const useGame = (gameLength: GameLength) => {
   const [tsumoOption, setTsumoOption] = useState(false);
   const [ronCandidate, setRonCandidate] = useState<{ tile: Tile; from: number } | null>(null);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [tenhouUrl, setTenhouUrl] = useState<string | null>(null);
   const [boardInput, setBoardInput] = useState('');
 
   const turnRef = useRef(turn);
@@ -325,6 +326,18 @@ export const useGame = (gameLength: GameLength) => {
   const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
   const startScoresRef = useRef<number[]>([]);
   const endInfoRef = useRef<RoundEndInfo | null>(null);
+
+  const buildTenhouUrl = () => {
+    if (!roundStartInfoRef.current || !endInfoRef.current) return null;
+    const data = exportTenhouLog(
+      roundStartInfoRef.current,
+      logRef.current,
+      startScoresRef.current,
+      endInfoRef.current,
+      dora,
+    );
+    return tenhouJsonToUrl(data);
+  };
 
   const clearActionTimer = () => {
     if (actionTimerRef.current !== null) {
@@ -494,6 +507,7 @@ export const useGame = (gameLength: GameLength) => {
     setRonCandidate(null);
     setRoundResult(null);
     setWinResult(null);
+    setTenhouUrl(null);
     if (resetKyoku) {
       setRiichiPool(0);
       setHonba(0);
@@ -590,6 +604,7 @@ export const useGame = (gameLength: GameLength) => {
       })),
     };
     setRoundResult(results);
+    setTenhouUrl(buildTenhouUrl());
     setMessage('牌山が尽きました。流局です。');
   };
 
@@ -1029,6 +1044,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       dora,
       uraDora: ura,
     });
+    setTenhouUrl(buildTenhouUrl());
   };
 
   const performRon = (winner: number, from: number, tile: Tile) => {
@@ -1111,6 +1127,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       dora,
       uraDora: ura,
     });
+    setTenhouUrl(buildTenhouUrl());
   };
 
   const performRiichi = (idx: number) => {
@@ -1385,6 +1402,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     tsumoOption,
     ronCandidate,
     log,
+    tenhouUrl,
     preset,
     boardInput,
     setWinResult,
