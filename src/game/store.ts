@@ -494,6 +494,7 @@ export const useGame = (gameLength: GameLength) => {
     setRonCandidate(null);
     setRoundResult(null);
     setWinResult(null);
+    winResultRef.current = null;
     if (resetKyoku) {
       setRiichiPool(0);
       setHonba(0);
