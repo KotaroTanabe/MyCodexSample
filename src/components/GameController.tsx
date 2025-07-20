@@ -3,6 +3,7 @@ import { UIBoard } from './UIBoard';
 import { RoundResultModal } from './RoundResultModal';
 import { FinalResultModal } from './FinalResultModal';
 import { WinResultModal } from './WinResultModal';
+import { GameToolsModal } from './GameToolsModal';
 import {
   useGame,
   maxKyokuForLength,
@@ -12,9 +13,16 @@ import {
 interface Props {
   gameLength: GameLength;
   showBorders?: boolean;
+  toolsOpen?: boolean;
+  onCloseTools?: () => void;
 }
 
-export const GameController: React.FC<Props> = ({ gameLength, showBorders = true }) => {
+export const GameController: React.FC<Props> = ({
+  gameLength,
+  showBorders = true,
+  toolsOpen = false,
+  onCloseTools,
+}) => {
   const game = useGame(gameLength);
   const maxKyoku = maxKyokuForLength(gameLength);
 
@@ -49,37 +57,17 @@ export const GameController: React.FC<Props> = ({ gameLength, showBorders = true
         showBorders={showBorders}
       />
       <div className="mt-2">{game.message}</div>
-      <button className="px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadLog}>
-        ログダウンロード
-      </button>
-      <button className="ml-2 px-2 py-1 bg-gray-200 rounded" onClick={game.handleDownloadMjaiLog}>
-        MJAIログダウンロード
-      </button>
-      <div className="my-2 flex items-center gap-2">
-        <label htmlFor="preset" className="whitespace-nowrap">プリセット</label>
-        <select
-          id="preset"
-          aria-label="プリセット"
-          className="border px-2 py-1"
-          value={game.preset}
-          onChange={e => game.setPreset(e.target.value as any)}
-        >
-          <option value="basic">基本形</option>
-          <option value="multiCalls">複数鳴き</option>
-          <option value="kanVariants">カン各種</option>
-          <option value="longRiver">捨て牌19枚</option>
-          <option value="allFuro">全員鳴き</option>
-        </select>
-      </div>
-      <textarea
-        aria-label="盤面入力"
-        className="w-full h-40 p-1 border font-mono"
-        value={game.boardInput}
-        onChange={e => game.setBoardInput(e.target.value)}
+      <GameToolsModal
+        isOpen={toolsOpen}
+        onClose={onCloseTools ?? (() => {})}
+        onDownloadLog={game.handleDownloadLog}
+        onDownloadMjaiLog={game.handleDownloadMjaiLog}
+        preset={game.preset}
+        setPreset={game.setPreset}
+        boardInput={game.boardInput}
+        setBoardInput={game.setBoardInput}
+        onLoadBoard={game.handleLoadBoard}
       />
-      <button className="px-2 py-1 bg-gray-200 rounded" onClick={game.handleLoadBoard}>
-        盤面読み込み
-      </button>
       {game.winResult && (
         <WinResultModal
           {...game.winResult}
