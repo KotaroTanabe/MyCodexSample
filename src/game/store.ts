@@ -507,6 +507,7 @@ export const useGame = (gameLength: GameLength) => {
     setRonCandidate(null);
     setRoundResult(null);
     setWinResult(null);
+    winResultRef.current = null;
     setTenhouUrl(null);
     if (resetKyoku) {
       setRiichiPool(0);
