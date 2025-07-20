@@ -812,6 +812,6 @@ describe('UIBoard meld area placement', () => {
     );
     const meld = screen.getByTestId('meld-seat-3');
     const wrapper = meld.parentElement as HTMLElement;
-    expect(wrapper.className).toContain('bottom-[10px]');
+    expect(wrapper.className).toContain('bottom-[calc(var(--tile-font-size)*4)]');
   });
 });
