@@ -50,6 +50,7 @@ interface Props extends WinResult {
   onNext: () => void;
   nextLabel?: string;
   onCopyTenhou?: () => void;
+  tenhouUrl?: string;
 }
 
 export const WinResultModal: React.FC<Props> = ({
@@ -68,6 +69,7 @@ export const WinResultModal: React.FC<Props> = ({
   onNext,
   nextLabel = '次局へ',
   onCopyTenhou,
+  tenhouUrl,
 }) => {
   if (players.length === 0) return null;
   const title = winType === 'ron' ? 'ロン和了' : 'ツモ和了';
@@ -137,14 +139,26 @@ export const WinResultModal: React.FC<Props> = ({
             ))}
           </tbody>
         </table>
-        {onCopyTenhou && (
+        {(onCopyTenhou || tenhouUrl) && (
           <div className="flex gap-2 mt-2">
-            <button
-              className="px-2 py-1 bg-gray-200 rounded"
-              onClick={onCopyTenhou}
-            >
-              Tenhouログ コピー
-            </button>
+            {onCopyTenhou && (
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={onCopyTenhou}
+              >
+                Tenhouログ コピー
+              </button>
+            )}
+            {tenhouUrl && (
+              <a
+                className="px-2 py-1 bg-gray-200 rounded"
+                href={tenhouUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                天鳳牌譜エディタ
+              </a>
+            )}
             <a
               className="px-2 py-1 bg-gray-200 rounded"
               href="https://mjai.ekyu.moe/ja.html"

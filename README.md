@@ -181,17 +181,17 @@ npm run lint
 | Kokushi Musou | ✓ |
 | San Kantsu | ✓ |
 | Su Kantsu | ✓ |
-| Daisangen | ✗ |
-| Shousangen | ✗ |
-| Suu Ankou | ✗ |
-| Daisuushii | ✗ |
-| Shousuushii | ✗ |
-| Tsuuiisou | ✗ |
-| Chinroutou | ✗ |
-| Ryuuiisou | ✗ |
-| Chuuren Poutou | ✗ |
-| Tenhou / Chiihou | ✗ |
-| Renhou | ✗ |
+| Daisangen | ✓ |
+| Shousangen | ✓ |
+| Suu Ankou | ✓ |
+| Daisuushii | ✓ |
+| Shousuushii | ✓ |
+| Tsuuiisou | ✓ |
+| Chinroutou | ✓ |
+| Ryuuiisou | ✓ |
+| Chuuren Poutou | ✓ |
+| Tenhou / Chiihou | ✓ |
+| Renhou | ✓ |
 
 ## 牌譜エクスポート
 
@@ -238,6 +238,7 @@ Tenhou形式ログを直接クリップボードにコピーするボタンも�
 - [x] Tenhouログのクリップボードコピー
 - [x] Tenhouログコピー時にトースト通知
 - [x] Tenhouログに符・飜・点数と役情報を追加
+- [x] 天鳳牌譜エディタURL生成ボタン
 - [x] 局進行時に親が持ち回る
 - [x] 未確認牌枚数を求めるヘルパー追加
 - [x] 受け入れ枚数ヘルパーとクイズ追加

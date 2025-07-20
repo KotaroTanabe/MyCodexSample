@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { exportTenhouLog, tileToTenhouNumber, RoundEndInfo } from './tenhouExport';
+import {
+  exportTenhouLog,
+  tileToTenhouNumber,
+  tenhouJsonToUrl,
+  RoundEndInfo,
+} from './tenhouExport';
 import { LogEntry, RoundStartInfo, Tile } from '../types/mahjong';
 declare function require(name: string): any;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -375,5 +380,15 @@ describe('exportTenhouLog', () => {
     ]);
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
+  it('creates tenhou replay url', () => {
+    const json = { title: ['',''], name: ['A','B','C','D'], rule: { disp: '四南喰', aka: 0 }, log: [] };
+    const url = tenhouJsonToUrl(json);
+    expect(url).toBe(
+      'https://tenhou.net/6/#json=' +
+        encodeURIComponent(JSON.stringify(json)) +
+        '&ts=0',
+    );
   });
 });
