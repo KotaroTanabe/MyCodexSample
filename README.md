@@ -181,17 +181,17 @@ npm run lint
 | Kokushi Musou | ✓ |
 | San Kantsu | ✓ |
 | Su Kantsu | ✓ |
-| Daisangen | ✗ |
-| Shousangen | ✗ |
-| Suu Ankou | ✗ |
-| Daisuushii | ✗ |
-| Shousuushii | ✗ |
-| Tsuuiisou | ✗ |
-| Chinroutou | ✗ |
-| Ryuuiisou | ✗ |
-| Chuuren Poutou | ✗ |
-| Tenhou / Chiihou | ✗ |
-| Renhou | ✗ |
+| Daisangen | ✓ |
+| Shousangen | ✓ |
+| Suu Ankou | ✓ |
+| Daisuushii | ✓ |
+| Shousuushii | ✓ |
+| Tsuuiisou | ✓ |
+| Chinroutou | ✓ |
+| Ryuuiisou | ✓ |
+| Chuuren Poutou | ✓ |
+| Tenhou / Chiihou | ✓ |
+| Renhou | ✓ |
 
 ## 牌譜エクスポート
 
