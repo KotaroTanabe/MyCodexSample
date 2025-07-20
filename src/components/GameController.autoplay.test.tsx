@@ -3,6 +3,7 @@ import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { GameController } from './GameController';
+import App from '../App';
 
 describe('GameController auto play', () => {
   vi.useFakeTimers();
@@ -34,9 +35,9 @@ describe('GameController auto play', () => {
 
   it('exports log file with actions', async () => {
     vi.useRealTimers();
-    const { container } = render(<GameController gameLength="tonnan" />);
+    const { container } = render(<App />);
     await screen.findAllByText('手牌');
-    const first = container.querySelector('button[aria-label]') as HTMLButtonElement;
+    const first = container.querySelector('button[aria-label]:not([aria-label="メニュー"])') as HTMLButtonElement;
     fireEvent.click(first);
     const createObjectURL = vi.fn().mockReturnValue('blob:log');
     (globalThis as any).URL.createObjectURL = createObjectURL;
@@ -53,7 +54,8 @@ describe('GameController auto play', () => {
       configurable: true,
       value: clickSpy,
     });
-    fireEvent.click(screen.getAllByText('ログダウンロード')[0]);
+    fireEvent.click(screen.getAllByLabelText('メニュー')[0]);
+    fireEvent.click(screen.getByText('ログダウンロード'));
     const blob = createObjectURL.mock.calls[0][0] as Blob;
     const text = await blob.text();
     const obj = JSON.parse(text);

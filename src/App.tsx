@@ -15,6 +15,7 @@ function App() {
     'east1',
   );
   const [helpOpen, setHelpOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [showBorders, setShowBorders] = useState(true);
 
@@ -85,6 +86,13 @@ function App() {
           </div>
         )}
         <button
+          onClick={() => setToolsOpen(true)}
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-0 dark:bg-surface-700 shadow text-sm hover:bg-surface-100 dark:hover:bg-surface-600"
+          aria-label="メニュー"
+        >
+          📄
+        </button>
+        <button
           onClick={() => setHelpOpen(true)}
           className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-0 dark:bg-surface-700 shadow text-sm font-bold hover:bg-surface-100 dark:hover:bg-surface-600"
           aria-label="ヘルプ"
@@ -108,7 +116,13 @@ function App() {
         </label>
       </div>
       {mode === 'game' ? (
-        <GameController key={gameLength} gameLength={gameLength} showBorders={showBorders} />
+        <GameController
+          key={gameLength}
+          gameLength={gameLength}
+          showBorders={showBorders}
+          toolsOpen={toolsOpen}
+          onCloseTools={() => setToolsOpen(false)}
+        />
       ) : mode === 'fu-quiz' ? (
         <FuQuiz />
       ) : mode === 'score-quiz' ? (
