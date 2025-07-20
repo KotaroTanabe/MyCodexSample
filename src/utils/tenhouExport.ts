@@ -238,3 +238,12 @@ export function exportTenhouLog(
     log: [hand],
   };
 }
+
+/**
+ * Convert a Tenhou JSON log to a URL that can be opened in the
+ * Tenhou replay/editor page.
+ */
+export function tenhouJsonToUrl(data: unknown): string {
+  const json = JSON.stringify(data);
+  return `https://tenhou.net/6/#json=${encodeURIComponent(json)}&ts=0`;
+}

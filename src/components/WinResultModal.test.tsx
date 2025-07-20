@@ -117,15 +117,16 @@ describe('WinResultModal', () => {
         han={1}
         fu={30}
         points={1000}
-        dora={[]}
-        onNext={() => {}}
+      dora={[]}
+      onNext={() => {}}
         onCopyTenhou={fn}
-      />, 
+        tenhouUrl="https://tenhou.net/6/#json=test"
+      />,
     );
     screen.getByText('Tenhouログ コピー').click();
     expect(fn).toHaveBeenCalled();
-    const link = screen.getByRole('link', { name: '牌譜解析（外部サイト）' });
-    expect(link.getAttribute('href')).toBe('https://mjai.ekyu.moe/ja.html');
+    const link = screen.getByRole('link', { name: '天鳳牌譜エディタ' });
+    expect(link.getAttribute('href')).toBe('https://tenhou.net/6/#json=test');
   });
 
   it('shows tsumo points text with split payments', () => {
