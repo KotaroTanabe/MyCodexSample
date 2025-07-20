@@ -528,4 +528,78 @@ describe('Scoring', () => {
     // メンタンピン三色なので6ハンのはず
     expect(han).toBe(6);
   });
+
+  it('detects Daisangen', () => {
+    const hand: Tile[] = [
+      t('dragon',1,'a1'),t('dragon',1,'a2'),t('dragon',1,'a3'),
+      t('dragon',2,'b1'),t('dragon',2,'b2'),t('dragon',2,'b3'),
+      t('dragon',3,'c1'),t('dragon',3,'c2'),t('dragon',3,'c3'),
+      t('man',2,'d1'),t('man',3,'d2'),t('man',4,'d3'),
+      t('man',5,'d4'),t('man',5,'d5'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Daisangen')).toBe(true);
+  });
+
+  it('detects Suu Ankou', () => {
+    const hand: Tile[] = [
+      t('man',1,'s1a'),t('man',1,'s1b'),t('man',1,'s1c'),
+      t('pin',2,'s2a'),t('pin',2,'s2b'),t('pin',2,'s2c'),
+      t('sou',3,'s3a'),t('sou',3,'s3b'),t('sou',3,'s3c'),
+      t('man',9,'s4a'),t('man',9,'s4b'),t('man',9,'s4c'),
+      t('pin',5,'p1'),t('pin',5,'p2'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Suu Ankou')).toBe(true);
+  });
+
+  it('detects Daisuushii', () => {
+    const hand: Tile[] = [
+      t('wind',1,'w1a'),t('wind',1,'w1b'),t('wind',1,'w1c'),
+      t('wind',2,'w2a'),t('wind',2,'w2b'),t('wind',2,'w2c'),
+      t('wind',3,'w3a'),t('wind',3,'w3b'),t('wind',3,'w3c'),
+      t('wind',4,'w4a'),t('wind',4,'w4b'),t('wind',4,'w4c'),
+      t('pin',5,'p5a'),t('pin',5,'p5b'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Daisuushii')).toBe(true);
+  });
+
+  it('detects Tsuuiisou', () => {
+    const hand: Tile[] = [
+      t('wind',1,'t1'),t('wind',1,'t2'),t('wind',1,'t3'),
+      t('wind',2,'t4'),t('wind',2,'t5'),t('wind',2,'t6'),
+      t('dragon',1,'d1'),t('dragon',1,'d2'),t('dragon',1,'d3'),
+      t('dragon',2,'d4'),t('dragon',2,'d5'),t('dragon',2,'d6'),
+      t('dragon',3,'d7'),t('dragon',3,'d8'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Tsuuiisou')).toBe(true);
+  });
+
+  it('detects Chuuren Poutou', () => {
+    const hand: Tile[] = [
+      t('man',1,'c1'),t('man',1,'c2'),t('man',1,'c3'),
+      t('man',2,'c4'),t('man',3,'c5'),t('man',4,'c6'),
+      t('man',5,'c7'),t('man',6,'c8'),t('man',7,'c9'),
+      t('man',8,'c10'),t('man',9,'c11'),t('man',9,'c12'),
+      t('man',9,'c13'),t('man',5,'c14'),
+    ];
+    const yaku = detectYaku(hand, [], { isTsumo: true });
+    expect(yaku.some(y => y.name === 'Chuuren Poutou')).toBe(true);
+  });
+
+  it('detects Tenhou and Renhou', () => {
+    const hand: Tile[] = [
+      t('man',1,'r1'),t('man',1,'r2'),t('man',1,'r3'),
+      t('pin',2,'r4'),t('pin',2,'r5'),t('pin',2,'r6'),
+      t('sou',3,'r7'),t('sou',3,'r8'),t('sou',3,'r9'),
+      t('man',2,'r10'),t('man',3,'r11'),t('man',4,'r12'),
+      t('pin',5,'r13'),t('pin',5,'r14'),
+    ];
+    const th = detectYaku(hand, [], { isTsumo: true, tenhou: true });
+    expect(th.some(y => y.name === 'Tenhou')).toBe(true);
+    const rh = detectYaku(hand, [], { isTsumo: false, renhou: true });
+    expect(rh.some(y => y.name === 'Renhou')).toBe(true);
+  });
 });

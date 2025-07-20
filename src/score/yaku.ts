@@ -248,6 +248,88 @@ function countConcealedTriplets(parsed: { melds: ParsedMeld[] }, melds: Meld[]):
   return totalTriplets - openTriplets;
 }
 
+function isSuuAnkou(parsed: { melds: ParsedMeld[] }, melds: Meld[]): boolean {
+  return countConcealedTriplets(parsed, melds) >= 4;
+}
+
+function isDaisangen(counts: Record<string, number>): boolean {
+  for (let r = 1; r <= 3; r++) {
+    if ((counts[`dragon-${r}`] || 0) < 3) return false;
+  }
+  return true;
+}
+
+function isShousangen(counts: Record<string, number>): boolean {
+  let trip = 0;
+  let pair = 0;
+  for (let r = 1; r <= 3; r++) {
+    const c = counts[`dragon-${r}`] || 0;
+    if (c >= 3) trip++;
+    else if (c === 2) pair++;
+  }
+  return trip === 2 && pair === 1;
+}
+
+function isDaisuushii(counts: Record<string, number>): boolean {
+  for (let r = 1; r <= 4; r++) {
+    if ((counts[`wind-${r}`] || 0) < 3) return false;
+  }
+  return true;
+}
+
+function isShousuushii(counts: Record<string, number>): boolean {
+  let trip = 0;
+  let pair = 0;
+  for (let r = 1; r <= 4; r++) {
+    const c = counts[`wind-${r}`] || 0;
+    if (c >= 3) trip++;
+    else if (c === 2) pair++;
+  }
+  return trip === 3 && pair === 1;
+}
+
+function isTsuuiisou(tiles: Tile[]): boolean {
+  return tiles.every(t => t.suit === 'wind' || t.suit === 'dragon');
+}
+
+function isChinroutou(tiles: Tile[]): boolean {
+  return tiles.every(t => (t.suit === 'man' || t.suit === 'pin' || t.suit === 'sou') && (t.rank === 1 || t.rank === 9));
+}
+
+function isRyuuiisou(tiles: Tile[]): boolean {
+  const allowed = new Set(['sou-2','sou-3','sou-4','sou-6','sou-8','dragon-2']);
+  return tiles.every(t => allowed.has(tileKey(t)));
+}
+
+function isChuurenPoutou(tiles: Tile[]): boolean {
+  if (tiles.length !== 14) return false;
+  const suits = new Set(tiles.map(t => t.suit));
+  if (suits.size !== 1) return false;
+  const suit = tiles[0].suit;
+  if (suit === 'wind' || suit === 'dragon') return false;
+  const counts = countTiles(tiles);
+  const need: Record<number, number> = {
+    1: 3,
+    2: 1,
+    3: 1,
+    4: 1,
+    5: 1,
+    6: 1,
+    7: 1,
+    8: 1,
+    9: 3,
+  };
+  let extra = 0;
+  for (let r = 1; r <= 9; r++) {
+    const k = `${suit}-${r}`;
+    const c = counts[k] || 0;
+    const needCount = need[r as keyof typeof need] || 0;
+    if (c < needCount) return false;
+    extra += c - needCount;
+  }
+  return extra === 1;
+}
+
 function isSanankou(parsed: { melds: ParsedMeld[] }, melds: Meld[]): boolean {
   return countConcealedTriplets(parsed, melds) >= 3;
 }
@@ -363,6 +445,9 @@ export function detectYaku(
     chankan?: boolean;
     haitei?: boolean;
     houtei?: boolean;
+    tenhou?: boolean;
+    chiihou?: boolean;
+    renhou?: boolean;
     uraDoraIndicators?: Tile[];
   },
 ): ScoreYaku[] {
@@ -392,6 +477,31 @@ export function detectYaku(
   }
   if (parsed && isSanDoukou(parsed)) {
     result.push({ name: 'San Doukou', han: 2 });
+  }
+  if (isDaisangen(counts)) {
+    result.push({ name: 'Daisangen', han: 13 });
+  } else if (isShousangen(counts)) {
+    result.push({ name: 'Shousangen', han: 2 });
+  }
+  if (parsed && isSuuAnkou(parsed, melds)) {
+    result.push({ name: 'Suu Ankou', han: 13 });
+  }
+  if (isDaisuushii(counts)) {
+    result.push({ name: 'Daisuushii', han: 13 });
+  } else if (isShousuushii(counts)) {
+    result.push({ name: 'Shousuushii', han: 13 });
+  }
+  if (isTsuuiisou(allTiles)) {
+    result.push({ name: 'Tsuuiisou', han: 13 });
+  }
+  if (isChinroutou(allTiles)) {
+    result.push({ name: 'Chinroutou', han: 13 });
+  }
+  if (isRyuuiisou(allTiles)) {
+    result.push({ name: 'Ryuuiisou', han: 13 });
+  }
+  if (isClosed && isChuurenPoutou(allTiles)) {
+    result.push({ name: 'Chuuren Poutou', han: 13 });
   }
   if (parsed && isIttsu(parsed)) {
     result.push({ name: 'Ittsu', han: isClosed ? 2 : 1 });
@@ -430,6 +540,15 @@ export function detectYaku(
   }
   if (opts?.houtei) {
     result.push({ name: 'Houtei', han: 1 });
+  }
+  if (opts?.tenhou) {
+    result.push({ name: 'Tenhou', han: 13 });
+  }
+  if (opts?.chiihou) {
+    result.push({ name: 'Chiihou', han: 13 });
+  }
+  if (opts?.renhou) {
+    result.push({ name: 'Renhou', han: 5 });
   }
   if (isChinitsu(allTiles)) {
     result.push({ name: 'Chinitsu', han: isClosed ? 6 : 5 });
