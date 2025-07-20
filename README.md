@@ -139,59 +139,8 @@ npm run lint
 スコアボード右側の「?」ボタンをクリックすると、標準的な役一覧をすべて確認できるモーダルが開きます。各役の門前/副露ごとの翻数と簡単な説明を表形式で表示します。閉じる場合はモーダル右上の「×」を押してください。
 
 ---
+詳細なルールと役の実装状況は [docs/rules.md](docs/rules.md) を参照してください。
 
-## Rules Supported
-
-現在実装されているルールは以下の通りです。
-
-- リーチ (Reach)
-- ダブルリーチ (Double Riichi)
-- ドラ (Dora)
-- 本場 (Honba)
-- 裏ドラ (Ura Dora)
-- 一発 (Ippatsu)
-
-### Yaku Implementation Status
-
-| Yaku | Implemented |
-| --- | --- |
-| Tanyao | ✓ |
-| Yakuhai | ✓ |
-| Menzen Tsumo | ✓ |
-| Pinfu | ✓ |
-| Iipeiko | ✓ |
-| Chiitoitsu | ✓ |
-| Toitoi | ✓ |
-| Sanankou | ✓ |
-| Sanshoku Doujun | ✓ |
-| San Doukou | ✓ |
-| Ittsu | ✓ |
-| Chanta | ✓ |
-| Junchan | ✓ |
-| Honitsu | ✓ |
-| Chinitsu | ✓ |
-| Riichi | ✓ |
-| Double Riichi | ✓ |
-| Ippatsu | ✓ |
-| Rinshan Kaihou | ✓ |
-| Chankan | ✓ |
-| Haitei | ✓ |
-| Houtei | ✓ |
-| Ura Dora | ✓ |
-| Kokushi Musou | ✓ |
-| San Kantsu | ✓ |
-| Su Kantsu | ✓ |
-| Daisangen | ✓ |
-| Shousangen | ✓ |
-| Suu Ankou | ✓ |
-| Daisuushii | ✓ |
-| Shousuushii | ✓ |
-| Tsuuiisou | ✓ |
-| Chinroutou | ✓ |
-| Ryuuiisou | ✓ |
-| Chuuren Poutou | ✓ |
-| Tenhou / Chiihou | ✓ |
-| Renhou | ✓ |
 
 ## 牌譜エクスポート
 
