@@ -3,18 +3,21 @@ import { PlayerState } from '../types/mahjong';
 export function payoutTsumo(
   players: PlayerState[],
   winner: number,
-  points: number,
+  childPoints: number,
+  dealerPoints: number,
+  dealer: number,
   honba = 0,
 ): PlayerState[] {
   const bonusEach = honba * 100;
+  const payments = players.map((_, idx) => {
+    if (idx === winner) return 0;
+    const base = idx === dealer ? dealerPoints : childPoints;
+    return base + bonusEach;
+  });
+  const gain = payments.reduce((sum, p) => sum + p, 0);
   return players.map((p, idx) => {
-    if (idx === winner) {
-      return {
-        ...p,
-        score: p.score + points * (players.length - 1) + honba * 300,
-      };
-    }
-    return { ...p, score: p.score - (points + bonusEach) };
+    if (idx === winner) return { ...p, score: p.score + gain };
+    return { ...p, score: p.score - payments[idx] };
   });
 }
 
