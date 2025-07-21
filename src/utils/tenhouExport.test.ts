@@ -452,6 +452,25 @@ describe('exportTenhouLog', () => {
       tileToTenhouNumber(kanDora),
     ]);
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+  execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
+  it('records honba and kyotaku counts', () => {
+    const t = makeTile(1);
+    const start: RoundStartInfo = {
+      hands: Array(4)
+        .fill(0)
+        .map(() => Array(13).fill(t)),
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [{ type: 'startRound', kyoku: 1 }];
+    const end: RoundEndInfo = { result: '流局', diffs: [0, 0, 0, 0] };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end, [t], 0, 2, 1);
+    expect(json.log[0][0]).toEqual([0, 2, 1]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
