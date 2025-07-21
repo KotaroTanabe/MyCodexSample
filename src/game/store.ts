@@ -336,6 +336,8 @@ export const useGame = (gameLength: GameLength, red = 1) => {
       endInfoRef.current,
       dora,
       red,
+      honbaRef.current,
+      riichiPoolRef.current,
     );
     return tenhouJsonToUrl(data);
   };
@@ -1329,6 +1331,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       endInfoRef.current,
       dora,
       red,
+      honbaRef.current,
+      riichiPoolRef.current,
     );
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1348,6 +1352,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       endInfoRef.current,
       dora,
       red,
+      honbaRef.current,
+      riichiPoolRef.current,
     );
     await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setMessage('Tenhouログをコピーしました');
