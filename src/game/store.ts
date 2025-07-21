@@ -273,7 +273,7 @@ const boardPresets: Record<string, BoardData> = (() => {
   return { basic, multiCalls, kanVariants, longRiver, allFuro };
 })();
 
-export const useGame = (gameLength: GameLength, red = 0) => {
+export const useGame = (gameLength: GameLength, red = 1) => {
   // ゲーム状態
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);

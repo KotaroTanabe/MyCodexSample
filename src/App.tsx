@@ -14,7 +14,7 @@ function App() {
   const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
     'east1',
   );
-  const [redAka, setRedAka] = useState(0);
+  const [redAka, setRedAka] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [dark, setDark] = useState(false);
@@ -134,7 +134,7 @@ function App() {
       </div>
       {mode === 'game' ? (
         <GameController
-          key={gameLength}
+          key={`${gameLength}-${redAka}`}
           gameLength={gameLength}
           red={redAka}
           showBorders={showBorders}
