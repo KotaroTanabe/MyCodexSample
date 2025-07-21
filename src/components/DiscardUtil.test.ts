@@ -146,4 +146,41 @@ describe('findRonWinner', () => {
     const idx = findRonWinner(players, 0, discard, 1);
     expect(idx).toBe(1);
   });
+
+  it('detects ron on 4p/5s/8s wait with mixed melds', () => {
+    // 44p55567s with pon 333m and chi 567m. Winning tile is 8s.
+    const melds = [
+      {
+        type: 'pon' as const,
+        tiles: [t('man', 3, 'm3a'), t('man', 3, 'm3b'), t('man', 3, 'm3c')],
+        fromPlayer: 1,
+        calledTileId: 'm3a',
+      },
+      {
+        type: 'chi' as const,
+        tiles: [t('man', 5, 'm5a'), t('man', 6, 'm6a'), t('man', 7, 'm7a')],
+        fromPlayer: 2,
+        calledTileId: 'm5a',
+      },
+    ];
+    const concealed = [
+      t('pin', 4, 'p4a'),
+      t('pin', 4, 'p4b'),
+      t('sou', 5, 's5a'),
+      t('sou', 5, 's5b'),
+      t('sou', 5, 's5c'),
+      t('sou', 6, 's6'),
+      t('sou', 7, 's7'),
+    ];
+    const discard = t('sou', 8, 's8');
+    const p1 = createInitialPlayerState('p1', false);
+    const p2 = {
+      ...createInitialPlayerState('p2', false, 1),
+      hand: concealed,
+      melds,
+    };
+    const players = [p1, p2];
+    const idx = findRonWinner(players, 0, discard, 1);
+    expect(idx).toBe(1);
+  });
 });
