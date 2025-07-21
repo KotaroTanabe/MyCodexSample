@@ -1,8 +1,14 @@
 import { Tile, Meld } from '../types/mahjong';
+import { tileToKanji } from '../utils/tileString';
 
 export interface ScoreYaku {
   name: string;
   han: number;
+  /**
+   * Additional detail for the yaku. Used mainly for Yakuhai to
+   * differentiate which value tile provided the han.
+   */
+  detail?: string;
 }
 
 function tileKey(t: Tile): string {
@@ -80,36 +86,39 @@ function isKokushi(tiles: Tile[]): boolean {
   return pairFound;
 }
 
-function countDragonTriplets(counts: Record<string, number>): number {
-  let yakuhai = 0;
-  for (let r = 1; r <= 3; r++) {
-    const key = `dragon-${r}`;
-    const c = counts[key] || 0;
-    yakuhai += Math.floor(c / 3);
-  }
-  return yakuhai;
-}
-
-function countValueTriplets(
+function getYakuhaiDetails(
   counts: Record<string, number>,
   seatWind?: number,
   roundWind?: number,
-): number {
-  let total = countDragonTriplets(counts);
+): string[] {
+  const details: string[] = [];
+  for (let r = 1; r <= 3; r++) {
+    const key = `dragon-${r}`;
+    const triplets = Math.floor((counts[key] || 0) / 3);
+    for (let i = 0; i < triplets; i++) {
+      details.push(tileToKanji({ suit: 'dragon', rank: r, id: '' }));
+    }
+  }
+  const windMap: Record<number, string> = { 1: '東', 2: '南', 3: '西', 4: '北' };
   if (seatWind) {
     const key = `wind-${seatWind}`;
     const triplets = Math.floor((counts[key] || 0) / 3);
-    total += triplets;
-    if (roundWind === seatWind) {
-      // ダブ風牌は2翻になるため、もう1回加算する
-      total += triplets;
+    for (let i = 0; i < triplets; i++) {
+      details.push(`自風 ${windMap[seatWind]}`);
+      if (roundWind === seatWind) {
+        // ダブ風牌は2翻になるため、もう1回加算する
+        details.push(`場風 ${windMap[seatWind]}`);
+      }
     }
   }
   if (roundWind && roundWind !== seatWind) {
     const key = `wind-${roundWind}`;
-    total += Math.floor((counts[key] || 0) / 3);
+    const triplets = Math.floor((counts[key] || 0) / 3);
+    for (let i = 0; i < triplets; i++) {
+      details.push(`場風 ${windMap[roundWind]}`);
+    }
   }
-  return total;
+  return details;
 }
 
 function canFormSets(counts: Record<string, number>, memo = new Map<string, boolean>()): boolean {
@@ -561,13 +570,13 @@ export function detectYaku(
   } else if (isSanKantsu(melds)) {
     result.push({ name: 'San Kantsu', han: 2 });
   }
-  const yakuhai = countValueTriplets(
+  const yakuhai = getYakuhaiDetails(
     counts,
     opts?.seatWind,
     opts?.roundWind,
   );
-  for (let i = 0; i < yakuhai; i++) {
-    result.push({ name: 'Yakuhai', han: 1 });
+  for (const d of yakuhai) {
+    result.push({ name: 'Yakuhai', han: 1, detail: d });
   }
   if (opts?.uraDoraIndicators && opts?.isRiichi) {
     const count = countDora(allTiles, opts.uraDoraIndicators);

@@ -88,7 +88,8 @@ the limit name (`満貫`, `跳満`, `倍満`, `三倍満`, `役満`). Example:
 `満貫12000点`.
 
 After the value string, each yaku is listed in the form
-`YAKU_NAME(han飜)`.
+`YAKU_NAME(han飜)`.  For Yakuhai, the specific value tile is used in
+place of `役牌`, e.g. `白(1飜)` or `自風 東(1飜)`.
 
 The result array therefore looks like the following:
 
