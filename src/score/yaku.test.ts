@@ -51,7 +51,8 @@ describe('Yaku detection', () => {
     ];
     expect(isWinningHand(hand)).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true });
-    expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
+    const yh = yaku.find(y => y.name === 'Yakuhai');
+    expect(yh?.detail).toBe('白');
   });
 
   it('detects Yakuhai for seat wind', () => {
@@ -64,7 +65,8 @@ describe('Yaku detection', () => {
     ];
     expect(isWinningHand(hand)).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true, seatWind: 1, roundWind: 2 });
-    expect(yaku.some(y => y.name === 'Yakuhai')).toBe(true);
+    const yh = yaku.find(y => y.name === 'Yakuhai');
+    expect(yh?.detail).toBe('自風 東');
   });
 
   it('counts Yakuhai twice for a double wind triplet', () => {
@@ -77,8 +79,8 @@ describe('Yaku detection', () => {
     ];
     expect(isWinningHand(hand)).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true, seatWind: 1, roundWind: 1 });
-    const yakuhaiCount = yaku.filter(y => y.name === 'Yakuhai').length;
-    expect(yakuhaiCount).toBe(2); // ダブ東の刻子は2翻になるはず
+    const details = yaku.filter(y => y.name === 'Yakuhai').map(y => y.detail);
+    expect(details).toEqual(['自風 東', '場風 東']); // ダブ東の刻子は2翻になるはず
   });
 
   it('detects Yakuhai from an open meld', () => {
@@ -91,7 +93,8 @@ describe('Yaku detection', () => {
     ];
     const melds: Meld[] = [{ type: 'pon', tiles: ponTiles, fromPlayer: 1, calledTileId: 'od1a' }];
     const yaku = detectYaku(concealed, melds, { isTsumo: true });
-    expect(yaku.filter(y => y.name === 'Yakuhai').length).toBe(1);
+    const yh = yaku.find(y => y.name === 'Yakuhai');
+    expect(yh?.detail).toBe('白');
   });
 
   it('detects open Ittsu as 1 han', () => {

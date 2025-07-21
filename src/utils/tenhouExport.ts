@@ -12,7 +12,7 @@ export interface RoundEndInfo {
   fu?: number;
   seatWind?: number;
   winType?: 'ron' | 'tsumo';
-  yakuList?: { name: string; han: number }[];
+  yakuList?: { name: string; han: number; detail?: string }[];
 }
 
 export function tileToTenhouNumber(tile: Tile): number {
@@ -232,7 +232,12 @@ export function exportTenhouLog(
       end.winType
         ? formatPointString(end.han, end.fu, end.seatWind, end.winType)
         : '';
-    const yaku = end.yakuList?.map(y => `${toTenhouName(y.name)}(${y.han}飜)`) ?? [];
+    const yaku =
+      end.yakuList?.map(y => {
+        const name =
+          y.name === 'Yakuhai' && y.detail ? y.detail : toTenhouName(y.name);
+        return `${name}(${y.han}飜)`;
+      }) ?? [];
     resultArr.push([end.winner, end.loser ?? end.winner, end.winner, pointStr, ...yaku]);
   }
   hand.push(resultArr);
