@@ -38,6 +38,7 @@ function countDora(allTiles: Tile[], indicators: Tile[]): number {
     const dora = doraFromIndicator(ind);
     total += counts[tileKey(dora)] || 0;
   }
+  total += allTiles.filter(t => t.red).length;
   return total;
 }
 

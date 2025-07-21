@@ -10,6 +10,12 @@ describe('generateTileWall', () => {
     const ids = new Set(wall.map(t => t.id));
     expect(ids.size).toBe(wall.length);
   });
+
+  it('adds red tiles when specified', () => {
+    const wall = generateTileWall(1);
+    const reds = wall.filter(t => t.red);
+    expect(reds).toHaveLength(3);
+  });
 });
 
 describe('drawDoraIndicator', () => {

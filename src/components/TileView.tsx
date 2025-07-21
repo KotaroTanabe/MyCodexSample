@@ -71,7 +71,7 @@ export const TileView: React.FC<{
       aria-label={kanji}
       style={{ transform: `rotate(${rotate}deg) ${extraTransform}` }}
     >
-      <span className="font-emoji">
+      <span className={`font-emoji ${tile.red ? 'text-red-600' : ''}`}> 
         {faceDown ? '🂠' : emojiMap[tile.suit]?.[tile.rank] ?? kanji}
       </span>
       {isShonpai && (
