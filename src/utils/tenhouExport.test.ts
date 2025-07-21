@@ -65,6 +65,44 @@ describe('exportTenhouLog', () => {
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
+  it('translates yaku names to Tenhou style', () => {
+    const t = makeTile(2);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'tsumo', player: 0, tile: t },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 0,
+      uraDora: [],
+      han: 2,
+      fu: 30,
+      seatWind: 1,
+      winType: 'tsumo',
+      yakuList: [
+        { name: 'Riichi', han: 1 },
+        { name: 'Menzen Tsumo', han: 1 },
+      ],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    const yakuStrings = json.log[0][16][2].slice(4);
+    expect(yakuStrings).toEqual(['立直(1飜)', '門前清自摸和(1飜)']);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
   it('sets rule.disp to a fixed value', () => {
     const t = makeTile(5);
     const hands = Array(4)

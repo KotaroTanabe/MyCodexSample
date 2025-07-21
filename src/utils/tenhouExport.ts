@@ -1,5 +1,6 @@
 import { LogEntry, RoundStartInfo, Tile } from '../types/mahjong';
 import { calcBase, calcRoundedScore } from '../score/score';
+import { toTenhouName } from './tenhouYakuNames';
 
 export interface RoundEndInfo {
   result: '和了' | '流局';
@@ -225,7 +226,7 @@ export function exportTenhouLog(
       end.winType
         ? formatPointString(end.han, end.fu, end.seatWind, end.winType)
         : '';
-    const yaku = end.yakuList?.map(y => `${y.name}(${y.han}飜)`) ?? [];
+    const yaku = end.yakuList?.map(y => `${toTenhouName(y.name)}(${y.han}飜)`) ?? [];
     resultArr.push([end.winner, end.loser ?? end.winner, end.winner, pointStr, ...yaku]);
   }
   hand.push(resultArr);
