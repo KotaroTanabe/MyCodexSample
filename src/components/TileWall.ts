@@ -13,17 +13,19 @@ const honors: { suit: Suit; rank: number }[] = [
 ];
 
 // 牌山生成
-export function generateTileWall(): Tile[] {
+export function generateTileWall(redCount = 0): Tile[] {
   let tiles: Tile[] = [];
   let id = 1;
   // 数牌
   for (const suit of suits) {
     for (let rank = 1; rank <= 9; rank++) {
       for (let i = 0; i < 4; i++) {
+        const red = rank === 5 && i < redCount ? true : undefined;
         tiles.push({
           suit,
           rank,
           id: `${suit}-${rank}-${i}-${id++}`,
+          ...(red ? { red } : {}),
         });
       }
     }

@@ -420,6 +420,11 @@ describe('exportTenhouLog', () => {
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
+  it('encodes red tiles with special numbers', () => {
+    const red: Tile = { suit: 'pin', rank: 5, id: 'r1', red: true };
+    expect(tileToTenhouNumber(red)).toBe(52);
+  });
+
   it('creates tenhou replay url', () => {
     const json = { title: ['',''], name: ['A','B','C','D'], rule: { disp: '四南喰', aka: 0 }, log: [] };
     const url = tenhouJsonToUrl(json);

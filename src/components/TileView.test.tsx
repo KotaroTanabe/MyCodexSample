@@ -33,4 +33,10 @@ describe('TileView', () => {
     expect(html).toContain('py-px');
     expect(html).toContain('leading-none');
   });
+
+  it('marks red tiles with text color', () => {
+    const tile: Tile = { suit: 'pin', rank: 5, id: 'r', red: true };
+    const html = renderToStaticMarkup(<TileView tile={tile} />);
+    expect(html).toContain('text-red-600');
+  });
 });

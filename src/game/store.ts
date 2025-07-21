@@ -273,7 +273,7 @@ const boardPresets: Record<string, BoardData> = (() => {
   return { basic, multiCalls, kanVariants, longRiver, allFuro };
 })();
 
-export const useGame = (gameLength: GameLength) => {
+export const useGame = (gameLength: GameLength, red = 0) => {
   // ゲーム状態
   const [wall, setWall] = useState<Tile[]>([]);
   const [players, setPlayers] = useState<PlayerState[]>([]);
@@ -320,7 +320,7 @@ export const useGame = (gameLength: GameLength) => {
   const recordHeadRef = useRef<RecordHead>({
     startTime: 0,
     endTime: 0,
-    rule: { gameLength },
+    rule: { gameLength, aka: red },
     players: [],
   });
   const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
@@ -335,6 +335,7 @@ export const useGame = (gameLength: GameLength) => {
       startScoresRef.current,
       endInfoRef.current,
       dora,
+      red,
     );
     return tenhouJsonToUrl(data);
   };
@@ -448,7 +449,7 @@ export const useGame = (gameLength: GameLength) => {
   // ラウンド初期化関数
   const startRound = (resetKyoku: boolean, roundNumber: number = kyokuRef.current) => {
     clearActionTimer();
-    let wallStack = generateTileWall();
+    let wallStack = generateTileWall(red);
     let wanpai = wallStack.slice(0, DEAD_WALL_SIZE);
     wallStack = wallStack.slice(DEAD_WALL_SIZE);
     const doraResult = drawDoraIndicator(wanpai, 1);
@@ -515,7 +516,7 @@ export const useGame = (gameLength: GameLength) => {
       honbaRef.current = 0;
       recordHeadRef.current.startTime = Date.now();
       recordHeadRef.current.endTime = 0;
-      recordHeadRef.current.rule = { gameLength };
+      recordHeadRef.current.rule = { gameLength, aka: red };
       recordHeadRef.current.players = playersRef.current.map(p => ({
         name: p.name,
         seat: p.seat,
@@ -1316,6 +1317,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       startScoresRef.current,
       endInfoRef.current,
       dora,
+      red,
     );
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1334,6 +1336,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       startScoresRef.current,
       endInfoRef.current,
       dora,
+      red,
     );
     await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setMessage('Tenhouログをコピーしました');

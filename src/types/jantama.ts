@@ -5,6 +5,7 @@ export interface RecordHead {
   endTime: number;
   rule: {
     gameLength: GameLength;
+    aka?: number;
   };
   players: { name: string; seat: number; isAI: boolean }[];
 }

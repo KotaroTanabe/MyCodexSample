@@ -12,6 +12,7 @@ import {
 
 interface Props {
   gameLength: GameLength;
+  red?: number;
   showBorders?: boolean;
   toolsOpen?: boolean;
   onCloseTools?: () => void;
@@ -19,11 +20,12 @@ interface Props {
 
 export const GameController: React.FC<Props> = ({
   gameLength,
+  red = 0,
   showBorders = true,
   toolsOpen = false,
   onCloseTools,
 }) => {
-  const game = useGame(gameLength);
+  const game = useGame(gameLength, red);
   const maxKyoku = maxKyokuForLength(gameLength);
 
   return (

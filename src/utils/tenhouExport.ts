@@ -16,6 +16,11 @@ export interface RoundEndInfo {
 }
 
 export function tileToTenhouNumber(tile: Tile): number {
+  if (tile.red) {
+    if (tile.suit === 'man') return 51;
+    if (tile.suit === 'pin') return 52;
+    if (tile.suit === 'sou') return 53;
+  }
   switch (tile.suit) {
     case 'man':
       return 10 + tile.rank;
@@ -98,6 +103,7 @@ export function exportTenhouLog(
   startScores: number[],
   end: RoundEndInfo,
   doraIndicators: Tile[] = [round.doraIndicator],
+  aka: number = 0,
 ) {
   const hai = round.hands.map(h => h.map(tileToTenhouNumber));
   // Dealer has 14 tiles in RoundStartInfo; Tenhou format expects 13.
@@ -235,7 +241,10 @@ export function exportTenhouLog(
     title: ['', ''],
     name: ['A', 'B', 'C', 'D'],
     // Fixed rule display string for Tenhou format
-    rule: { disp: '四南喰', aka: 0 },
+    rule: {
+      disp: `四南喰${aka > 0 ? `赤${aka}` : ''}`,
+      aka,
+    },
     log: [hand],
   };
 }

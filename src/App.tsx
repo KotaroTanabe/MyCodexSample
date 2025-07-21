@@ -14,6 +14,7 @@ function App() {
   const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
     'east1',
   );
+  const [redAka, setRedAka] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [dark, setDark] = useState(false);
@@ -67,23 +68,39 @@ function App() {
             </select>
           </div>
         {mode === 'game' && (
-          <div className="flex items-center gap-2">
-            <label htmlFor="length">試合形式</label>
-            <select
-              id="length"
-              value={gameLength}
-              onChange={e =>
-                setGameLength(
-                  e.target.value as 'east1' | 'tonpu' | 'tonnan',
-                )
-              }
-              className="border px-2 py-1"
-            >
-              <option value="east1">東1局のみ</option>
-              <option value="tonpu">東風戦</option>
-              <option value="tonnan">東南戦</option>
-            </select>
-          </div>
+          <>
+            <div className="flex items-center gap-2">
+              <label htmlFor="length">試合形式</label>
+              <select
+                id="length"
+                value={gameLength}
+                onChange={e =>
+                  setGameLength(
+                    e.target.value as 'east1' | 'tonpu' | 'tonnan',
+                  )
+                }
+                className="border px-2 py-1"
+              >
+                <option value="east1">東1局のみ</option>
+                <option value="tonpu">東風戦</option>
+                <option value="tonnan">東南戦</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label htmlFor="aka">赤5枚数</label>
+              <select
+                id="aka"
+                value={redAka}
+                onChange={e => setRedAka(parseInt(e.target.value))}
+                className="border px-2 py-1"
+              >
+                <option value={0}>0</option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+              </select>
+            </div>
+          </>
         )}
         <button
           onClick={() => setToolsOpen(true)}
@@ -119,6 +136,7 @@ function App() {
         <GameController
           key={gameLength}
           gameLength={gameLength}
+          red={redAka}
           showBorders={showBorders}
           toolsOpen={toolsOpen}
           onCloseTools={() => setToolsOpen(false)}

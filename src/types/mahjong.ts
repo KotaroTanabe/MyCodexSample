@@ -5,6 +5,8 @@ export interface Tile {
   suit: Suit;
   rank: number; // 1–9／風:1東2南3西4北／三元:1白2発3中
   id: string;   // ユニーク識別子
+  /** true for red dora tiles */
+  red?: boolean;
   /** true if this discard was claimed for a meld */
   called?: boolean;
   /** seat index of the player who called this tile */
