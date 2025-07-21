@@ -1012,7 +1012,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       { seatWind, roundWind, winType: 'tsumo' },
     );
     const points = calcRoundedScore(han, fu, seatWind === 1, 'tsumo');
-    const childPts = calcRoundedScore(han, fu, false, 'tsumo');
+    const childPts = calcRoundedScore(han, fu, seatWind === 1, 'tsumo');
     const dealerPts = calcRoundedScore(han, fu, true, 'tsumo');
     const dealerIdx = p.findIndex(pl => pl.seat === 0);
     let newPlayers = payoutTsumo(

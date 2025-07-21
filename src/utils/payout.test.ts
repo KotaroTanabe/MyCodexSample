@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { payoutTsumo, payoutRon, payoutNoten } from './payout';
+import { calcRoundedScore } from '../score/score';
 import { createInitialPlayerState } from '../components/Player';
 
 function setupPlayers() {
@@ -31,6 +32,21 @@ describe('payoutTsumo', () => {
     expect(updated[1].score).toBe(players[1].score - 2200);
     for (let i = 2; i < 4; i++) {
       expect(updated[i].score).toBe(players[i].score - 1200);
+    }
+  });
+
+  it('handles dealer tsumo payouts correctly', () => {
+    const players = setupPlayers();
+    const han = 3;
+    const fu = 60;
+    // 基本点 60 * 2^(3 + 2) = 1920 で、親ツモは2倍支払いなので
+    // 各子から 1920 * 2 = 3840 を100点単位に切り上げて3900点ずつ受け取る
+    const childPts = calcRoundedScore(han, fu, true, 'tsumo');
+    const updated = payoutTsumo(players, 0, childPts, childPts, 0);
+    expect(childPts).toBe(3900);
+    expect(updated[0].score).toBe(players[0].score + 3 * childPts);
+    for (let i = 1; i < 4; i++) {
+      expect(updated[i].score).toBe(players[i].score - childPts);
     }
   });
 });
