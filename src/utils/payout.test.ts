@@ -4,30 +4,32 @@ import { createInitialPlayerState } from '../components/Player';
 
 function setupPlayers() {
   return [
-    createInitialPlayerState('p1', false),
-    createInitialPlayerState('p2', false),
-    createInitialPlayerState('p3', false),
-    createInitialPlayerState('p4', false),
+    createInitialPlayerState('p1', false, 0),
+    createInitialPlayerState('p2', false, 1),
+    createInitialPlayerState('p3', false, 2),
+    createInitialPlayerState('p4', false, 3),
   ];
 }
 
 describe('payoutTsumo', () => {
   it('adjusts scores for a tsumo win', () => {
     const players = setupPlayers();
-    const updated = payoutTsumo(players, 0, 1000);
-    expect(updated[0].score).toBe(players[0].score + 3000);
-    for (let i = 1; i < 4; i++) {
+    const updated = payoutTsumo(players, 0, 1000, 2000, 1);
+    // 子ツモ時は親が2倍支払いになるため合計4000点受け取るはず
+    expect(updated[0].score).toBe(players[0].score + 4000);
+    expect(updated[1].score).toBe(players[1].score - 2000);
+    for (let i = 2; i < 4; i++) {
       expect(updated[i].score).toBe(players[i].score - 1000);
     }
   });
 
   it('includes honba bonus for tsumo', () => {
     const players = setupPlayers();
-    const updated = payoutTsumo(players, 0, 1000, 2);
-    // 今の実装だと2本場でツモした場合、各家が1000点+200点支払いとなるため
-    // 合計3600点受け取りになるはず
-    expect(updated[0].score).toBe(players[0].score + 3600);
-    for (let i = 1; i < 4; i++) {
+    const updated = payoutTsumo(players, 0, 1000, 2000, 1, 2);
+    // 2本場なら親は2200点、子は1200点支払いで計4600点受け取り
+    expect(updated[0].score).toBe(players[0].score + 4600);
+    expect(updated[1].score).toBe(players[1].score - 2200);
+    for (let i = 2; i < 4; i++) {
       expect(updated[i].score).toBe(players[i].score - 1200);
     }
   });

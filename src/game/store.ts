@@ -23,7 +23,7 @@ import {
 } from '../utils/meld';
 import { filterChiOptions } from '../utils/table';
 import { isWinningHand, detectYaku } from '../score/yaku';
-import { calculateScore } from '../score/score';
+import { calculateScore, calcRoundedScore } from '../score/score';
 import { calcShanten } from '../utils/shanten';
 import { incrementDiscardCount, findRonWinner } from '../components/DiscardUtil';
 import { chooseAICallOption, chooseAIDiscardTile } from '../utils/ai';
@@ -997,14 +997,25 @@ const handleCallAction = (action: MeldType | 'pass') => {
       if (idx === 0) setMessage('役なし');
       return;
     }
-    const { han, fu, points } = calculateScore(
+    const { han, fu } = calculateScore(
       p[idx].hand,
       p[idx].melds,
       yaku,
       dora,
       { seatWind, roundWind, winType: 'tsumo' },
     );
-    let newPlayers = payoutTsumo(p, idx, points, honbaRef.current).map((pl, i) =>
+    const points = calcRoundedScore(han, fu, seatWind === 1, 'tsumo');
+    const childPts = calcRoundedScore(han, fu, false, 'tsumo');
+    const dealerPts = calcRoundedScore(han, fu, true, 'tsumo');
+    const dealerIdx = p.findIndex(pl => pl.seat === 0);
+    let newPlayers = payoutTsumo(
+      p,
+      idx,
+      childPts,
+      dealerPts,
+      dealerIdx,
+      honbaRef.current,
+    ).map((pl, i) =>
       i === idx ? { ...pl, ippatsu: false } : pl,
     );
     if (riichiPoolRef.current > 0) {
