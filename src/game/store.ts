@@ -642,7 +642,12 @@ export const useGame = (gameLength: GameLength, red = 1) => {
       performSelfKan(currentIndex, kanOpts[0]);
       return;
     }
-    const fullHand = [...p[currentIndex].hand, ...p[currentIndex].melds.flatMap(m => m.tiles)];
+    const fullHand = [
+      ...p[currentIndex].hand,
+      ...p[currentIndex].melds.flatMap(m =>
+        m.type === 'kan' ? m.tiles.slice(0, 3) : m.tiles,
+      ),
+    ];
     if (isWinningHand(fullHand)) {
       const seatWind = p[currentIndex].seat + 1;
       const roundWind = kyokuRef.current <= 4 ? 1 : 2;
