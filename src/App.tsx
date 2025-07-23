@@ -12,7 +12,7 @@ function App() {
   const [tileFont, setTileFont] = useState(2);
   const [mode, setMode] = useState<'game' | 'fu-quiz' | 'score-quiz' | 'shanten-quiz' | 'ukeire-quiz'>('game');
   const [gameLength, setGameLength] = useState<'east1' | 'tonpu' | 'tonnan'>(
-    'east1',
+    'tonnan',
   );
   const [redAka, setRedAka] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
