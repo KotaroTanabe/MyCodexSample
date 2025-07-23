@@ -8,6 +8,7 @@ import { RiichiStick } from './RiichiStick';
 import { HandView } from './HandView';
 import { MeldArea } from './MeldArea';
 import { isWinningHand, detectYaku } from '../score/yaku';
+import { countUkeireTiles } from '../utils/ukeire';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
 const honorMap: Record<string, Record<number, string>> = {
@@ -254,9 +255,35 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 }).length > 0;
               return hasYaku ? <>和了可能</> : <>役なし</>;
             }
-            return base === 0
-              ? <>聴牌{label && ` (${label})`}</>
-              : <>向聴数: {base}{label && ` (${label})`}</>;
+            if (base === 0) {
+              const result = countUkeireTiles(me.hand, me.melds.length);
+              const tiles = Object.keys(result.counts);
+              const labels = tiles
+                .map(key => {
+                  const [suit, rankStr] = key.split('-');
+                  const rank = parseInt(rankStr, 10);
+                  if (suit === 'man' || suit === 'pin' || suit === 'sou') {
+                    return `${rank}${suitMap[suit]}`;
+                  }
+                  return honorMap[suit]?.[rank] ?? '';
+                })
+                .join(' ');
+              return (
+                <>
+                  聴牌{label && ` (${label})`}
+                  {tiles.length > 0 && (
+                    <span
+                      className="ml-1 cursor-help"
+                      title={labels}
+                      aria-label="winning-tiles"
+                    >
+                      ?
+                    </span>
+                  )}
+                </>
+              );
+            }
+            return <>向聴数: {base}{label && ` (${label})`}</>;
           })()}
         </div>
         <HandView
