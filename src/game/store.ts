@@ -280,6 +280,7 @@ export const useGame = (gameLength: GameLength, red = 1) => {
   const [dora, setDora] = useState<Tile[]>([]);
   const [deadWall, setDeadWall] = useState<Tile[]>([]);
   const [playerIsAI, setPlayerIsAI] = useState(false);
+  const [advancedAI, setAdvancedAI] = useState(false);
   const [turn, setTurn] = useState(0); // 0:自分, 1-3:AI
   const [phase, setPhase] = useState<GamePhase>('init');
   const [message, setMessage] = useState<string>('');
@@ -304,6 +305,7 @@ export const useGame = (gameLength: GameLength, red = 1) => {
 
   const turnRef = useRef(turn);
   const playersRef = useRef<PlayerState[]>(players);
+  const advancedAIRef = useRef(advancedAI);
   const wallRef = useRef<Tile[]>(wall);
   const deadWallRef = useRef<Tile[]>(deadWall);
   const kyokuRef = useRef(kyoku);
@@ -389,9 +391,21 @@ export const useGame = (gameLength: GameLength, red = 1) => {
     });
   };
 
+  const toggleAdvancedAI = () => {
+    setAdvancedAI(prev => {
+      const next = !prev;
+      advancedAIRef.current = next;
+      return next;
+    });
+  };
+
   useEffect(() => {
     turnRef.current = turn;
   }, [turn]);
+
+  useEffect(() => {
+    advancedAIRef.current = advancedAI;
+  }, [advancedAI]);
 
   useEffect(() => {
     wallRef.current = wall;
@@ -1272,6 +1286,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       const tile = chooseAIDiscardTile(
         playersRef.current[ai],
         pendingRiichiRef.current === ai,
+        { advanced: advancedAIRef.current },
       );
       handleDiscard(tile.id);
     }, 500);
@@ -1431,11 +1446,13 @@ const handleCallAction = (action: MeldType | 'pass') => {
     tenhouUrl,
     preset,
     boardInput,
+    advancedAI,
     setWinResult,
     setRoundResult,
     setPreset,
     setBoardInput,
     togglePlayerAI,
+    toggleAdvancedAI,
     handleDiscard,
     handleCallAction,
     handleRiichi,

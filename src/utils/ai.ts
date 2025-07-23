@@ -58,11 +58,13 @@ export function chooseAICallOption(
 export function chooseAIDiscardTile(
   player: PlayerState,
   declaringRiichi = false,
+  options?: { advanced?: boolean },
 ): Tile {
   let best: Tile | null = null;
   let bestShanten = Infinity;
   let bestSynergy = Infinity;
   let bestUkeire = -1;
+  const useUkeire = options?.advanced;
 
   function calcSynergy(tile: Tile): number {
     let score = 0;
@@ -82,13 +84,18 @@ export function chooseAIDiscardTile(
     const s = calcShanten(remaining, player.melds.length);
     const value = Math.min(s.standard, s.chiitoi, s.kokushi);
     if (player.isRiichi && value > 0) continue;
-    const ukeire = countUkeireTiles(remaining, player.melds.length).total;
+    const ukeire = useUkeire
+      ? countUkeireTiles(remaining, player.melds.length).total
+      : -1;
     const synergy = calcSynergy(tile);
-    if (
+    const better =
       value < bestShanten ||
-      (value === bestShanten && ukeire > bestUkeire) ||
-      (value === bestShanten && ukeire === bestUkeire && synergy < bestSynergy)
-    ) {
+      (value === bestShanten &&
+        (useUkeire
+          ? ukeire > bestUkeire ||
+            (ukeire === bestUkeire && synergy < bestSynergy)
+          : synergy < bestSynergy));
+    if (better) {
       bestShanten = value;
       bestUkeire = ukeire;
       bestSynergy = synergy;

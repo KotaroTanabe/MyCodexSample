@@ -55,7 +55,9 @@ export const GameController: React.FC<Props> = ({
         onRon={!game.players[0]?.isAI ? game.handleRon : undefined}
         onRonPass={!game.players[0]?.isAI ? game.handleRonPass : undefined}
         playerIsAI={game.playerIsAI}
+        advancedAI={game.advancedAI}
         onToggleAI={game.togglePlayerAI}
+        onToggleAdvancedAI={game.toggleAdvancedAI}
         showBorders={showBorders}
       />
       <div className="mt-2">{game.message}</div>
