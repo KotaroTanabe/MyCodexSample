@@ -41,6 +41,8 @@ interface UIBoardProps {
   onRonPass?: () => void;
   playerIsAI?: boolean;
   onToggleAI?: () => void;
+  advancedAI?: boolean;
+  onToggleAdvancedAI?: () => void;
   showBorders?: boolean;
 }
 
@@ -71,6 +73,8 @@ export const UIBoard: React.FC<UIBoardProps> = ({
   onRonPass,
   playerIsAI,
   onToggleAI,
+  advancedAI,
+  onToggleAdvancedAI,
   showBorders = true,
 }) => {
   if (players.length === 0) {
@@ -338,6 +342,16 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         <label className="flex items-center gap-2 mt-2">
           <input type="checkbox" checked={playerIsAI} onChange={onToggleAI} />
           観戦モード
+        </label>
+      )}
+      {onToggleAdvancedAI && (
+        <label className="flex items-center gap-2 mt-2">
+          <input
+            type="checkbox"
+            checked={advancedAI}
+            onChange={onToggleAdvancedAI}
+          />
+          高度なAI
         </label>
       )}
       </div>
