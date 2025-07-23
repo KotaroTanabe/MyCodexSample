@@ -10,6 +10,8 @@ interface Props {
   boardInput: string;
   setBoardInput: (s: string) => void;
   onLoadBoard: () => void;
+  advancedAI: boolean;
+  onToggleAdvancedAI: () => void;
 }
 
 export const GameToolsModal: React.FC<Props> = ({
@@ -22,6 +24,8 @@ export const GameToolsModal: React.FC<Props> = ({
   boardInput,
   setBoardInput,
   onLoadBoard,
+  advancedAI,
+  onToggleAdvancedAI,
 }) => {
   if (!isOpen) return null;
   return (
@@ -68,6 +72,15 @@ export const GameToolsModal: React.FC<Props> = ({
         <button className="px-2 py-1 bg-gray-200 rounded w-full" onClick={onLoadBoard}>
           盤面読み込み
         </button>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={advancedAI}
+            onChange={onToggleAdvancedAI}
+            aria-label="高度なAI"
+          />
+          高度なAI
+        </label>
       </div>
     </div>
   );
