@@ -3,6 +3,7 @@ import { getValidCallOptions, selectMeldTiles } from './meld';
 import { isLeftOf } from './table';
 import { calcShanten } from './shanten';
 import { canDiscardTile } from '../components/Player';
+import { countUkeireTiles } from './ukeire';
 
 /**
  * Choose an AI call action based on available options.
@@ -61,6 +62,7 @@ export function chooseAIDiscardTile(
   let best: Tile | null = null;
   let bestShanten = Infinity;
   let bestSynergy = Infinity;
+  let bestUkeire = -1;
 
   function calcSynergy(tile: Tile): number {
     let score = 0;
@@ -80,12 +82,15 @@ export function chooseAIDiscardTile(
     const s = calcShanten(remaining, player.melds.length);
     const value = Math.min(s.standard, s.chiitoi, s.kokushi);
     if (player.isRiichi && value > 0) continue;
+    const ukeire = countUkeireTiles(remaining, player.melds.length).total;
     const synergy = calcSynergy(tile);
     if (
       value < bestShanten ||
-      (value === bestShanten && synergy < bestSynergy)
+      (value === bestShanten && ukeire > bestUkeire) ||
+      (value === bestShanten && ukeire === bestUkeire && synergy < bestSynergy)
     ) {
       bestShanten = value;
+      bestUkeire = ukeire;
       bestSynergy = synergy;
       best = tile;
     }
