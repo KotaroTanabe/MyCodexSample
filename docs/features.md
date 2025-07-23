@@ -26,4 +26,5 @@ This page describes the key functionality provided by the Mahjong Web App.
 ## UI Extras
 - Yaku list help modal
 - Numeric display of deposit sticks
+- Winning tiles tooltip when tenpai
 

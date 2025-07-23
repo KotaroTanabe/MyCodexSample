@@ -8,6 +8,8 @@ import { RiichiStick } from './RiichiStick';
 import { HandView } from './HandView';
 import { MeldArea } from './MeldArea';
 import { isWinningHand, detectYaku } from '../score/yaku';
+import { countUkeireTiles } from '../utils/ukeire';
+import { tileToKanji } from '../utils/tileString';
 
 const suitMap: Record<string, string> = { man: '萬', pin: '筒', sou: '索', wind: '', dragon: '' };
 const honorMap: Record<string, Record<number, string>> = {
@@ -254,9 +256,34 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                 }).length > 0;
               return hasYaku ? <>和了可能</> : <>役なし</>;
             }
-            return base === 0
-              ? <>聴牌{label && ` (${label})`}</>
-              : <>向聴数: {base}{label && ` (${label})`}</>;
+            if (base === 0) {
+              const { counts } = countUkeireTiles(me.hand, me.melds.length);
+              const tiles = Object.keys(counts)
+                .map(key => {
+                  const [suit, rankStr] = key.split('-');
+                  return tileToKanji({
+                    suit: suit as Tile['suit'],
+                    rank: parseInt(rankStr, 10),
+                    id: '',
+                  });
+                })
+                .join(' ');
+              return (
+                <>
+                  聴牌{label && ` (${label})`}
+                  {tiles && (
+                    <span
+                      className="ml-1 cursor-help"
+                      data-testid="winning-tiles"
+                      title={tiles}
+                    >
+                      ?
+                    </span>
+                  )}
+                </>
+              );
+            }
+            return <>向聴数: {base}{label && ` (${label})`}</>;
           })()}
         </div>
         <HandView

@@ -7,6 +7,8 @@ import { createInitialPlayerState, canDeclareRiichi } from './Player';
 import { RESERVED_HAND_SLOTS } from './HandView';
 import { Tile } from '../types/mahjong';
 import { rotationForSeat } from '../utils/rotation';
+import { tilesFromString, tileToKanji } from '../utils/tileString';
+import { countUkeireTiles } from '../utils/ukeire';
 import type { PlayerState, Meld } from "../types/mahjong";
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
@@ -59,6 +61,42 @@ describe('UIBoard shanten display', () => {
   it('shows tenpai when shanten is zero', () => {
     renderBoard({ standard: 0, chiitoi: 2, kokushi: 13 });
     expect(screen.getByText('聴牌')).toBeTruthy();
+  });
+
+  it('displays winning tiles tooltip when in tenpai', () => {
+    const hand = tilesFromString('2345677p8p22345s1m');
+    const { counts } = countUkeireTiles(hand, 0);
+    const expected = Object.keys(counts)
+      .map(k => {
+        const [suit, r] = k.split('-');
+        return tileToKanji({ suit: suit as Tile['suit'], rank: parseInt(r, 10), id: '' });
+      })
+      .join(' ');
+    const player = { ...createInitialPlayerState('you', false) } as PlayerState;
+    player.hand = hand;
+    player.drawnTile = hand[hand.length - 1];
+    render(
+      <UIBoard
+        players={[
+          player,
+          createInitialPlayerState('ai1', true, 1),
+          createInitialPlayerState('ai2', true, 2),
+          createInitialPlayerState('ai3', true, 3),
+        ]}
+        dora={[]}
+        kyoku={1}
+        wallCount={70}
+        kyotaku={0}
+        honba={0}
+        onDiscard={() => {}}
+        isMyTurn={true}
+        shanten={{ standard: 0, chiitoi: 8, kokushi: 13 }}
+        lastDiscard={null}
+      />,
+    );
+    const elem = screen.getByTestId('winning-tiles');
+    expect(elem).toBeTruthy();
+    expect(elem.getAttribute('title')).toBe(expected);
   });
 
   it('shows kokushi label for 2-shanten', () => {
