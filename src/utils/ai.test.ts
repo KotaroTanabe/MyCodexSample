@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { chooseAICallOption, chooseAIDiscardTile } from './ai';
 import { calcShanten } from './shanten';
+import { countUkeireTiles } from './ukeire';
 import { Tile, PlayerState } from '../types/mahjong';
 import {
   createInitialPlayerState,
@@ -175,5 +176,39 @@ describe('chooseAIDiscardTile', () => {
     const player = makePlayer(hand);
     const chosen = chooseAIDiscardTile(player);
     expect(['p1', 'p2', 's1', 's2']).not.toContain(chosen.id);
+  });
+
+  it('prefers higher ukeire when shanten ties', () => {
+    const hand: Tile[] = [
+      t('man', 1, 'a1'),
+      t('man', 2, 'a2'),
+      t('man', 3, 'a3'),
+      t('man', 4, 'a4'),
+      t('man', 7, 'b1'),
+      t('man', 9, 'b2'),
+      t('pin', 3, 'c1'),
+      t('pin', 4, 'c2'),
+      t('pin', 6, 'c3'),
+      t('sou', 2, 'd1'),
+      t('sou', 3, 'd2'),
+      t('sou', 5, 'd3'),
+      t('wind', 1, 'e1'),
+      t('dragon', 1, 'f1'),
+    ];
+    const player = makePlayer(hand);
+    const chosen = chooseAIDiscardTile(player);
+    const evaluate = (tile: Tile) => {
+      const remaining = hand.filter(t => t.id !== tile.id);
+      const s = calcShanten(remaining, player.melds.length);
+      const value = Math.min(s.standard, s.chiitoi, s.kokushi);
+      const ukeire = countUkeireTiles(remaining, player.melds.length).total;
+      return { value, ukeire };
+    };
+    const data = hand.map(tile => ({ tile, ...evaluate(tile) }));
+    const min = Math.min(...data.map(d => d.value));
+    const bestUkeire = Math.max(
+      ...data.filter(d => d.value === min).map(d => d.ukeire),
+    );
+    expect(evaluate(chosen).ukeire).toBe(bestUkeire);
   });
 });
