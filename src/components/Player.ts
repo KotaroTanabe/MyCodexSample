@@ -19,7 +19,7 @@ export function sortHand(hand: Tile[]): Tile[] {
 export function createInitialPlayerState(
   name: string,
   isAI: boolean,
-  seat = 0,
+  chair = 0,
 ): PlayerState {
   return {
     hand: [],
@@ -32,7 +32,8 @@ export function createInitialPlayerState(
     name,
     isAI,
     drawnTile: null,
-    seat,
+    seat: chair,
+    chair,
   };
 }
 

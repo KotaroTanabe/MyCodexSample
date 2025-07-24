@@ -1,6 +1,7 @@
 # Tile Rotation Utilities
 
-These helpers control the orientation and placement of tiles based on player seat and calling position.
+These helpers control the orientation and placement of tiles based on a player's
+table position (`chair`) and calling seat.
 
 - `rotationForSeat(seat: number)` returns the base rotation in degrees for the given seat.
 - `calledRotation(seat: number, from: number)` adjusts the rotation when claiming a tile from another player's discard.

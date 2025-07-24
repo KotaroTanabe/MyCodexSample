@@ -110,14 +110,14 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         </div>
         <RiverView
           tiles={top.discard}
-          seat={top.seat}
+          seat={top.chair}
           lastDiscard={lastDiscard}
           dataTestId="discard-seat-2"
           showBorder={showBorders}
         />
         {top.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick seat={top.seat} />
+            <RiichiStick seat={top.chair} />
           </div>
         )}
       </div>
@@ -130,13 +130,13 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           </div>
           {right.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
-              <RiichiStick seat={right.seat} />
+              <RiichiStick seat={right.chair} />
             </div>
           )}
           <div className="flex items-start gap-2">
             <RiverView
               tiles={right.discard}
-              seat={right.seat}
+              seat={right.chair}
               lastDiscard={lastDiscard}
               dataTestId="discard-seat-1"
               showBorder={showBorders}
@@ -160,7 +160,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
           </div>
           {left.isRiichi && (
             <div className="text-xs" data-testid="riichi-indicator">
-              <RiichiStick seat={left.seat} />
+              <RiichiStick seat={left.chair} />
             </div>
           )}
           <div className="flex items-start gap-2">
@@ -173,7 +173,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             </div>
             <RiverView
               tiles={left.discard}
-              seat={left.seat}
+              seat={left.chair}
               lastDiscard={lastDiscard}
               dataTestId="discard-seat-3"
               showBorder={showBorders}
@@ -207,20 +207,20 @@ export const UIBoard: React.FC<UIBoardProps> = ({
         <div className="flex items-start gap-2">
           <RiverView
             tiles={me.discard}
-            seat={me.seat}
+            seat={me.chair}
             lastDiscard={lastDiscard}
             dataTestId="discard-seat-0"
             showBorder={showBorders}
           />
           <MeldArea
             melds={me.melds}
-            seat={me.seat}
+            seat={me.chair}
             showBorder={showBorders && me.melds.length > 0}
           />
         </div>
         {me.isRiichi && (
           <div className="text-xs" data-testid="riichi-indicator">
-            <RiichiStick seat={me.seat} />
+            <RiichiStick seat={me.chair} />
           </div>
         )}
         <div className="text-sm mb-1">
@@ -372,7 +372,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       <div className="absolute left-0 top-0">
         <MeldArea
           melds={top.melds}
-          seat={top.seat}
+          seat={top.chair}
           showBorder={showBorders && top.melds.length > 0}
           dataTestId="meld-seat-2"
         />
@@ -380,7 +380,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       <div className="absolute right-0 top-0">
         <MeldArea
           melds={right.melds}
-          seat={right.seat}
+          seat={right.chair}
           showBorder={showBorders && right.melds.length > 0}
           dataTestId="meld-seat-1"
         />
@@ -388,7 +388,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
       <div className="absolute left-0 bottom-[calc(var(--tile-font-size)*4)]">
         <MeldArea
           melds={left.melds}
-          seat={left.seat}
+          seat={left.chair}
           showBorder={showBorders && left.melds.length > 0}
           dataTestId="meld-seat-3"
         />

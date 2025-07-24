@@ -42,7 +42,10 @@ export interface PlayerState {
   name: string;
   isAI: boolean;
   drawnTile: Tile | null;
+  /** seat wind index (rotates each round) */
   seat: number;
+  /** fixed table position (0 = south/bottom, 1 = west/right, 2 = north/top, 3 = east/left) */
+  chair: number;
 }
 
 export interface RoundStartInfo {

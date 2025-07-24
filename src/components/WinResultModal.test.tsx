@@ -12,8 +12,8 @@ function t(suit: Tile['suit'], rank: number, id: string): Tile {
 }
 
 const players: PlayerState[] = [
-  { hand: [], discard: [], melds: [], score: 32000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0 },
-  { hand: [], discard: [], melds: [], score: 28000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1 },
+  { hand: [], discard: [], melds: [], score: 32000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0, chair: 0 },
+  { hand: [], discard: [], melds: [], score: 28000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1, chair: 1 },
 ];
 
 const hand = [t('man', 1, 'm1'), t('man', 2, 'm2')];
