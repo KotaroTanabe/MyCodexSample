@@ -326,6 +326,8 @@ export const useGame = (gameLength: GameLength, red = 1) => {
     players: [],
   });
   const roundStartInfoRef = useRef<RoundStartInfo | null>(null);
+  const roundStartHonbaRef = useRef(honba);
+  const roundStartKyotakuRef = useRef(riichiPool);
   const startScoresRef = useRef<number[]>([]);
   const endInfoRef = useRef<RoundEndInfo | null>(null);
 
@@ -338,8 +340,8 @@ export const useGame = (gameLength: GameLength, red = 1) => {
       endInfoRef.current,
       dora,
       red,
-      honbaRef.current,
-      riichiPoolRef.current,
+      roundStartHonbaRef.current,
+      roundStartKyotakuRef.current,
     );
     return tenhouJsonToUrl(data);
   };
@@ -463,8 +465,13 @@ export const useGame = (gameLength: GameLength, red = 1) => {
   }, [players]);
 
   // ラウンド初期化関数
-  const startRound = (resetKyoku: boolean, roundNumber: number = kyokuRef.current) => {
+  const startRound = (
+    resetKyoku: boolean,
+    roundNumber: number = kyokuRef.current,
+  ) => {
     clearActionTimer();
+    roundStartHonbaRef.current = honbaRef.current;
+    roundStartKyotakuRef.current = riichiPoolRef.current;
     let wallStack = generateTileWall(red);
     let wanpai = wallStack.slice(0, DEAD_WALL_SIZE);
     wallStack = wallStack.slice(DEAD_WALL_SIZE);
@@ -1351,8 +1358,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       endInfoRef.current,
       dora,
       red,
-      honbaRef.current,
-      riichiPoolRef.current,
+      roundStartHonbaRef.current,
+      roundStartKyotakuRef.current,
     );
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1372,8 +1379,8 @@ const handleCallAction = (action: MeldType | 'pass') => {
       endInfoRef.current,
       dora,
       red,
-      honbaRef.current,
-      riichiPoolRef.current,
+      roundStartHonbaRef.current,
+      roundStartKyotakuRef.current,
     );
     await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setMessage('Tenhouログをコピーしました');
@@ -1397,8 +1404,10 @@ const handleCallAction = (action: MeldType | 'pass') => {
       kyokuRef.current = data.kyoku;
       setRiichiPool(data.riichiPool);
       riichiPoolRef.current = data.riichiPool;
+      roundStartKyotakuRef.current = data.riichiPool;
       setHonba(data.honba);
       honbaRef.current = data.honba;
+      roundStartHonbaRef.current = data.honba;
       setCallOptions(null);
       setLastDiscard(null);
       setSelfKanOptions(null);
