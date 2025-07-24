@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { findRonWinner } from './DiscardUtil';
-import { Tile } from '../types/mahjong';
-import { createInitialPlayerState } from './Player';
+import { Tile, PlayerState } from '../types/mahjong';
+import { createInitialPlayerState, claimMeld, discardTile } from './Player';
 
 const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({ suit, rank, id });
 
@@ -181,6 +181,29 @@ describe('findRonWinner', () => {
     };
     const players = [p1, p2];
     const idx = findRonWinner(players, 0, discard, 1);
+    expect(idx).toBe(1);
+  });
+
+  it('identifies ron after a melded player discards', () => {
+    const callTile = t('man', 1, 'mc');
+    let caller: PlayerState = {
+      ...createInitialPlayerState('caller', false),
+      hand: [t('man', 1, 'ma'), t('man', 1, 'mb'), winningTile],
+    };
+    caller = claimMeld(
+      caller,
+      [t('man', 1, 'ma'), t('man', 1, 'mb'), callTile],
+      'pon',
+      0,
+      callTile.id,
+    );
+    caller = discardTile(caller, winningTile.id);
+    const winner = {
+      ...createInitialPlayerState('winner', false, 1),
+      hand: winningBase,
+    };
+    const players = [caller, winner];
+    const idx = findRonWinner(players, 0, caller.discard[0], 1);
     expect(idx).toBe(1);
   });
 });
