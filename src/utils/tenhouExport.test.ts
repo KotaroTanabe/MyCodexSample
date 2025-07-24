@@ -474,6 +474,51 @@ describe('exportTenhouLog', () => {
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
+  it('uses kyotaku value from round start even after riichi', () => {
+    const t = makeTile(1);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 1, tile: t },
+      { type: 'riichi', player: 1, tile: t },
+      { type: 'discard', player: 1, tile: t },
+    ];
+    const end: RoundEndInfo = { result: '流局', diffs: [0, 0, 0, 0] };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end, [t], 0, 0, 0);
+    expect(json.log[0][0]).toEqual([0, 0, 0]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
+  it('carries kyotaku over between rounds', () => {
+    const t = makeTile(2);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 2,
+    };
+    const log: LogEntry[] = [{ type: 'startRound', kyoku: 2 }];
+    const end: RoundEndInfo = { result: '流局', diffs: [0, 0, 0, 0] };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end, [t], 0, 1, 1);
+    expect(json.log[0][0]).toEqual([1, 1, 1]);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
   it('encodes red tiles with special numbers', () => {
     const red: Tile = { suit: 'pin', rank: 5, id: 'r1', red: true };
     expect(tileToTenhouNumber(red)).toBe(52);
