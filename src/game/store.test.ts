@@ -17,10 +17,12 @@ describe('game store', () => {
   it('rotates seat numbers when dealer changes', () => {
     const { result } = renderHook(() => useGame('tonpu'));
     expect(result.current.players.map(p => p.seat)).toEqual([0, 1, 2, 3]);
+    expect(result.current.players.map(p => p.chair)).toEqual([0, 1, 2, 3]);
     act(() => {
       result.current.nextKyoku(false);
     });
     expect(result.current.players.map(p => p.seat)).toEqual([3, 0, 1, 2]);
+    expect(result.current.players.map(p => p.chair)).toEqual([0, 1, 2, 3]);
     expect(result.current.players[0].name).toBe('あなた');
   });
 

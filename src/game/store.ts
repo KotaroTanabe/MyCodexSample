@@ -39,8 +39,8 @@ import { shouldRotateRiichi } from './riichiUtil';
 
 /**
  * Rotate seat numbers without reordering the array.
- * This keeps the first array element as the controlling player
- * while advancing the dealer position.
+ * Each player's {@link PlayerState.chair} stays fixed so UI orientation
+ * remains consistent while the dealer position advances.
  */
 const rotateSeatNumbers = (players: PlayerState[]): PlayerState[] =>
   players.map(p => ({ ...p, seat: (p.seat + 3) % 4 }));

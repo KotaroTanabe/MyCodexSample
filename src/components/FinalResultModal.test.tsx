@@ -6,8 +6,8 @@ import { FinalResultModal } from './FinalResultModal';
 import { PlayerState } from '../types/mahjong';
 
 const players: PlayerState[] = [
-  { hand: [], discard: [], melds: [], score: 30000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0 },
-  { hand: [], discard: [], melds: [], score: 20000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1 },
+  { hand: [], discard: [], melds: [], score: 30000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'A', isAI: false, drawnTile: null, seat: 0, chair: 0 },
+  { hand: [], discard: [], melds: [], score: 20000, isRiichi: false, ippatsu: false, doubleRiichi: false, name: 'B', isAI: true, drawnTile: null, seat: 1, chair: 1 },
 ];
 
 describe('FinalResultModal', () => {
