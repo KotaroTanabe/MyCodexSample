@@ -229,6 +229,28 @@ describe('claimMeld', () => {
     expect(fromOpposite.melds[0].tiles[3].id).toBe('a');
     expect(fromLeft.melds[0].tiles[3].id).toBe('a');
   });
+
+  it('clears drawnTile when calling a meld', () => {
+    const t = (suit: Tile['suit'], rank: number, id: string): Tile => ({
+      suit,
+      rank,
+      id,
+    });
+    const hand: Tile[] = [t('man', 1, 'a'), t('man', 1, 'b'), t('pin', 5, 'p')];
+    const player: PlayerState = {
+      ...createInitialPlayerState('Bob', false),
+      hand,
+      drawnTile: hand[0],
+    };
+    const updated = claimMeld(
+      player,
+      [t('man', 1, 'a'), t('man', 1, 'b'), t('man', 1, 'c')],
+      'pon' as MeldType,
+      1,
+      'c',
+    );
+    expect(updated.drawnTile).toBeNull();
+  });
 });
 
 describe('incrementDiscardCount', () => {

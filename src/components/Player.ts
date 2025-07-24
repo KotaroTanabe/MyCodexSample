@@ -145,6 +145,7 @@ export function claimMeld(
       ...player.melds,
       { type, tiles: meldTiles, fromPlayer, calledTileId, kanType },
     ],
+    drawnTile: null,
   };
 }
 
