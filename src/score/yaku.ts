@@ -121,7 +121,7 @@ function getYakuhaiDetails(
   return details;
 }
 
-function canFormSets(counts: Record<string, number>, memo = new Map<string, boolean>()): boolean {
+function _canFormSets(counts: Record<string, number>, memo = new Map<string, boolean>()): boolean {
   const serialized = JSON.stringify(counts);
   if (memo.has(serialized)) return memo.get(serialized)!;
 
@@ -135,7 +135,7 @@ function canFormSets(counts: Record<string, number>, memo = new Map<string, bool
   // try triplet
   if (counts[first] >= 3) {
     counts[first] -= 3;
-    if (canFormSets(counts, memo)) {
+    if (_canFormSets(counts, memo)) {
       counts[first] += 3;
       memo.set(serialized, true);
       return true;
@@ -146,7 +146,7 @@ function canFormSets(counts: Record<string, number>, memo = new Map<string, bool
   // try sequence
   if ((suit === 'man' || suit === 'pin' || suit === 'sou') && counts[`${suit}-${rank+1}`] > 0 && counts[`${suit}-${rank+2}`] > 0) {
     counts[first]--; counts[`${suit}-${rank+1}`]--; counts[`${suit}-${rank+2}`]--;
-    if (canFormSets(counts, memo)) {
+    if (_canFormSets(counts, memo)) {
       counts[first]++; counts[`${suit}-${rank+1}`]++; counts[`${suit}-${rank+2}`]++;
       memo.set(serialized, true);
       return true;
@@ -423,15 +423,81 @@ function isChinitsu(tiles: Tile[]): boolean {
   return suits.size === 1 && !hasHonor;
 }
 
-export function isWinningHand(tiles: Tile[]): boolean {
-  if (tiles.length !== 14) return false;
-  if (isChiitoitsu(tiles) || isKokushi(tiles)) return true;
-  const counts = countTiles(tiles);
+function canFormLimitedSets(
+  counts: Record<string, number>,
+  need: number,
+  memo = new Map<string, boolean>(),
+): boolean {
+  const serialized = JSON.stringify({ counts, need });
+  if (memo.has(serialized)) return memo.get(serialized)!;
+  if (need === 0) {
+    const remaining = Object.values(counts).every(c => c === 0);
+    memo.set(serialized, remaining);
+    return remaining;
+  }
+
+  const keys = Object.keys(counts).filter(k => counts[k] > 0);
+  if (keys.length === 0) {
+    memo.set(serialized, false);
+    return false;
+  }
+
+  const first = keys[0];
+  const [suit, rankStr] = first.split('-');
+  const rank = Number(rankStr);
+
+  // try triplet
+  if (counts[first] >= 3) {
+    counts[first] -= 3;
+    if (canFormLimitedSets(counts, need - 1, memo)) {
+      counts[first] += 3;
+      memo.set(serialized, true);
+      return true;
+    }
+    counts[first] += 3;
+  }
+
+  // try sequence
+  if (
+    (suit === 'man' || suit === 'pin' || suit === 'sou') &&
+    counts[`${suit}-${rank + 1}`] > 0 &&
+    counts[`${suit}-${rank + 2}`] > 0
+  ) {
+    counts[first]--;
+    counts[`${suit}-${rank + 1}`]--;
+    counts[`${suit}-${rank + 2}`]--;
+    if (canFormLimitedSets(counts, need - 1, memo)) {
+      counts[first]++;
+      counts[`${suit}-${rank + 1}`]++;
+      counts[`${suit}-${rank + 2}`]++;
+      memo.set(serialized, true);
+      return true;
+    }
+    counts[first]++;
+    counts[`${suit}-${rank + 1}`]++;
+    counts[`${suit}-${rank + 2}`]++;
+  }
+
+  memo.set(serialized, false);
+  return false;
+}
+
+export function isWinningHand(concealed: Tile[], melds: Meld[] = []): boolean {
+  const meldTiles = melds.flatMap(m =>
+    m.type === 'kan' ? m.tiles.slice(0, 3) : m.tiles,
+  );
+  const allTiles = [...concealed, ...meldTiles];
+  if (allTiles.length !== 14) return false;
+  if (melds.length === 0 && (isChiitoitsu(allTiles) || isKokushi(allTiles)))
+    return true;
+
+  const counts = countTiles(concealed);
   const tileKeys = Object.keys(counts);
+  const needSets = 4 - melds.length;
   for (const key of tileKeys) {
     if (counts[key] >= 2) {
       counts[key] -= 2;
-      if (canFormSets(counts)) {
+      if (canFormLimitedSets(counts, needSets)) {
         counts[key] += 2;
         return true;
       }

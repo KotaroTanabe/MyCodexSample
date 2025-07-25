@@ -61,11 +61,9 @@ describe('store winning draw', () => {
       vi.advanceTimersByTime(600);
     });
 
-    const fullHand = [
-      ...result.current.players[0].hand,
-      ...result.current.players[0].melds.flatMap(m => m.tiles),
-    ];
-    expect(isWinningHand(fullHand)).toBe(true);
+    expect(
+      isWinningHand(result.current.players[0].hand, result.current.players[0].melds),
+    ).toBe(true);
     const yaku = detectYaku(result.current.players[0].hand, result.current.players[0].melds, {
       isTsumo: true,
       seatWind: 1,

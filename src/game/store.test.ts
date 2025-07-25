@@ -72,7 +72,7 @@ describe('game store', () => {
       tiles: [t('man', 1, 'k1'), t('man', 1, 'k2'), t('man', 1, 'k3'), t('man', 1, 'k4')],
       fromPlayer: 0,
       calledTileId: 'k1',
-      kanType: 'ankan',
+      kanType: 'ankan' as const,
     };
     const hand = [
       t('man', 2, 'm2a'), t('man', 2, 'm2b'), t('man', 2, 'm2c'),
@@ -80,11 +80,6 @@ describe('game store', () => {
       t('man', 4, 'm4a'), t('man', 4, 'm4b'), t('man', 4, 'm4c'),
       t('man', 5, 'm5a'), t('man', 5, 'm5b'),
     ];
-    const fullHand = [
-      ...hand,
-      ...kan.tiles.slice(0, 3),
-    ];
-    expect(fullHand).toHaveLength(14);
-    expect(isWinningHand(fullHand)).toBe(true);
+    expect(isWinningHand(hand, [kan])).toBe(true);
   });
 });

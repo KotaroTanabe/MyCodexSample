@@ -8,6 +8,6 @@ describe('generateRandomAgari', () => {
     expect(hand).toHaveLength(14);
     expect(melds).toHaveLength(0);
     expect(hand.includes(winningTile)).toBe(true);
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, melds)).toBe(true);
   });
 });

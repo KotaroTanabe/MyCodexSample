@@ -24,7 +24,7 @@ describe('Yaku detection', () => {
       t('man',6,'m6a'),t('man',7,'m7a'),t('man',8,'m8a'),
       t('pin',5,'p5a'),t('pin',5,'p5b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Tanyao')).toBe(true);
   });
@@ -49,7 +49,7 @@ describe('Yaku detection', () => {
       t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
       t('sou',2,'s2a'),t('sou',2,'s2b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true });
     const yh = yaku.find(y => y.name === 'Yakuhai');
     expect(yh?.detail).toBe('白');
@@ -63,7 +63,7 @@ describe('Yaku detection', () => {
       t('pin',2,'p2a'),t('pin',3,'p3a'),t('pin',4,'p4a'),
       t('sou',2,'s2a'),t('sou',2,'s2b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true, seatWind: 1, roundWind: 2 });
     const yh = yaku.find(y => y.name === 'Yakuhai');
     expect(yh?.detail).toBe('自風 東');
@@ -77,7 +77,7 @@ describe('Yaku detection', () => {
       t('pin',2,'dp2a'),t('pin',3,'dp3a'),t('pin',4,'dp4a'),
       t('sou',2,'ds2a'),t('sou',2,'ds2b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true, seatWind: 1, roundWind: 1 });
     const details = yaku.filter(y => y.name === 'Yakuhai').map(y => y.detail);
     expect(details).toEqual(['自風 東', '場風 東']); // ダブ東の刻子は2翻になるはず
@@ -145,7 +145,7 @@ describe('Yaku detection', () => {
       t('sou',6,'s6a'),t('sou',6,'s6b'),
       t('dragon',1,'d1a'),t('dragon',1,'d1b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Chiitoitsu')).toBe(true);
   });
@@ -175,7 +175,7 @@ describe('Yaku detection', () => {
       t('dragon',1,'d1a'),t('dragon',2,'d2a'),t('dragon',3,'d3a'),
       t('man',1,'m1b'),
     ];
-    expect(isWinningHand(hand)).toBe(true);
+    expect(isWinningHand(hand, [])).toBe(true);
     const yaku = detectYaku(hand, [], { isTsumo: true });
     expect(yaku.some(y => y.name === 'Kokushi Musou')).toBe(true);
   });
@@ -604,5 +604,17 @@ describe('Scoring', () => {
     expect(th.some(y => y.name === 'Tenhou')).toBe(true);
     const rh = detectYaku(hand, [], { isTsumo: false, renhou: true });
     expect(rh.some(y => y.name === 'Renhou')).toBe(true);
+  });
+
+  it('rejects hands that split meld tiles', () => {
+    const p = (r: number, id: string) => t('pin', r, id);
+    const w = (s: number, id: string) => t('wind', s, id);
+    const concealed = [p(1,'a'), p(2,'b'), p(3,'c'), p(4,'d'), p(6,'win')];
+    const melds: Meld[] = [
+      { type: 'pon', tiles: [p(5,'e1'), p(5,'e2'), p(5,'e3')], fromPlayer: 1, calledTileId: 'e1' },
+      { type: 'pon', tiles: [w(1,'ea'), w(1,'eb'), w(1,'ec')], fromPlayer: 2, calledTileId: 'ea' },
+      { type: 'pon', tiles: [w(3,'wa'), w(3,'wb'), w(3,'wc')], fromPlayer: 3, calledTileId: 'wa' },
+    ];
+    expect(isWinningHand(concealed, melds)).toBe(false);
   });
 });

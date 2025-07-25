@@ -22,12 +22,7 @@ export function findRonWinner(
 ): number | null {
   for (let i = 0; i < players.length; i++) {
     if (i === discarderIndex) continue;
-    const candidate = [
-      ...players[i].hand,
-      ...players[i].melds.flatMap(m => m.tiles),
-      tile,
-    ];
-    if (isWinningHand(candidate)) {
+    if (isWinningHand([...players[i].hand, tile], players[i].melds as any)) {
       const yaku = detectYaku(
         [...players[i].hand, tile],
         players[i].melds as any,
