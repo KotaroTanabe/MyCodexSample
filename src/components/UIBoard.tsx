@@ -237,7 +237,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
             }
             if (base < 0) {
               const full = [...me.hand, ...me.melds.flatMap(m => m.tiles)];
-              const winning = isWinningHand(full);
+              const winning = isWinningHand(me.hand, me.melds);
               if (!winning || !tsumoOption) {
                 console.warn('negative shanten but not tsumo/win', { hand: full, shanten, tsumoOption });
               }
