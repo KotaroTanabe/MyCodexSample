@@ -41,6 +41,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
       isTsumo: winType === 'tsumo',
       seatWind,
       roundWind,
+      winTile: question.winningTile,
     });
     const { han, fu } = calculateScore(
       question.hand,
@@ -51,6 +52,7 @@ export const ScoreQuiz: React.FC<ScoreQuizProps> = ({ initialIndex, initialWinTy
         seatWind,
         roundWind,
         winType,
+        winTile: question.winningTile,
       },
     );
     const base = calcBase(han, fu);

@@ -33,6 +33,7 @@ export function findRonWinner(
           isRiichi: players[i].isRiichi,
           doubleRiichi: players[i].doubleRiichi,
           ippatsu: players[i].ippatsu,
+          winTile: tile,
         },
       );
       const hasBaseYaku = yaku.some(y => y.name !== 'Ura Dora');

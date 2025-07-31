@@ -249,6 +249,7 @@ export const UIBoard: React.FC<UIBoardProps> = ({
                   isTsumo: true,
                   seatWind,
                   roundWind,
+                  winTile: me.drawnTile!,
                 }).length > 0;
               return hasYaku ? <>和了可能</> : <>役なし</>;
             }

@@ -97,12 +97,13 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
 export function calculateFu(
   hand: Tile[],
   melds: Meld[] = [],
-  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
+  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo'; winTile?: Tile },
 ): number {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const yaku = detectYaku(hand, melds, {
     seatWind: opts?.seatWind,
     roundWind: opts?.roundWind,
+    winTile: opts?.winTile,
   });
   if (yaku.some(y => y.name === 'Chiitoitsu')) {
     return 25; // 七対子は固定25符
@@ -205,7 +206,7 @@ export function calculateScore(
   melds: Meld[],
   yaku: ScoreYaku[],
   doraIndicators: Tile[] = [],
-  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo' },
+  opts?: { seatWind?: number; roundWind?: number; winType?: 'ron' | 'tsumo'; winTile?: Tile },
 ): { han: number; fu: number; points: number } {
   const allTiles = [...hand, ...melds.flatMap(m => m.tiles)];
   const dora = countDora(allTiles, doraIndicators);

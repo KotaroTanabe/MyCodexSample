@@ -217,12 +217,16 @@ function decomposeHand(tiles: Tile[]): { pair: Tile[]; melds: ParsedMeld[] } | n
   return null;
 }
 
-function isPinfuHand(tiles: Tile[]): boolean {
+function isPinfuHand(tiles: Tile[], winTile?: Tile): boolean {
   const parsed = decomposeHand(tiles);
   if (!parsed) return false;
   if (parsed.melds.some(m => m.type !== 'chi')) return false;
   const pairSuit = parsed.pair[0].suit;
   if (pairSuit === 'dragon' || pairSuit === 'wind') return false;
+  if (winTile && tileKey(winTile) === tileKey(parsed.pair[0])) {
+    // tanki wait is not allowed for pinfu
+    return false;
+  }
   return true;
 }
 
@@ -525,6 +529,7 @@ export function detectYaku(
     chiihou?: boolean;
     renhou?: boolean;
     uraDoraIndicators?: Tile[];
+    winTile?: Tile;
   },
 ): ScoreYaku[] {
   const allTiles = [...concealed, ...melds.flatMap(m => m.tiles)];
@@ -587,7 +592,7 @@ export function detectYaku(
   } else if (parsed && isChanta(parsed)) {
     result.push({ name: 'Chanta', han: isClosed ? 2 : 1 });
   }
-  if (isClosed && isPinfuHand(allTiles)) {
+  if (isClosed && isPinfuHand(allTiles, opts?.winTile)) {
     result.push({ name: 'Pinfu', han: 1 });
   }
   if (isClosed && isIipeikoHand(allTiles)) {
