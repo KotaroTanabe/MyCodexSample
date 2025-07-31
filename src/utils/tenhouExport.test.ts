@@ -133,7 +133,7 @@ describe('exportTenhouLog', () => {
     const scores = [25000, 25000, 25000, 25000];
     const json = exportTenhouLog(start, log, scores, end);
     const yakuStrings = json.log[0][16][2].slice(4);
-    expect(yakuStrings).toEqual(['白(1飜)']);
+    expect(yakuStrings).toEqual(['役牌 白(1飜)']);
     writeFileSync('tmp.tenhou.json', JSON.stringify(json));
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
