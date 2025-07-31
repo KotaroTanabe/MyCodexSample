@@ -3,7 +3,7 @@ import { calcBase, calcRoundedScore } from '../score/score';
 import { toTenhouName } from './tenhouYakuNames';
 
 export interface RoundEndInfo {
-  result: '和了' | '流局';
+  result: '和了' | '流局' | '全員聴牌' | '全員不聴';
   diffs: number[];
   winner?: number;
   loser?: number;
