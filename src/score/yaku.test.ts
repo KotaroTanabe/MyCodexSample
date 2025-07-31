@@ -123,6 +123,19 @@ describe('Yaku detection', () => {
     expect(yaku.some(y => y.name === 'Pinfu')).toBe(true);
   });
 
+  it('does not count Pinfu on tanki wait', () => {
+    // 456678m 1234p 567s +4p tanki
+    const hand: Tile[] = [
+      t('man',4,'m4'),t('man',5,'m5'),t('man',6,'m6a'),
+      t('man',6,'m6b'),t('man',7,'m7'),t('man',8,'m8'),
+      t('pin',1,'p1'),t('pin',2,'p2'),t('pin',3,'p3'),
+      t('pin',4,'p4a'),t('pin',4,'p4b'),
+      t('sou',5,'s5'),t('sou',6,'s6'),t('sou',7,'s7'),
+    ];
+    const yaku = detectYaku(hand, [], { winTile: hand[10] });
+    expect(yaku.some(y => y.name === 'Pinfu')).toBe(false);
+  });
+
   it('detects Iipeiko', () => {
     const hand: Tile[] = [
       t('man',2,'m2a'),t('man',3,'m3a'),t('man',4,'m4a'),

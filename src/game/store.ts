@@ -670,6 +670,7 @@ export const useGame = (gameLength: GameLength, red = 1) => {
         isTsumo: true,
         seatWind,
         roundWind,
+        winTile: p[currentIndex].drawnTile!,
       });
       const hasBaseYaku = yaku.some(y => y.name !== 'Ura Dora');
       if (hasBaseYaku) {
@@ -1013,6 +1014,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       seatWind,
       roundWind,
       uraDoraIndicators: ura,
+      winTile: p[idx].drawnTile!,
     });
     const baseYaku = yaku.filter(y => y.name !== 'Ura Dora');
     if (baseYaku.length === 0) {
@@ -1024,7 +1026,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       p[idx].melds,
       yaku,
       dora,
-      { seatWind, roundWind, winType: 'tsumo' },
+      { seatWind, roundWind, winType: 'tsumo', winTile: p[idx].drawnTile! },
     );
     const points = calcRoundedScore(han, fu, seatWind === 1, 'tsumo');
     const childPts = calcRoundedScore(han, fu, seatWind === 1, 'tsumo');
@@ -1108,6 +1110,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       seatWind,
       roundWind,
       uraDoraIndicators: ura,
+      winTile: tile,
     });
     const baseYaku = yaku.filter(y => y.name !== 'Ura Dora');
     if (baseYaku.length === 0) {
@@ -1119,7 +1122,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
       p[winner].melds,
       yaku,
       dora,
-      { seatWind, roundWind, winType: 'ron' },
+      { seatWind, roundWind, winType: 'ron', winTile: tile },
     );
     let updated = payoutRon(p, winner, from, points, honbaRef.current).map((pl, i) =>
       i === winner ? { ...pl, ippatsu: false } : pl,

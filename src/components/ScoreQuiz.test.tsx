@@ -4,8 +4,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { ScoreQuiz } from './ScoreQuiz';
 
-// SAMPLE_HANDS[0] を親でロン和了すると 4翻30符で
-// 基本点1920 ×6 = 11520 -> 11600点になる
+// SAMPLE_HANDS[0] を親でロン和了すると 3翻30符で
+// 基本点960 ×6 = 5760 -> 5800点になる
 
 afterEach(() => cleanup());
 
@@ -13,7 +13,7 @@ describe('ScoreQuiz', () => {
   it('shows "正解！" when the guess is correct', () => {
     render(<ScoreQuiz initialIndex={0} initialWinType="ron" initialSeatWind={1} />);
     const input = screen.getByPlaceholderText('点数を入力');
-    fireEvent.change(input, { target: { value: '11600' } });
+    fireEvent.change(input, { target: { value: '5800' } });
     const button = screen.getByText('答える');
     fireEvent.click(button);
     expect(screen.getByText('正解！')).toBeTruthy();
@@ -27,7 +27,7 @@ describe('ScoreQuiz', () => {
     fireEvent.change(input, { target: { value: '1000' } });
     const button = screen.getByText('答える');
     fireEvent.click(button);
-    expect(screen.getByText('不正解。正解: 11600 (4翻 30符)')).toBeTruthy();
+    expect(screen.getByText('不正解。正解: 5800 (3翻 30符)')).toBeTruthy();
     expect(screen.getByText('Tanyao (1翻)')).toBeTruthy();
     expect(screen.getByText('基本符20')).toBeTruthy();
   });
@@ -42,7 +42,7 @@ describe('ScoreQuiz', () => {
     const childInput = screen.getByPlaceholderText('子の支払い');
     const parentInput = screen.getByPlaceholderText('親の支払い');
     fireEvent.change(childInput, { target: { value: '2000' } });
-    fireEvent.change(parentInput, { target: { value: '4000' } });
+    fireEvent.change(parentInput, { target: { value: '3900' } });
     fireEvent.click(screen.getByText('答える'));
     expect(screen.getByText('正解！')).toBeTruthy();
   });
