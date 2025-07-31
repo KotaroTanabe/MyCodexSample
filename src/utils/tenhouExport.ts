@@ -237,7 +237,9 @@ export function exportTenhouLog(
     const yaku =
       end.yakuList?.map(y => {
         const name =
-          y.name === 'Yakuhai' && y.detail ? y.detail : toTenhouName(y.name);
+          y.name === 'Yakuhai' && y.detail
+            ? `役牌 ${y.detail}`
+            : toTenhouName(y.name);
         return `${name}(${y.han}飜)`;
       }) ?? [];
     resultArr.push([end.winner, end.loser ?? end.winner, end.winner, pointStr, ...yaku]);
