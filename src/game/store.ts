@@ -619,7 +619,10 @@ export const useGame = (gameLength: GameLength, red = 1) => {
     const { players: updated, changes } = payoutNoten(playersRef.current, tenpai);
     setPlayers(updated);
     playersRef.current = updated;
-    endInfoRef.current = { result: '流局', diffs: changes };
+    const allTenpai = tenpai.every(t => t);
+    const allNoten = tenpai.every(t => !t);
+    const resultStr = allTenpai ? '全員聴牌' : allNoten ? '全員不聴' : '流局';
+    endInfoRef.current = { result: resultStr, diffs: changes };
     const results: RoundResult = {
       results: updated.map((p, idx) => ({
         name: p.name,
@@ -630,7 +633,7 @@ export const useGame = (gameLength: GameLength, red = 1) => {
     };
     setRoundResult(results);
     setTenhouUrl(buildTenhouUrl());
-    setMessage('牌山が尽きました。流局です。');
+    setMessage(`牌山が尽きました。${resultStr}です。`);
   };
 
   // ツモ処理
@@ -692,7 +695,8 @@ export const useGame = (gameLength: GameLength, red = 1) => {
       return;
     }
     if (last) {
-      handleWallExhaustion();
+      // Exhaustion is handled after the final discard so that the
+      // river (kawa) contains the last tile.
       return;
     }
 

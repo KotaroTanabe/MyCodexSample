@@ -10,7 +10,7 @@ class ValidationError(Exception):
 
 # Allowed end reasons
 END_REASONS = {
-    "和了", "流局", "全員不聴", "九種九牌", "四槓散了", "四家立直", "不明"
+    "和了", "流局", "全員聴牌", "全員不聴", "九種九牌", "四槓散了", "四家立直", "不明"
 }
 
 # Tile codes
