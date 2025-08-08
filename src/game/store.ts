@@ -638,6 +638,7 @@ export const useGame = (gameLength: GameLength, red = 1) => {
 
   // ツモ処理
   const drawForCurrentPlayer = () => {
+    if (winResultRef.current) return;
     if (wallRef.current.length === 0) {
       handleWallExhaustion();
       return;
