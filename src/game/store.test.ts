@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useGame } from './store';
 import type { Tile, MeldType } from '../types/mahjong';
@@ -81,5 +81,22 @@ describe('game store', () => {
       t('man', 5, 'm5a'), t('man', 5, 'm5b'),
     ];
     expect(isWinningHand(hand, [kan])).toBe(true);
+  });
+
+  it('does not log a draw when a win result is present before next turn', () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useGame('tonpu'));
+    act(() => {
+      result.current.setWinResult({} as any);
+    });
+    const before = result.current.log.length;
+    act(() => {
+      result.current.nextTurn();
+    });
+    act(() => {
+      vi.runAllTimers();
+    });
+    expect(result.current.log.length).toBe(before);
+    vi.useRealTimers();
   });
 });
