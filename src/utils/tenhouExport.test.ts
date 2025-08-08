@@ -474,6 +474,46 @@ describe('exportTenhouLog', () => {
     execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
   });
 
+  it('ignores events after a ron', () => {
+    const t = makeTile(1);
+    const hands = Array(4)
+      .fill(0)
+      .map(() => Array(13).fill(t));
+    const start: RoundStartInfo = {
+      hands,
+      dealer: 0,
+      doraIndicator: t,
+      kyoku: 1,
+    };
+    const log: LogEntry[] = [
+      { type: 'startRound', kyoku: 1 },
+      { type: 'draw', player: 1, tile: t },
+      { type: 'discard', player: 1, tile: t },
+      { type: 'ron', player: 0, tile: t, from: 1 },
+      // Extra draw that should be ignored
+      { type: 'draw', player: 2, tile: t },
+    ];
+    const end: RoundEndInfo = {
+      result: '和了',
+      diffs: [0, 0, 0, 0],
+      winner: 0,
+      loser: 1,
+      uraDora: [],
+      han: 1,
+      fu: 30,
+      seatWind: 1,
+      winType: 'ron',
+      yakuList: [{ name: '立直', han: 1 }],
+    };
+    const scores = [25000, 25000, 25000, 25000];
+    const json = exportTenhouLog(start, log, scores, end);
+    // Player 2 drew after the win but has no discards; ensure the draw was omitted.
+    expect(json.log[0][11]).toHaveLength(0);
+    expect(json.log[0][11].length).toBe(json.log[0][12].length);
+    writeFileSync('tmp.tenhou.json', JSON.stringify(json));
+    execSync('python devutils/tenhou-validator.py tmp.tenhou.json');
+  });
+
   it('uses kyotaku value from round start even after riichi', () => {
     const t = makeTile(1);
     const hands = Array(4)

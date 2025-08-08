@@ -129,7 +129,7 @@ export function exportTenhouLog(
   const dahai: (Array<number | string>)[] = [[], [], [], []];
   const lastDraw: (Tile | null)[] = [null, null, null, null];
 
-  for (let i = 0; i < log.length; i++) {
+  mainLoop: for (let i = 0; i < log.length; i++) {
     const entry = log[i];
     switch (entry.type) {
       case 'draw':
@@ -190,14 +190,14 @@ export function exportTenhouLog(
           take[entry.player].push(tileToTenhouNumber(entry.tile));
           lastDraw[entry.player] = null;
         }
-        break;
+        break mainLoop;
       }
       case 'ron':
         // Ron tiles should not appear in the take list. Only the
         // discarded tile from the losing player is recorded. See
         // docs/tenhou-json.md for details.
         lastDraw[entry.player] = null;
-        break;
+        break mainLoop;
     }
   }
 
