@@ -8,20 +8,25 @@ import { useGame } from './store';
 describe('useGame win timeout clearing', () => {
   it('stops scheduled actions on tsumo', () => {
     vi.useFakeTimers();
-    const { result } = renderHook(() => useGame('tonpu'));
-    // schedule nextTurn to create a pending timeout
-    act(() => {
-      result.current.nextTurn();
-    });
-    // Perform tsumo before the timeout triggers
-    act(() => {
-      result.current.handleTsumo();
-    });
-    const currentTurnAfterWin = result.current.turn;
-    // advance timers to check if nextTurn was cancelled
-    vi.advanceTimersByTime(600);
-    expect(result.current.turn).toBe(currentTurnAfterWin);
-    expect(result.current.winResult?.winType).toBe('tsumo');
-    vi.useRealTimers();
+    const { result, unmount } = renderHook(() => useGame('tonpu'));
+    try {
+      // schedule nextTurn to create a pending timeout
+      act(() => {
+        result.current.nextTurn();
+      });
+      // Perform tsumo before the timeout triggers
+      act(() => {
+        result.current.handleTsumo();
+      });
+      const currentTurnAfterWin = result.current.turn;
+      // advance timers to check if nextTurn was cancelled
+      vi.advanceTimersByTime(600);
+      vi.runAllTimers();
+      expect(result.current.turn).toBe(currentTurnAfterWin);
+      expect(result.current.winResult?.winType).toBe('tsumo');
+    } finally {
+      unmount();
+      vi.useRealTimers();
+    }
   });
 });
