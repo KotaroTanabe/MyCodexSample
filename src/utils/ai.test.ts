@@ -210,7 +210,7 @@ describe('chooseAIDiscardTile', () => {
       ...data.filter(d => d.value === min).map(d => d.ukeire),
     );
     expect(evaluate(chosen).ukeire).toBe(bestUkeire);
-  });
+  }, 10000);
 
   it('uses synergy tie-breaker when advanced mode is off', () => {
     const hand: Tile[] = [

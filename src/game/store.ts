@@ -1072,7 +1072,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     logRef.current = [...logRef.current, { type: 'tsumo', player: idx, tile: p[idx].drawnTile as Tile }];
     setMessage(`${p[idx].name} の和了！`);
     setTsumoOption(false);
-    setWinResult({
+    const result: WinResult = {
       players: newPlayers,
       winner: idx,
       winType: 'tsumo',
@@ -1085,7 +1085,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
       points,
       dora,
       uraDora: ura,
-    });
+    };
+    winResultRef.current = result;
+    setWinResult(result);
     setTenhouUrl(buildTenhouUrl());
   };
 
@@ -1156,7 +1158,7 @@ const handleCallAction = (action: MeldType | 'pass') => {
     setLog(prev => [...prev, { type: 'ron', player: winner, tile, from }]);
     logRef.current = [...logRef.current, { type: 'ron', player: winner, tile, from }];
     setMessage(`${p[winner].name} のロン！`);
-    setWinResult({
+    const result: WinResult = {
       players: updated,
       winner,
       winType: 'ron',
@@ -1169,7 +1171,9 @@ const handleCallAction = (action: MeldType | 'pass') => {
       points,
       dora,
       uraDora: ura,
-    });
+    };
+    winResultRef.current = result;
+    setWinResult(result);
     setTenhouUrl(buildTenhouUrl());
   };
 
